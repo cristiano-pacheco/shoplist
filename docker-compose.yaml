@@ -1,21 +1,21 @@
 services:
-  controlweb-postgres:
+  gomodulith-postgres:
     image: postgres:16-alpine
     volumes:
       - postgres:/data/postgres
     environment:
-      POSTGRES_DB: controlweb
+      POSTGRES_DB: gomodulith
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 'postgres'
       PGDATA: /data/postgres
     ports:
       - '5432:5432'
     networks:
-      - controlweb_internal
+      - gomodulith_internal
 
 networks:
-  controlweb_internal:
-    name: controlweb_internal
+  gomodulith_internal:
+    name: gomodulith_internal
 
 volumes:
   postgres:

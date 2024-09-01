@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/cristiano-pacheco/go-modulith/internal/module/billing/model"
-	"github.com/cristiano-pacheco/go-modulith/internal/shared/module/database"
+	"github.com/cristiano-pacheco/go-modulith/internal/shared/database"
 )
 
 type CategoryRepositoryI interface {
