@@ -3,8 +3,8 @@ package repository
 import (
 	"context"
 
-	"github.com/cristiano-pacheco/go-modulith/internal/model"
-	"github.com/cristiano-pacheco/go-modulith/internal/shared/database"
+	"github.com/cristiano-pacheco/go-modulith/internal/module/billing/model"
+	"github.com/cristiano-pacheco/go-modulith/internal/shared/module/database"
 )
 
 type CategoryRepositoryI interface {

@@ -1,7 +1,9 @@
 package model
 
+import "github.com/cristiano-pacheco/go-modulith/internal/shared/model"
+
 type CategoryModel struct {
-	Base
+	model.Base
 	Name string `gorm:"type:varchar;not null; column:name"`
 }
 

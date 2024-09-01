@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/cristiano-pacheco/go-modulith/internal/shared/config"
+	"github.com/cristiano-pacheco/go-modulith/internal/shared/module/config"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	gormLogger "gorm.io/gorm/logger"

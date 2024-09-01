@@ -1,8 +1,8 @@
 package usecase
 
 import (
-	"github.com/cristiano-pacheco/go-modulith/internal/modules/billing/repository"
-	"github.com/cristiano-pacheco/go-modulith/internal/modules/billing/usecase/data"
+	"github.com/cristiano-pacheco/go-modulith/internal/module/billing/repository"
+	"github.com/cristiano-pacheco/go-modulith/internal/module/billing/usecase/data"
 	"github.com/go-playground/validator/v10"
 )
 
