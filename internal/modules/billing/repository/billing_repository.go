@@ -3,16 +3,16 @@ package repository
 import (
 	"context"
 
-	"github.com/cristiano-pacheco/go-modulith/internal/persistence"
+	"github.com/cristiano-pacheco/go-modulith/internal/model"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/database"
 )
 
 type BillingRepositoryI interface {
-	Create(ctx context.Context, model persistence.BillingModel) (*persistence.BillingModel, error)
-	Update(ctx context.Context, model persistence.BillingModel) (*persistence.BillingModel, error)
-	Delete(ctx context.Context, model persistence.BillingModel) error
-	FindOneByID(ctx context.Context, ID uint64) (*persistence.BillingModel, error)
-	FindList(ctx context.Context, filters BillingSearchFilters) []*persistence.BillingModel
+	Create(ctx context.Context, model model.BillingModel) (*model.BillingModel, error)
+	Update(ctx context.Context, model model.BillingModel) (*model.BillingModel, error)
+	Delete(ctx context.Context, model model.BillingModel) error
+	FindOneByID(ctx context.Context, ID uint64) (*model.BillingModel, error)
+	FindList(ctx context.Context, filters BillingSearchFilters) []*model.BillingModel
 }
 
 type BillingSearchFilters struct {
@@ -30,26 +30,26 @@ func NewBillingRepository(db *database.DB) BillingRepositoryI {
 
 func (r *billingRepository) Create(
 	ctx context.Context,
-	model persistence.BillingModel,
-) (*persistence.BillingModel, error) {
+	model model.BillingModel,
+) (*model.BillingModel, error) {
 	return nil, nil
 }
 
 func (r *billingRepository) Update(
 	ctx context.Context,
-	model persistence.BillingModel,
-) (*persistence.BillingModel, error) {
+	model model.BillingModel,
+) (*model.BillingModel, error) {
 	return nil, nil
 }
 
-func (r *billingRepository) Delete(ctx context.Context, model persistence.BillingModel) error {
+func (r *billingRepository) Delete(ctx context.Context, model model.BillingModel) error {
 	return nil
 }
 
-func (r *billingRepository) FindOneByID(ctx context.Context, ID uint64) (*persistence.BillingModel, error) {
+func (r *billingRepository) FindOneByID(ctx context.Context, ID uint64) (*model.BillingModel, error) {
 	return nil, nil
 }
 
-func (r *billingRepository) FindList(ctx context.Context, filters BillingSearchFilters) []*persistence.BillingModel {
+func (r *billingRepository) FindList(ctx context.Context, filters BillingSearchFilters) []*model.BillingModel {
 	return nil
 }

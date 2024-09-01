@@ -1,4 +1,4 @@
-package persistence
+package model
 
 type User struct {
 	Base
