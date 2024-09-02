@@ -1,4 +1,4 @@
-package data
+package dto
 
 type CreateBillingInput struct {
 	CategoryID uint64  `validate:"required,gte=0"`

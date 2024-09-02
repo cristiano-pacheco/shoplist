@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/cristiano-pacheco/go-modulith/internal/module/billing/dto"
 	"github.com/cristiano-pacheco/go-modulith/internal/module/billing/usecase"
+	"github.com/cristiano-pacheco/go-modulith/internal/module/billing/usecase/data"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -18,7 +18,7 @@ func NewBillingHandler(createBillingUseCase *usecase.CreateBillingUseCase) *Bill
 }
 
 func (h *BillingHandler) Index(c *fiber.Ctx) error {
-	input := dto.CreateBillingInput{}
+	input := data.CreateBillingInput{}
 	output, err := h.createBillingUseCase.Execute(context.Background(), input)
 	if err != nil {
 		return c.JSON(fiber.Map{"message": err.Error()})

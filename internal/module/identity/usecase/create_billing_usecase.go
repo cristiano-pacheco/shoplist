@@ -3,8 +3,8 @@ package usecase
 import (
 	"context"
 
-	"github.com/cristiano-pacheco/go-modulith/internal/module/billing/dto"
 	"github.com/cristiano-pacheco/go-modulith/internal/module/billing/repository"
+	"github.com/cristiano-pacheco/go-modulith/internal/module/billing/usecase/data"
 	"github.com/go-playground/validator/v10"
 )
 
@@ -22,13 +22,13 @@ func NewCreateBillingUseCase(
 
 func (uc *CreateBillingUseCase) Execute(
 	ctx context.Context,
-	input dto.CreateBillingInput,
-) (dto.CreateBillingOutput, error) {
+	input data.CreateBillingInput,
+) (data.CreateBillingOutput, error) {
 	err := uc.validate.Struct(input)
 	if err != nil {
 		//validationErrors := err.(validator.ValidationErrors)
-		return dto.CreateBillingOutput{}, err
+		return data.CreateBillingOutput{}, err
 	}
 
-	return dto.CreateBillingOutput{}, nil
+	return data.CreateBillingOutput{}, nil
 }
