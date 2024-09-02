@@ -10,7 +10,6 @@ import (
 type UserRepositoryI interface {
 	Create(ctx context.Context, model model.UserModel) (*model.UserModel, error)
 	Update(ctx context.Context, model model.UserModel) (*model.UserModel, error)
-	Delete(ctx context.Context, model model.UserModel) error
 	FindOneByID(ctx context.Context, ID uint64) (*model.UserModel, error)
 }
 
@@ -34,10 +33,6 @@ func (r *UserRepository) Update(
 	model model.UserModel,
 ) (*model.UserModel, error) {
 	return nil, nil
-}
-
-func (r *UserRepository) Delete(ctx context.Context, model model.UserModel) error {
-	return nil
 }
 
 func (r *UserRepository) FindOneByID(ctx context.Context, ID uint64) (*model.UserModel, error) {
