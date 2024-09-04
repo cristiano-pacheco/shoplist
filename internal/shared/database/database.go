@@ -1,7 +1,6 @@
 package database
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/config"
@@ -19,7 +18,7 @@ func New(cfg config.Config) *DB {
 }
 
 func openConnection(cfg config.Config) *DB {
-	dsn := generateDSN(cfg)
+	dsn := config.GenerateGormDatabaseDSN(cfg)
 	gormConf := gorm.Config{}
 	writer := stdoutWriter{}
 
@@ -39,29 +38,4 @@ func openConnection(cfg config.Config) *DB {
 	}
 
 	return &DB{db}
-}
-
-func generateDSN(cfg config.Config) string {
-	sslMode := "enabled"
-	if !cfg.DB.SSLMode {
-		sslMode = "disable"
-	}
-
-	dsn := fmt.Sprintf(
-		"host=%s "+
-			"user=%s "+
-			"password=%s "+
-			"dbname=%s "+
-			"port=%d "+
-			"sslmode=%s "+
-			"TimeZone=UTC",
-		cfg.DB.DBHost,
-		cfg.DB.DBUser,
-		cfg.DB.DBPassword,
-		cfg.DB.DBName,
-		cfg.DB.DBPort,
-		sslMode,
-	)
-
-	return dsn
 }
