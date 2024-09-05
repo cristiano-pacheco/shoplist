@@ -4,6 +4,7 @@ import (
 	"os"
 
 	"github.com/cristiano-pacheco/go-modulith/internal/module/billing"
+	"github.com/cristiano-pacheco/go-modulith/internal/module/identity"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared"
 	"github.com/spf13/cobra"
 	"go.uber.org/fx"
@@ -18,6 +19,7 @@ var rootCmd = &cobra.Command{
 		app := fx.New(
 			shared.Module,
 			billing.Module,
+			identity.Module,
 		)
 		app.Run()
 	},

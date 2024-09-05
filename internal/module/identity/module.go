@@ -1,15 +1,15 @@
-package billing
+package identity
 
 import (
-	"github.com/cristiano-pacheco/go-modulith/internal/module/billing/handler"
-	"github.com/cristiano-pacheco/go-modulith/internal/module/billing/repository"
-	"github.com/cristiano-pacheco/go-modulith/internal/module/billing/router"
-	"github.com/cristiano-pacheco/go-modulith/internal/module/billing/usecase"
+	"github.com/cristiano-pacheco/go-modulith/internal/module/identity/handler"
+	"github.com/cristiano-pacheco/go-modulith/internal/module/identity/repository"
+	"github.com/cristiano-pacheco/go-modulith/internal/module/identity/router"
+	"github.com/cristiano-pacheco/go-modulith/internal/module/identity/usecase"
 	"go.uber.org/fx"
 )
 
 var Module = fx.Module(
-	"billing",
+	"identity",
 	handler.Module,
 	repository.Module,
 	router.Module,

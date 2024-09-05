@@ -23,9 +23,13 @@ func NewUserRepository(db *database.DB) UserRepositoryI {
 
 func (r *UserRepository) Create(
 	ctx context.Context,
-	model model.UserModel,
+	userModel model.UserModel,
 ) (*model.UserModel, error) {
-	return nil, nil
+	result := r.db.Create(&userModel)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return &userModel, nil
 }
 
 func (r *UserRepository) Update(
