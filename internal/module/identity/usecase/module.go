@@ -5,4 +5,6 @@ import "go.uber.org/fx"
 var Module = fx.Module(
 	"identity/usecase",
 	fx.Provide(NewCreateUserUseCasetUseCase),
+	fx.Provide(NewFindUserByIDUseCase),
+	fx.Provide(NewUpdateUserUseCase),
 )
