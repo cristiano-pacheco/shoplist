@@ -27,7 +27,10 @@ func Init() {
 		log.Fatal("Error loading .env file")
 	}
 
-	env.Parse(&_global)
+	err = env.Parse(&_global)
+	if err != nil {
+		log.Fatalf("%+v\n", err)
+	}
 }
 
 func GetConfig() Config {

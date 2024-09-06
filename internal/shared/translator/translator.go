@@ -11,6 +11,9 @@ func New(v *validator.Validate) ut.Translator {
 	en := en.New()
 	uni := ut.New(en, en)
 	trans, _ := uni.GetTranslator("en")
-	en_translations.RegisterDefaultTranslations(v, trans)
+	err := en_translations.RegisterDefaultTranslations(v, trans)
+	if err != nil {
+		panic(err)
+	}
 	return trans
 }
