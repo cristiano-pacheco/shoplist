@@ -2,6 +2,8 @@ package dbtest
 
 import (
 	"database/sql"
+	"io"
+	"log"
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -27,4 +29,10 @@ func NewDBMock(t *testing.T) (*sql.DB, *database.DB, sqlmock.Sqlmock) {
 	db := database.NewFromGorm(gormdb)
 
 	return sqldb, db, mock
+}
+
+func CloseWithErrorCheck(closer io.Closer) {
+	if err := closer.Close(); err != nil {
+		log.Printf("failed to close resource: %v", err)
+	}
 }

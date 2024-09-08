@@ -17,7 +17,7 @@ import (
 func TestUserRepository_Create_Success(t *testing.T) {
 	// Arrange
 	sqldb, db, mock := dbtest.NewDBMock(t)
-	defer sqldb.Close()
+	defer dbtest.CloseWithErrorCheck(sqldb)
 
 	sut := NewUserRepository(db)
 
@@ -60,7 +60,7 @@ func TestUserRepository_Create_Success(t *testing.T) {
 func TestUserRepository_Create_Error(t *testing.T) {
 	// Arrange
 	sqldb, db, mock := dbtest.NewDBMock(t)
-	defer sqldb.Close()
+	defer dbtest.CloseWithErrorCheck(sqldb)
 
 	sut := NewUserRepository(db)
 
@@ -95,7 +95,7 @@ func TestUserRepository_Create_Error(t *testing.T) {
 func TestUserRepository_Update_Success(t *testing.T) {
 	// Arrange
 	sqldb, db, mock := dbtest.NewDBMock(t)
-	defer sqldb.Close()
+	defer dbtest.CloseWithErrorCheck(sqldb)
 
 	sut := NewUserRepository(db)
 
@@ -132,7 +132,7 @@ func TestUserRepository_Update_Success(t *testing.T) {
 func TestUserRepository_Update_Error(t *testing.T) {
 	// Arrange
 	sqldb, db, mock := dbtest.NewDBMock(t)
-	defer sqldb.Close()
+	defer dbtest.CloseWithErrorCheck(sqldb)
 
 	sut := NewUserRepository(db)
 
@@ -169,7 +169,7 @@ func TestUserRepository_Update_Error(t *testing.T) {
 func TestUserRepository_FindOneByID_Success(t *testing.T) {
 	// Arrange
 	sqldb, db, mock := dbtest.NewDBMock(t)
-	defer sqldb.Close()
+	defer dbtest.CloseWithErrorCheck(sqldb)
 
 	sut := NewUserRepository(db)
 
@@ -221,7 +221,7 @@ func TestUserRepository_FindOneByID_Success(t *testing.T) {
 func TestUserRepository_FindOneByID_Error(t *testing.T) {
 	// Arrange
 	sqldb, db, mock := dbtest.NewDBMock(t)
-	defer sqldb.Close()
+	defer dbtest.CloseWithErrorCheck(sqldb)
 
 	sut := NewUserRepository(db)
 
