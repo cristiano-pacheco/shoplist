@@ -6,17 +6,17 @@ import (
 	"github.com/cristiano-pacheco/go-modulith/internal/module/identity/dto"
 	"github.com/cristiano-pacheco/go-modulith/internal/module/identity/repository"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/model"
-	"github.com/go-playground/validator/v10"
+	"github.com/cristiano-pacheco/go-modulith/internal/shared/validator"
 )
 
 type CreateUserUseCase struct {
 	userRepo repository.UserRepositoryI
-	validate *validator.Validate
+	validate validator.ValidateI
 }
 
 func NewCreateUserUseCaseUseCase(
 	userRepo repository.UserRepositoryI,
-	validate *validator.Validate,
+	validate validator.ValidateI,
 ) *CreateUserUseCase {
 	return &CreateUserUseCase{userRepo, validate}
 }
