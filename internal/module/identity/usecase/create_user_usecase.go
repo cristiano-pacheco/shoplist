@@ -14,7 +14,7 @@ type CreateUserUseCase struct {
 	validate *validator.Validate
 }
 
-func NewCreateUserUseCasetUseCase(
+func NewCreateUserUseCaseUseCase(
 	userRepo repository.UserRepositoryI,
 	validate *validator.Validate,
 ) *CreateUserUseCase {
