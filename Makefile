@@ -34,3 +34,11 @@ vuln-check:
 test: test-only lint vuln-check
 
 test-race: test-r lint vuln-check
+
+tests:
+	CGO_ENABLED=0 go test -count=1 ./...
+
+tests-coverage:
+	CGO_ENABLED=0 go test -v -coverprofile cover.out ./...
+	CGO_ENABLED=0 go tool cover -html cover.out -o cover.html
+	open cover.html

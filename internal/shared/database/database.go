@@ -1,12 +1,10 @@
 package database
 
 import (
-	"time"
-
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/config"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	gormLogger "gorm.io/gorm/logger"
+	"gorm.io/gorm/logger"
 )
 
 type DB struct {
@@ -17,18 +15,16 @@ func New(cfg config.Config) *DB {
 	return openConnection(cfg)
 }
 
+func NewFromGorm(db *gorm.DB) *DB {
+	return &DB{db}
+}
+
 func openConnection(cfg config.Config) *DB {
 	dsn := config.GenerateGormDatabaseDSN(cfg)
 	gormConf := gorm.Config{}
-	writer := stdoutWriter{}
 
 	if cfg.DB.EnableLogs {
-		newLogger := gormLogger.New(writer, gormLogger.Config{
-			SlowThreshold: time.Second,
-			LogLevel:      gormLogger.Info,
-			Colorful:      false,
-		})
-		gormConf.Logger = newLogger
+		gormConf.Logger = logger.Default.LogMode(logger.Info)
 	}
 
 	pgconfig := postgres.Config{DSN: dsn}

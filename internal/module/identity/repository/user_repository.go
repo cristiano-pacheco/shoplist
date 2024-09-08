@@ -31,7 +31,7 @@ func (r *userRepository) Create(ctx context.Context, userModel model.UserModel) 
 }
 
 func (r *userRepository) Update(ctx context.Context, model model.UserModel) error {
-	result := r.db.WithContext(ctx).Save(&model)
+	result := r.db.WithContext(ctx).Omit("created_at", "updated_at").Save(&model)
 	if result.Error != nil {
 		return result.Error
 	}
