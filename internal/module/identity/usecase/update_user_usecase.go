@@ -5,16 +5,16 @@ import (
 
 	"github.com/cristiano-pacheco/go-modulith/internal/module/identity/dto"
 	"github.com/cristiano-pacheco/go-modulith/internal/module/identity/repository"
-	"github.com/go-playground/validator/v10"
+	"github.com/cristiano-pacheco/go-modulith/internal/shared/validator"
 )
 
 type UpdateUserUseCase struct {
-	validate *validator.Validate
+	validate validator.ValidateI
 	userRepo repository.UserRepositoryI
 }
 
 func NewUpdateUserUseCase(
-	validate *validator.Validate,
+	validate validator.ValidateI,
 	userRepo repository.UserRepositoryI,
 ) *UpdateUserUseCase {
 	return &UpdateUserUseCase{validate, userRepo}

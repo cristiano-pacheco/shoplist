@@ -4,17 +4,18 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/cristiano-pacheco/go-modulith/internal/shared/validator"
 	ut "github.com/go-playground/universal-translator"
-	"github.com/go-playground/validator/v10"
+	lib_validator "github.com/go-playground/validator/v10"
 )
 
 type Mapper struct {
-	validate   *validator.Validate
+	validate   validator.ValidateI
 	translator ut.Translator
 }
 
 func New(
-	validate *validator.Validate,
+	validate validator.ValidateI,
 	translator ut.Translator,
 ) *Mapper {
 	return &Mapper{validate, translator}
@@ -34,7 +35,7 @@ const ServerErrorMessage = "internal server error"
 
 func (m *Mapper) MapErrorToResponseError(err error) ResponseError {
 	var responseError ResponseError
-	fieldErrors, ok := err.(validator.ValidationErrors)
+	fieldErrors, ok := err.(lib_validator.ValidationErrors)
 	if !ok {
 		responseError.ErrorCode = InternalError
 		responseError.Errors = []Error{

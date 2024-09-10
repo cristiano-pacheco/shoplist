@@ -4,6 +4,7 @@ import (
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/config"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/database"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/httpserver"
+	"github.com/cristiano-pacheco/go-modulith/internal/shared/logger"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/mapper/errormapper"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/translator"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/validator"
@@ -18,4 +19,5 @@ var Module = fx.Module(
 	translator.Module,
 	httpserver.Module,
 	errormapper.Module,
+	logger.Module,
 )
