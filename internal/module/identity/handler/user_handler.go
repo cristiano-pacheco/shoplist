@@ -4,8 +4,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/cristiano-pacheco/go-modulith/internal/module/identity/dto"
-	"github.com/cristiano-pacheco/go-modulith/internal/module/identity/usecase"
+	"github.com/cristiano-pacheco/go-modulith/internal/module/identity/usecase/create_user_usecase"
+	"github.com/cristiano-pacheco/go-modulith/internal/module/identity/usecase/find_user_by_id_usecase"
+	"github.com/cristiano-pacheco/go-modulith/internal/module/identity/usecase/update_user_usecase"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/mapper/errormapper"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/response"
 	"github.com/gofiber/fiber/v2"
@@ -13,16 +14,16 @@ import (
 
 type UserHandler struct {
 	errorMapper         *errormapper.Mapper
-	createUserUseCase   *usecase.CreateUserUseCase
-	updateUserUseCase   *usecase.UpdateUserUseCase
-	findUserByIDUseCase *usecase.FindUserByIDUseCase
+	createUserUseCase   *create_user_usecase.UseCase
+	updateUserUseCase   *update_user_usecase.UseCase
+	findUserByIDUseCase *find_user_by_id_usecase.UseCase
 }
 
 func NewUserHandler(
 	errorMapper *errormapper.Mapper,
-	createUserUseCase *usecase.CreateUserUseCase,
-	updateUserUseCase *usecase.UpdateUserUseCase,
-	findUserByIDUseCase *usecase.FindUserByIDUseCase,
+	createUserUseCase *create_user_usecase.UseCase,
+	updateUserUseCase *update_user_usecase.UseCase,
+	findUserByIDUseCase *find_user_by_id_usecase.UseCase,
 ) *UserHandler {
 	return &UserHandler{
 		errorMapper,
@@ -34,8 +35,8 @@ func NewUserHandler(
 
 func (h *UserHandler) Store(c *fiber.Ctx) error {
 	var (
-		input  dto.CreateUserInput
-		output dto.CreateUserOutput
+		input  create_user_usecase.Input
+		output create_user_usecase.Output
 	)
 
 	err := c.BodyParser(&input)
@@ -54,7 +55,7 @@ func (h *UserHandler) Store(c *fiber.Ctx) error {
 
 func (h *UserHandler) Update(c *fiber.Ctx) error {
 	var (
-		input dto.UpdateUserInput
+		input update_user_usecase.Input
 	)
 
 	err := c.BodyParser(&input)
@@ -80,8 +81,8 @@ func (h *UserHandler) Update(c *fiber.Ctx) error {
 
 func (h *UserHandler) Show(c *fiber.Ctx) error {
 	var (
-		input  dto.FindUserByIDInput
-		output dto.FindUserByIDOutput
+		input  find_user_by_id_usecase.Input
+		output find_user_by_id_usecase.Output
 	)
 
 	id := c.Params("id")

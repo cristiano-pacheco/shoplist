@@ -1,42 +1,38 @@
-package usecase
+package create_user_usecase
 
 import (
 	"context"
 
-	"github.com/cristiano-pacheco/go-modulith/internal/module/identity/dto"
 	"github.com/cristiano-pacheco/go-modulith/internal/module/identity/repository"
 	"github.com/cristiano-pacheco/go-modulith/internal/module/identity/service/hashservice"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/model"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/validator"
 )
 
-type CreateUserUseCase struct {
+type UseCase struct {
 	userRepo    repository.UserRepositoryI
 	validate    validator.ValidateI
 	hashService hashservice.HashServiceI
 }
 
-func NewCreateUserUseCaseUseCase(
+func New(
 	userRepo repository.UserRepositoryI,
 	validate validator.ValidateI,
 	hashService hashservice.HashServiceI,
 
-) *CreateUserUseCase {
-	return &CreateUserUseCase{userRepo, validate, hashService}
+) *UseCase {
+	return &UseCase{userRepo, validate, hashService}
 }
 
-func (uc *CreateUserUseCase) Execute(
-	ctx context.Context,
-	input dto.CreateUserInput,
-) (dto.CreateUserOutput, error) {
+func (uc *UseCase) Execute(ctx context.Context, input Input) (Output, error) {
 	err := uc.validate.Struct(input)
 	if err != nil {
-		return dto.CreateUserOutput{}, err
+		return Output{}, err
 	}
 
 	ph, err := uc.hashService.GenerateFromPassword([]byte(input.Password))
 	if err != nil {
-		return dto.CreateUserOutput{}, err
+		return Output{}, err
 	}
 
 	userModel := model.UserModel{
@@ -47,10 +43,10 @@ func (uc *CreateUserUseCase) Execute(
 
 	newUserModel, err := uc.userRepo.Create(ctx, userModel)
 	if err != nil {
-		return dto.CreateUserOutput{}, err
+		return Output{}, err
 	}
 
-	output := dto.CreateUserOutput{
+	output := Output{
 		UserID: newUserModel.ID,
 		Name:   newUserModel.Name,
 		Email:  newUserModel.Email,

@@ -1,26 +1,25 @@
-package usecase
+package update_user_usecase
 
 import (
 	"context"
 
-	"github.com/cristiano-pacheco/go-modulith/internal/module/identity/dto"
 	"github.com/cristiano-pacheco/go-modulith/internal/module/identity/repository"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/validator"
 )
 
-type UpdateUserUseCase struct {
+type UseCase struct {
 	validate validator.ValidateI
 	userRepo repository.UserRepositoryI
 }
 
-func NewUpdateUserUseCase(
+func New(
 	validate validator.ValidateI,
 	userRepo repository.UserRepositoryI,
-) *UpdateUserUseCase {
-	return &UpdateUserUseCase{validate, userRepo}
+) *UseCase {
+	return &UseCase{validate, userRepo}
 }
 
-func (uc *UpdateUserUseCase) Execute(ctx context.Context, input dto.UpdateUserInput) error {
+func (uc *UseCase) Execute(ctx context.Context, input Input) error {
 	err := uc.validate.Struct(input)
 	if err != nil {
 		return err
