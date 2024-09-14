@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/cristiano-pacheco/go-modulith/internal/module/identity/repository"
-	"github.com/cristiano-pacheco/go-modulith/internal/module/identity/service/hashservice"
+	"github.com/cristiano-pacheco/go-modulith/internal/module/identity/service/hash_service"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/model"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/validator"
 )
@@ -12,13 +12,13 @@ import (
 type UseCase struct {
 	userRepo    repository.UserRepositoryI
 	validate    validator.ValidateI
-	hashService hashservice.HashServiceI
+	hashService hash_service.HashServiceI
 }
 
 func New(
 	userRepo repository.UserRepositoryI,
 	validate validator.ValidateI,
-	hashService hashservice.HashServiceI,
+	hashService hash_service.HashServiceI,
 
 ) *UseCase {
 	return &UseCase{userRepo, validate, hashService}

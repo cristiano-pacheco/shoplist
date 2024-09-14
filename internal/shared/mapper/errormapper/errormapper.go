@@ -1,9 +1,11 @@
 package errormapper
 
 import (
+	"errors"
 	"regexp"
 	"strings"
 
+	"github.com/cristiano-pacheco/go-modulith/internal/shared/errs"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/validator"
 	ut "github.com/go-playground/universal-translator"
 	lib_validator "github.com/go-playground/validator/v10"
@@ -27,7 +29,7 @@ type ResponseError struct {
 }
 
 type Error struct {
-	Field   string `json:"field"`
+	Field   string `json:"field,omitempty"`
 	Message string `json:"message"`
 }
 
@@ -36,27 +38,37 @@ const ServerErrorMessage = "internal server error"
 func (m *Mapper) MapErrorToResponseError(err error) ResponseError {
 	var responseError ResponseError
 	fieldErrors, ok := err.(lib_validator.ValidationErrors)
-	if !ok {
-		responseError.ErrorCode = InternalError
-		responseError.Errors = []Error{
-			{
-				Field:   "-",
-				Message: err.Error(),
-			},
+
+	// validation error flow
+	if ok {
+		var errs []Error
+		for _, e := range fieldErrors {
+			errs = append(errs, Error{
+				Field:   camelToSnake(e.Field()),
+				Message: e.Translate(m.translator),
+			})
 		}
+
+		responseError.ErrorCode = ValidationError
+		responseError.Errors = errs
+
 		return responseError
 	}
 
-	var errs []Error
-	for _, e := range fieldErrors {
-		errs = append(errs, Error{
-			Field:   camelToSnake(e.Field()),
-			Message: e.Translate(m.translator),
-		})
+	switch {
+	// Authentication
+	case errors.Is(err, errs.ErrInvalidCredentials), errors.Is(err, errs.ErrUserIsNotActivated):
+		responseError.ErrorCode = AuthenticationError
+	default:
+		// Defaut: internal server error
+		responseError.ErrorCode = InternalError
 	}
 
-	responseError.ErrorCode = ValidationError
-	responseError.Errors = errs
+	responseError.Errors = []Error{
+		{
+			Message: err.Error(),
+		},
+	}
 
 	return responseError
 }

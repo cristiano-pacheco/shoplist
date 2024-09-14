@@ -25,7 +25,7 @@ func (uc *UseCase) Execute(ctx context.Context, input Input) error {
 		return err
 	}
 
-	userModel, err := uc.userRepo.FindOneByID(ctx, input.UserID)
+	userModel, err := uc.userRepo.FindByID(ctx, input.UserID)
 	if err != nil {
 		return err
 	}

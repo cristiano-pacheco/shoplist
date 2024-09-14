@@ -4,14 +4,15 @@ import (
 	"context"
 
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/database"
-	"github.com/cristiano-pacheco/go-modulith/internal/shared/err"
+	"github.com/cristiano-pacheco/go-modulith/internal/shared/errs"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/model"
 )
 
 type UserRepositoryI interface {
 	Create(ctx context.Context, model model.UserModel) (*model.UserModel, error)
 	Update(ctx context.Context, model model.UserModel) error
-	FindOneByID(ctx context.Context, ID uint64) (*model.UserModel, error)
+	FindByID(ctx context.Context, ID uint64) (*model.UserModel, error)
+	FindByEmail(ctx context.Context, email string) (*model.UserModel, error)
 }
 
 type userRepository struct {
@@ -38,11 +39,20 @@ func (r *userRepository) Update(ctx context.Context, model model.UserModel) erro
 	return nil
 }
 
-func (r *userRepository) FindOneByID(ctx context.Context, ID uint64) (*model.UserModel, error) {
+func (r *userRepository) FindByID(ctx context.Context, ID uint64) (*model.UserModel, error) {
 	var userModel model.UserModel
 	r.db.WithContext(ctx).First(&userModel, ID)
 	if userModel.ID == 0 {
-		return nil, err.ErrNotFound
+		return nil, errs.ErrNotFound
+	}
+	return &userModel, nil
+}
+
+func (r *userRepository) FindByEmail(ctx context.Context, email string) (*model.UserModel, error) {
+	var userModel model.UserModel
+	r.db.WithContext(ctx).Where("email = ?", email).First(&userModel)
+	if userModel.ID == 0 {
+		return nil, errs.ErrNotFound
 	}
 	return &userModel, nil
 }

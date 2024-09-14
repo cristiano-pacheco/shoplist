@@ -1,4 +1,4 @@
-package hashservice
+package hash_service
 
 import (
 	"testing"

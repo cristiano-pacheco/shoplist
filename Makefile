@@ -9,7 +9,6 @@ install-libs:
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 	go install golang.org/x/vuln/cmd/govulncheck@latest
 
-
 # ==============================================================================
 # Administration
 
@@ -45,3 +44,13 @@ tests-coverage:
 
 generate-mocks:
 	mockery
+
+# ==============================================================================
+# NOTES
+#
+# RSA Keys
+# 	To generate a private key PEM file.
+# 	$ openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:2048 | base64 | tr -d '\n' > private_key_base64.txt
+#
+#	To convert the txt file to a PEM file.
+#   base64 -D -i private_key_base64.txt -o private.pem

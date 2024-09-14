@@ -16,7 +16,7 @@ import (
 type Server struct {
 	app    *fiber.App
 	logger *slog.Logger
-	config *config.Config
+	conf   config.Config
 }
 
 func NewHTTPServer(lc fx.Lifecycle, logger *slog.Logger, conf config.Config) *Server {
@@ -25,11 +25,10 @@ func NewHTTPServer(lc fx.Lifecycle, logger *slog.Logger, conf config.Config) *Se
 		ProxyHeader:    "X-Real-IP",
 	}
 
-	server := Init(&conf, logger, fiberConfig)
+	server := Init(conf, logger, fiberConfig)
 
 	lc.Append(fx.Hook{
 		OnStart: func(context.Context) error {
-			fmt.Println(conf)
 			server.Run()
 			return nil
 		},
@@ -39,9 +38,9 @@ func NewHTTPServer(lc fx.Lifecycle, logger *slog.Logger, conf config.Config) *Se
 	return server
 }
 
-func Init(cfg *config.Config, logger *slog.Logger, options ...fiber.Config) *Server {
+func Init(conf config.Config, logger *slog.Logger, options ...fiber.Config) *Server {
 	config := fiber.Config{
-		EnablePrintRoutes: !cfg.IsProduction(),
+		EnablePrintRoutes: !conf.IsProduction(),
 		AppName:           "ControlWeb",
 		IdleTimeout:       5 * time.Second,
 	}
@@ -50,7 +49,7 @@ func Init(cfg *config.Config, logger *slog.Logger, options ...fiber.Config) *Ser
 	app.Use(recover.New(recover.Config{EnableStackTrace: true}))
 	app.Use(healthcheck.New())
 
-	return &Server{app: app, logger: logger, config: cfg}
+	return &Server{app, logger, conf}
 }
 
 func (s *Server) Get(path string, handler ...fiber.Handler) {
@@ -79,7 +78,7 @@ func (s *Server) Group(path string, middleware ...fiber.Handler) fiber.Router {
 
 func (s *Server) Run() {
 	go func() {
-		err := s.app.Listen(fmt.Sprintf(":%d", s.config.HTTPPort))
+		err := s.app.Listen(fmt.Sprintf(":%d", s.conf.HTTPPort))
 		if err != nil {
 			panic(err)
 		}

@@ -13,6 +13,7 @@ type Config struct {
 	Environment string `env:"ENVIROMENT"`
 	Cors        string `env:"CORS"`
 	DB          DB     `envPrefix:"DB_"`
+	JWT         JWT    `envPrefix:"JWT_"`
 }
 
 const EnvProduction = "production"
