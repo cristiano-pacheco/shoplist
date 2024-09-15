@@ -24,8 +24,10 @@ migrate:
 # ==============================================================================
 # Running tests within the local computer
 
+static-checks: lint vuln-check
+
 lint:
-	golangci-lint run ./...
+	golangci-lint run ./... --allow-parallel-runners
 
 vuln-check:
 	govulncheck -show verbose ./... 

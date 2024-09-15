@@ -14,8 +14,31 @@ linters:
     - gosec
     - cyclop
     - gocritic
+    - depguard
 
 issues:
   exclude-use-default: false
   max-issues-per-linter: 0
   max-same-issues: 0
+
+linters-settings:
+  depguard:
+    rules:
+      main:
+        files: 
+          - $all
+          - "!$test"
+        allow:
+          - $gostd
+          - "github.com/cristiano-pacheco/go-modulith"
+          - "github.com/go-playground/validator"
+          - "github.com/spf13/cobra"
+          - "github.com/gofiber/fiber"
+          - "github.com/stretchr/testify"
+          - "github.com/go-playground/universal-translator"
+          - "github.com/go-playground/locales"
+          - "github.com/golang-jwt/jwt"
+          - "github.com/DATA-DOG/go-sqlmock"
+          - "github.com/golang-migrate/migrate"
+          - "github.com/joho/godotenv"
+          - "github.com/caarlos0/env"
