@@ -1,12 +1,12 @@
 package generate_token_service
 
 import (
-	"encoding/base64"
 	"strconv"
 	"time"
 
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/config"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/model"
+	"github.com/cristiano-pacheco/go-modulith/internal/shared/registry/privatekey_registry"
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -15,13 +15,15 @@ type ServiceI interface {
 }
 
 type service struct {
-	conf config.Config
+	conf               config.Config
+	privateKeyRegistry privatekey_registry.RegistryI
 }
 
 func New(
 	conf config.Config,
+	privateKeyRegistry privatekey_registry.RegistryI,
 ) ServiceI {
-	return &service{conf}
+	return &service{conf, privateKeyRegistry}
 }
 
 func (s *service) Execute(user model.UserModel) (string, error) {
@@ -39,17 +41,8 @@ func (s *service) Execute(user model.UserModel) (string, error) {
 	method := jwt.GetSigningMethod(jwt.SigningMethodRS256.Name)
 	token := jwt.NewWithClaims(method, claims)
 
-	pkString, err := base64.StdEncoding.DecodeString(s.conf.JWT.PrivateKey)
-	if err != nil {
-		return "", err
-	}
-
-	privateKey, err := mapPEMToRSAPrivateKey(pkString)
-	if err != nil {
-		return "", err
-	}
-
-	signedToken, err := token.SignedString(privateKey)
+	pk := s.privateKeyRegistry.Get()
+	signedToken, err := token.SignedString(pk)
 	if err != nil {
 		return "", err
 	}

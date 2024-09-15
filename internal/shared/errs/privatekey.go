@@ -1,4 +1,4 @@
-package generate_token_service
+package errs
 
 import "errors"
 
