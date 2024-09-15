@@ -26,7 +26,6 @@ func (uc *CreateBillingUseCase) Execute(
 ) (dto.CreateBillingOutput, error) {
 	err := uc.validate.Struct(input)
 	if err != nil {
-		//validationErrors := err.(validator.ValidationErrors)
 		return dto.CreateBillingOutput{}, err
 	}
 

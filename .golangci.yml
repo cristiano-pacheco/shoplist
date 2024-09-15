@@ -12,6 +12,8 @@ linters:
     - govet
     - staticcheck
     - gosec
+    - cyclop
+    - gocritic
 
 issues:
   exclude-use-default: false

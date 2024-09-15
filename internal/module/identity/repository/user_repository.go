@@ -11,7 +11,7 @@ import (
 type UserRepositoryI interface {
 	Create(ctx context.Context, model model.UserModel) (*model.UserModel, error)
 	Update(ctx context.Context, model model.UserModel) error
-	FindByID(ctx context.Context, ID uint64) (*model.UserModel, error)
+	FindByID(ctx context.Context, id uint64) (*model.UserModel, error)
 	FindByEmail(ctx context.Context, email string) (*model.UserModel, error)
 }
 
@@ -39,9 +39,9 @@ func (r *userRepository) Update(ctx context.Context, model model.UserModel) erro
 	return nil
 }
 
-func (r *userRepository) FindByID(ctx context.Context, ID uint64) (*model.UserModel, error) {
+func (r *userRepository) FindByID(ctx context.Context, id uint64) (*model.UserModel, error) {
 	var userModel model.UserModel
-	r.db.WithContext(ctx).First(&userModel, ID)
+	r.db.WithContext(ctx).First(&userModel, id)
 	if userModel.ID == 0 {
 		return nil, errs.ErrNotFound
 	}

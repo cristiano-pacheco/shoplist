@@ -11,7 +11,7 @@ type BillingRepositoryI interface {
 	Create(ctx context.Context, model model.BillingModel) (*model.BillingModel, error)
 	Update(ctx context.Context, model model.BillingModel) (*model.BillingModel, error)
 	Delete(ctx context.Context, model model.BillingModel) error
-	FindOneByID(ctx context.Context, ID uint64) (*model.BillingModel, error)
+	FindOneByID(ctx context.Context, id uint64) (*model.BillingModel, error)
 	FindList(ctx context.Context, filters BillingSearchFilters) []*model.BillingModel
 }
 
@@ -46,7 +46,7 @@ func (r *billingRepository) Delete(ctx context.Context, model model.BillingModel
 	return nil
 }
 
-func (r *billingRepository) FindOneByID(ctx context.Context, ID uint64) (*model.BillingModel, error) {
+func (r *billingRepository) FindOneByID(ctx context.Context, id uint64) (*model.BillingModel, error) {
 	return nil, nil
 }
 

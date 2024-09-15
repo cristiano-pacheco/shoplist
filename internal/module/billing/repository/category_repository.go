@@ -50,7 +50,7 @@ func (r *categoryRepository) Delete(
 
 func (r *categoryRepository) FindOneByID(
 	ctx context.Context,
-	ID uint64,
+	id uint64,
 ) (*model.CategoryModel, error) {
 	return nil, nil
 }
