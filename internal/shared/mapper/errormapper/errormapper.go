@@ -57,7 +57,9 @@ func (m *Mapper) MapErrorToResponseError(err error) ResponseError {
 
 	switch {
 	// Authentication
-	case errors.Is(err, errs.ErrInvalidCredentials), errors.Is(err, errs.ErrUserIsNotActivated):
+	case errors.Is(err, errs.ErrInvalidCredentials),
+		errors.Is(err, errs.ErrUserIsNotActivated),
+		errors.Is(err, errs.ErrInvalidToken):
 		responseError.ErrorCode = AuthenticationError
 	default:
 		// Defaut: internal server error
