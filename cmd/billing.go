@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"github.com/cristiano-pacheco/go-modulith/internal/module/billing"
+	"github.com/cristiano-pacheco/go-modulith/internal/module/mediator"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared"
 	"github.com/spf13/cobra"
 	"go.uber.org/fx"
@@ -14,6 +15,7 @@ var billingCmd = &cobra.Command{
 		app := fx.New(
 			shared.Module,
 			billing.Module,
+			mediator.Module,
 		)
 		app.Run()
 	},

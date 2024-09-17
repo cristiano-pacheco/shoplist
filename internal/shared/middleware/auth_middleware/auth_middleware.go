@@ -1,11 +1,14 @@
 package auth_middleware
 
 import (
+	"context"
+	"strconv"
 	"strings"
 
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/dto"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/errs"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/mapper/errormapper"
+	"github.com/cristiano-pacheco/go-modulith/internal/shared/mediator"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/registry/privatekey_registry"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/response"
 	"github.com/gofiber/fiber/v2"
@@ -16,14 +19,16 @@ type Middleware struct {
 	jwtParser          *jwt.Parser
 	errorMapper        *errormapper.Mapper
 	privateKeyRegistry privatekey_registry.RegistryI
+	mediator           mediator.MediatorI
 }
 
 func New(
 	jwtParser *jwt.Parser,
 	errorMapper *errormapper.Mapper,
 	privateKeyRegistry privatekey_registry.RegistryI,
+	mediator mediator.MediatorI,
 ) *Middleware {
-	return &Middleware{jwtParser, errorMapper, privateKeyRegistry}
+	return &Middleware{jwtParser, errorMapper, privateKeyRegistry, mediator}
 }
 
 func (m *Middleware) Execute(c *fiber.Ctx) error {
@@ -49,7 +54,16 @@ func (m *Middleware) Execute(c *fiber.Ctx) error {
 		return m.handleError(c, errs.ErrInvalidToken)
 	}
 
-	// TODO: check if the user is activated
+	userID, err := strconv.ParseUint(claims.Subject, 10, 64)
+	if err != nil {
+		return m.handleError(c, errs.ErrInvalidToken)
+	}
+
+	ctx := context.Background()
+	isUserActivated := m.mediator.IsUserActivated(ctx, userID)
+	if !isUserActivated {
+		return m.handleError(c, errs.ErrInvalidToken)
+	}
 
 	return c.Next()
 }

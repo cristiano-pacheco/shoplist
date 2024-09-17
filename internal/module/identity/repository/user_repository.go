@@ -13,6 +13,7 @@ type UserRepositoryI interface {
 	Update(ctx context.Context, model model.UserModel) error
 	FindByID(ctx context.Context, id uint64) (*model.UserModel, error)
 	FindByEmail(ctx context.Context, email string) (*model.UserModel, error)
+	IsUsedActivated(ctx context.Context, userID uint64) bool
 }
 
 type userRepository struct {
@@ -55,4 +56,13 @@ func (r *userRepository) FindByEmail(ctx context.Context, email string) (*model.
 		return nil, errs.ErrNotFound
 	}
 	return &userModel, nil
+}
+
+func (r *userRepository) IsUsedActivated(ctx context.Context, userID uint64) bool {
+	var userModel model.UserModel
+	r.db.WithContext(ctx).Where("id = ?", userID).Where("is_activated = ?", true).First(&userModel)
+	if userModel.ID == 0 {
+		return false
+	}
+	return userModel.IsActivated
 }
