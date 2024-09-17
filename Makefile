@@ -24,13 +24,19 @@ migrate:
 # ==============================================================================
 # Running tests within the local computer
 
-static-checks: lint vuln-check
+static-checks: lint vuln-check field-alignment
 
 lint:
 	golangci-lint run ./... --allow-parallel-runners
 
 vuln-check:
 	govulncheck -show verbose ./... 
+
+field-alignment:
+	fieldalignment ./...
+
+field-alignment-fix:
+	fieldalignment -fix ./...
 
 test: test-only lint vuln-check
 

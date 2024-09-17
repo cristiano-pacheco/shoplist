@@ -15,15 +15,15 @@ type ServiceI interface {
 }
 
 type service struct {
-	conf               config.Config
 	privateKeyRegistry privatekey_registry.RegistryI
+	conf               config.Config
 }
 
 func New(
 	conf config.Config,
 	privateKeyRegistry privatekey_registry.RegistryI,
 ) ServiceI {
-	return &service{conf, privateKeyRegistry}
+	return &service{privateKeyRegistry, conf}
 }
 
 func (s *service) Execute(user model.UserModel) (string, error) {

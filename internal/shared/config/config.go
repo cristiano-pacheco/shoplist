@@ -9,11 +9,11 @@ import (
 )
 
 type Config struct {
-	HTTPPort    uint   `env:"HTTP_PORT"`
 	Environment string `env:"ENVIROMENT"`
 	Cors        string `env:"CORS"`
-	DB          DB     `envPrefix:"DB_"`
 	JWT         JWT    `envPrefix:"JWT_"`
+	DB          DB     `envPrefix:"DB_"`
+	HTTPPort    uint   `env:"HTTP_PORT"`
 }
 
 const EnvProduction = "production"
