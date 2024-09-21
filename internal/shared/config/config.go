@@ -13,6 +13,7 @@ type Config struct {
 	Cors        string `env:"CORS"`
 	JWT         JWT    `envPrefix:"JWT_"`
 	DB          DB     `envPrefix:"DB_"`
+	MAIL        MAIL   `envPrefix:"MAIL"`
 	HTTPPort    uint   `env:"HTTP_PORT"`
 }
 

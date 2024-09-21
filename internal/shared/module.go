@@ -5,6 +5,7 @@ import (
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/database"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/httpserver"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/logger"
+	"github.com/cristiano-pacheco/go-modulith/internal/shared/mailer"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/mapper"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/middleware"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/parser"
@@ -26,4 +27,5 @@ var Module = fx.Module(
 	middleware.Module,
 	registry.Module,
 	parser.Module,
+	mailer.Module,
 )
