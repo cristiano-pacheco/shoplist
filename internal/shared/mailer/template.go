@@ -22,7 +22,8 @@ func NewMailerTemplate() MailerTemplateI {
 }
 
 func (mt *mailerTemplate) CompileTemplate(templateName string, data any) (string, error) {
-	tmpl, err := template.New("email").ParseFS(templateFS, "templates/layout/default.gohtml", templateName)
+	layoutTpl := "templates/layout/default.gohtml"
+	tmpl, err := template.New("email").ParseFS(templateFS, layoutTpl, "templates/"+templateName)
 	if err != nil {
 		return "", err
 	}

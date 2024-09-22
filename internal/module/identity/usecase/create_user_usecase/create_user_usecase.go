@@ -5,23 +5,25 @@ import (
 
 	"github.com/cristiano-pacheco/go-modulith/internal/module/identity/repository"
 	"github.com/cristiano-pacheco/go-modulith/internal/module/identity/service/hash_service"
+	"github.com/cristiano-pacheco/go-modulith/internal/module/identity/service/send_account_confirmation_email_service"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/model"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/validator"
 )
 
 type UseCase struct {
-	userRepo    repository.UserRepositoryI
-	validate    validator.ValidateI
-	hashService hash_service.HashServiceI
+	userRepo                            repository.UserRepositoryI
+	validate                            validator.ValidateI
+	hashService                         hash_service.ServiceI
+	sendAccountConfirmationEmailService send_account_confirmation_email_service.ServiceI
 }
 
 func New(
 	userRepo repository.UserRepositoryI,
 	validate validator.ValidateI,
-	hashService hash_service.HashServiceI,
-
+	hashService hash_service.ServiceI,
+	sendAccountConfirmationEmailService send_account_confirmation_email_service.ServiceI,
 ) *UseCase {
-	return &UseCase{userRepo, validate, hashService}
+	return &UseCase{userRepo, validate, hashService, sendAccountConfirmationEmailService}
 }
 
 func (uc *UseCase) Execute(ctx context.Context, input Input) (Output, error) {
@@ -42,6 +44,11 @@ func (uc *UseCase) Execute(ctx context.Context, input Input) (Output, error) {
 	}
 
 	newUserModel, err := uc.userRepo.Create(ctx, userModel)
+	if err != nil {
+		return Output{}, err
+	}
+
+	err = uc.sendAccountConfirmationEmailService.Execute(ctx, *newUserModel)
 	if err != nil {
 		return Output{}, err
 	}

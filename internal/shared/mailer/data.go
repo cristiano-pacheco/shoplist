@@ -5,4 +5,5 @@ type MailData struct {
 	ToEmail string
 	Subject string
 	Content string
+	Sender  string
 }

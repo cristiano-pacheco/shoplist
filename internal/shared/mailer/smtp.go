@@ -10,17 +10,16 @@ type SmtpMailerI interface {
 
 type smtpMailer struct {
 	dialer *mail.Dialer
-	sender string
 }
 
-func NewSmtpMailer(dialer *mail.Dialer, sender string) SmtpMailerI {
-	return &smtpMailer{dialer, sender}
+func NewSmtpMailer(dialer *mail.Dialer) SmtpMailerI {
+	return &smtpMailer{dialer}
 }
 
 func (m *smtpMailer) Send(md MailData) error {
 	msg := mail.NewMessage()
 	msg.SetHeader("To", md.ToEmail)
-	msg.SetHeader("From", m.sender)
+	msg.SetHeader("From", md.Sender)
 	msg.SetHeader("Subject", md.Subject)
 	msg.SetBody("text/html", md.Content)
 

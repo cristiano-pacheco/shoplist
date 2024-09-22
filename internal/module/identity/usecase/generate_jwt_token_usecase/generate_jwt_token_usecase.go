@@ -13,14 +13,14 @@ import (
 type UseCase struct {
 	validator            validator.ValidateI
 	userRepo             repository.UserRepositoryI
-	hashService          hash_service.HashServiceI
+	hashService          hash_service.ServiceI
 	generateTokenService generate_token_service.ServiceI
 }
 
 func New(
 	validator validator.ValidateI,
 	userRepo repository.UserRepositoryI,
-	hashService hash_service.HashServiceI,
+	hashService hash_service.ServiceI,
 	generateTokenService generate_token_service.ServiceI,
 ) *UseCase {
 	return &UseCase{

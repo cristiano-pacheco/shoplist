@@ -2,6 +2,7 @@ package errormapper
 
 import (
 	"errors"
+	"log/slog"
 	"regexp"
 	"strings"
 
@@ -14,13 +15,15 @@ import (
 type Mapper struct {
 	validate   validator.ValidateI
 	translator ut.Translator
+	logger     *slog.Logger
 }
 
 func New(
 	validate validator.ValidateI,
 	translator ut.Translator,
+	logger *slog.Logger,
 ) *Mapper {
-	return &Mapper{validate, translator}
+	return &Mapper{validate, translator, logger}
 }
 
 type ResponseError struct {
@@ -71,6 +74,8 @@ func (m *Mapper) MapErrorToResponseError(err error) ResponseError {
 			Message: err.Error(),
 		},
 	}
+
+	m.logger.Error(err.Error())
 
 	return responseError
 }

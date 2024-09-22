@@ -6,7 +6,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type HashServiceI interface {
+type ServiceI interface {
 	GenerateFromPassword(password []byte) ([]byte, error)
 	CompareHashAndPassword(hashedPassword, password []byte) error
 	GenerateRandomBytes() ([]byte, error)
@@ -15,7 +15,7 @@ type HashServiceI interface {
 type service struct {
 }
 
-func New() HashServiceI {
+func New() ServiceI {
 	return service{}
 }
 
