@@ -7,6 +7,7 @@ import (
 	"github.com/cristiano-pacheco/go-modulith/internal/module/identity/service/generate_token_service"
 	"github.com/cristiano-pacheco/go-modulith/internal/module/identity/service/hash_service"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/errs"
+	"github.com/cristiano-pacheco/go-modulith/internal/shared/telemetry"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/validator"
 )
 
@@ -32,6 +33,10 @@ func New(
 }
 
 func (uc *UseCase) Execute(ctx context.Context, input Input) (Output, error) {
+	t := telemetry.Get()
+	ctx, span := t.StartSpan(ctx, "Generate JWT Token")
+	defer span.End()
+
 	err := uc.validator.Struct(input)
 	if err != nil {
 		return Output{}, nil

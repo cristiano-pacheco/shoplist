@@ -9,6 +9,7 @@ import (
 	"github.com/cristiano-pacheco/go-modulith/internal/module/identity/usecase/update_user_usecase"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/mapper/errormapper"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/response"
+	"github.com/cristiano-pacheco/go-modulith/internal/shared/telemetry"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -38,13 +39,16 @@ func (h *UserHandler) Store(c *fiber.Ctx) error {
 		input  create_user_usecase.Input
 		output create_user_usecase.Output
 	)
+	t := telemetry.Get()
+	ctx, span := t.StartSpan(c.Context(), "user_handler.Store")
+	defer span.End()
 
 	err := c.BodyParser(&input)
 	if err != nil {
 		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}
 
-	output, err = h.createUserUseCase.Execute(c.Context(), input)
+	output, err = h.createUserUseCase.Execute(ctx, input)
 	if err != nil {
 		rError := h.errorMapper.MapErrorToResponseError(err)
 		return response.HandleErrorResponse(c, rError)
@@ -63,6 +67,10 @@ func (h *UserHandler) Update(c *fiber.Ctx) error {
 		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}
 
+	t := telemetry.Get()
+	ctx, span := t.StartSpan(c.Context(), "user_handler.Update")
+	defer span.End()
+
 	id := c.Params("id")
 	idUser, err := strconv.ParseUint(id, 10, 64)
 	if err != nil {
@@ -70,7 +78,7 @@ func (h *UserHandler) Update(c *fiber.Ctx) error {
 	}
 	input.UserID = idUser
 
-	err = h.updateUserUseCase.Execute(c.Context(), input)
+	err = h.updateUserUseCase.Execute(ctx, input)
 	if err != nil {
 		rError := h.errorMapper.MapErrorToResponseError(err)
 		return response.HandleErrorResponse(c, rError)
@@ -85,6 +93,10 @@ func (h *UserHandler) Show(c *fiber.Ctx) error {
 		output find_user_by_id_usecase.Output
 	)
 
+	t := telemetry.Get()
+	ctx, span := t.StartSpan(c.Context(), "user_handler.Show")
+	defer span.End()
+
 	id := c.Params("id")
 	idUser, err := strconv.ParseUint(id, 10, 64)
 	if err != nil {
@@ -92,7 +104,7 @@ func (h *UserHandler) Show(c *fiber.Ctx) error {
 	}
 
 	input.UserID = idUser
-	output, err = h.findUserByIDUseCase.Execute(c.Context(), input)
+	output, err = h.findUserByIDUseCase.Execute(ctx, input)
 	if err != nil {
 		rError := h.errorMapper.MapErrorToResponseError(err)
 		return response.HandleErrorResponse(c, rError)

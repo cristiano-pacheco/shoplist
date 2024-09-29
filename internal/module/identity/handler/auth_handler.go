@@ -1,12 +1,12 @@
 package handler
 
 import (
-	"context"
 	"net/http"
 
 	"github.com/cristiano-pacheco/go-modulith/internal/module/identity/usecase/generate_jwt_token_usecase"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/mapper/errormapper"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/response"
+	"github.com/cristiano-pacheco/go-modulith/internal/shared/telemetry"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -26,8 +26,11 @@ func (h *AuthHandler) Execute(c *fiber.Ctx) error {
 	var (
 		input  generate_jwt_token_usecase.Input
 		output generate_jwt_token_usecase.Output
-		ctx    = context.Background()
 	)
+
+	t := telemetry.Get()
+	ctx, span := t.StartSpan(c.Context(), "Auth Handler")
+	defer span.End()
 
 	err := c.BodyParser(&input)
 	if err != nil {

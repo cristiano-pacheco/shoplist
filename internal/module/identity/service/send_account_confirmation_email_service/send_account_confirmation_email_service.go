@@ -11,6 +11,7 @@ import (
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/config"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/mailer"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/model"
+	"github.com/cristiano-pacheco/go-modulith/internal/shared/telemetry"
 )
 
 const emailTemplate = "account_confirmation.gohtml"
@@ -39,6 +40,10 @@ func New(
 }
 
 func (s *service) Execute(ctx context.Context, user model.UserModel) error {
+	t := telemetry.Get()
+	ctx, span := t.StartSpan(ctx, "send_account_confirmation_email_service.execute")
+	defer span.End()
+
 	// generate a random token
 	token, err := s.hashService.GenerateRandomBytes()
 	if err != nil {

@@ -9,13 +9,15 @@ import (
 )
 
 type Config struct {
-	Environment string `env:"ENVIROMENT"`
-	Cors        string `env:"CORS"`
-	AppBaseURL  string `env:"APP_BASE_URL"`
-	JWT         JWT    `envPrefix:"JWT_"`
-	DB          DB     `envPrefix:"DB_"`
-	MAIL        MAIL   `envPrefix:"MAIL_"`
-	HTTPPort    uint   `env:"HTTP_PORT"`
+	Environment string    `env:"ENVIROMENT"`
+	Cors        string    `env:"CORS"`
+	AppBaseURL  string    `env:"APP_BASE_URL"`
+	AppName     string    `env:"APP_NAME"`
+	JWT         JWT       `envPrefix:"JWT_"`
+	DB          DB        `envPrefix:"DB_"`
+	MAIL        MAIL      `envPrefix:"MAIL_"`
+	HTTPPort    uint      `env:"HTTP_PORT"`
+	Telemetry   Telemetry `envPrefix:"TELEMETRY_"`
 }
 
 const EnvProduction = "production"

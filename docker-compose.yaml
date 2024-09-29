@@ -13,6 +13,15 @@ services:
     networks:
       - gomodulith_internal
 
+# https://github.com/openzipkin/zipkin/blob/master/docker/examples/docker-compose.yml
+  zipkin:
+    image: ghcr.io/openzipkin/zipkin-slim:${TAG:-latest}
+    container_name: zipkin
+    environment:
+      - STORAGE_TYPE=mem
+    ports:
+      - 9411:9411
+
 networks:
   gomodulith_internal:
     name: gomodulith_internal

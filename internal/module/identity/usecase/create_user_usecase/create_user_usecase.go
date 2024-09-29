@@ -7,6 +7,7 @@ import (
 	"github.com/cristiano-pacheco/go-modulith/internal/module/identity/service/hash_service"
 	"github.com/cristiano-pacheco/go-modulith/internal/module/identity/service/send_account_confirmation_email_service"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/model"
+	"github.com/cristiano-pacheco/go-modulith/internal/shared/telemetry"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/validator"
 )
 
@@ -27,6 +28,10 @@ func New(
 }
 
 func (uc *UseCase) Execute(ctx context.Context, input Input) (Output, error) {
+	t := telemetry.Get()
+	ctx, span := t.StartSpan(ctx, "create_user_usecase.Execute")
+	defer span.End()
+
 	err := uc.validate.Struct(input)
 	if err != nil {
 		return Output{}, err

@@ -6,6 +6,7 @@ import (
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/database"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/errs"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/model"
+	"github.com/cristiano-pacheco/go-modulith/internal/shared/telemetry"
 )
 
 type UserRepositoryI interface {
@@ -25,6 +26,9 @@ func NewUserRepository(db *database.DB) UserRepositoryI {
 }
 
 func (r *userRepository) Create(ctx context.Context, userModel model.UserModel) (*model.UserModel, error) {
+	t := telemetry.Get()
+	ctx, span := t.StartSpan(ctx, "user_repository.create")
+	defer span.End()
 	result := r.db.WithContext(ctx).Create(&userModel)
 	if result.Error != nil {
 		return nil, result.Error
@@ -33,6 +37,9 @@ func (r *userRepository) Create(ctx context.Context, userModel model.UserModel) 
 }
 
 func (r *userRepository) Update(ctx context.Context, model model.UserModel) error {
+	t := telemetry.Get()
+	ctx, span := t.StartSpan(ctx, "user_repository.update")
+	defer span.End()
 	result := r.db.WithContext(ctx).Omit("created_at", "updated_at").Save(&model)
 	if result.Error != nil {
 		return result.Error
@@ -41,6 +48,9 @@ func (r *userRepository) Update(ctx context.Context, model model.UserModel) erro
 }
 
 func (r *userRepository) FindByID(ctx context.Context, id uint64) (*model.UserModel, error) {
+	t := telemetry.Get()
+	ctx, span := t.StartSpan(ctx, "user_repository.find_by_id")
+	defer span.End()
 	var userModel model.UserModel
 	r.db.WithContext(ctx).First(&userModel, id)
 	if userModel.ID == 0 {
@@ -50,6 +60,9 @@ func (r *userRepository) FindByID(ctx context.Context, id uint64) (*model.UserMo
 }
 
 func (r *userRepository) FindByEmail(ctx context.Context, email string) (*model.UserModel, error) {
+	t := telemetry.Get()
+	ctx, span := t.StartSpan(ctx, "user_repository.find_by_email")
+	defer span.End()
 	var userModel model.UserModel
 	r.db.WithContext(ctx).Where("email = ?", email).First(&userModel)
 	if userModel.ID == 0 {
@@ -59,6 +72,9 @@ func (r *userRepository) FindByEmail(ctx context.Context, email string) (*model.
 }
 
 func (r *userRepository) IsUsedActivated(ctx context.Context, userID uint64) bool {
+	t := telemetry.Get()
+	ctx, span := t.StartSpan(ctx, "user_repository.is_used_activated")
+	defer span.End()
 	var userModel model.UserModel
 	r.db.WithContext(ctx).Where("id = ?", userID).Where("is_activated = ?", true).First(&userModel)
 	if userModel.ID == 0 {
