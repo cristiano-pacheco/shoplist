@@ -29,7 +29,7 @@ func (h *AuthHandler) Execute(c *fiber.Ctx) error {
 	)
 
 	t := telemetry.Get()
-	ctx, span := t.StartSpan(c.Context(), "Auth Handler")
+	ctx, span := t.StartSpan(c.Context(), "auth_handler.execute")
 	defer span.End()
 
 	err := c.BodyParser(&input)

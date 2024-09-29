@@ -2,6 +2,7 @@ package telemetry
 
 import (
 	"context"
+	"os"
 
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 
@@ -26,7 +27,11 @@ func New(config TelemetryConfig) (*Telemetry, error) {
 }
 
 func (t *Telemetry) StartSpan(ctx context.Context, name string) (context.Context, trace.Span) {
-	tracer := t.tracerProvider.Tracer("gomodulith")
+	appName := os.Getenv("APP_NAME")
+	if appName == "" {
+		appName = "gomodulith"
+	}
+	tracer := t.tracerProvider.Tracer(appName)
 	return tracer.Start(ctx, name)
 }
 

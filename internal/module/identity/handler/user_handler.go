@@ -40,7 +40,7 @@ func (h *UserHandler) Store(c *fiber.Ctx) error {
 		output create_user_usecase.Output
 	)
 	t := telemetry.Get()
-	ctx, span := t.StartSpan(c.Context(), "user_handler.Store")
+	ctx, span := t.StartSpan(c.Context(), "user_handler.store")
 	defer span.End()
 
 	err := c.BodyParser(&input)
@@ -62,14 +62,14 @@ func (h *UserHandler) Update(c *fiber.Ctx) error {
 		input update_user_usecase.Input
 	)
 
+	t := telemetry.Get()
+	ctx, span := t.StartSpan(c.Context(), "user_handler.update")
+	defer span.End()
+
 	err := c.BodyParser(&input)
 	if err != nil {
 		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}
-
-	t := telemetry.Get()
-	ctx, span := t.StartSpan(c.Context(), "user_handler.Update")
-	defer span.End()
 
 	id := c.Params("id")
 	idUser, err := strconv.ParseUint(id, 10, 64)
@@ -94,7 +94,7 @@ func (h *UserHandler) Show(c *fiber.Ctx) error {
 	)
 
 	t := telemetry.Get()
-	ctx, span := t.StartSpan(c.Context(), "user_handler.Show")
+	ctx, span := t.StartSpan(c.Context(), "user_handler.show")
 	defer span.End()
 
 	id := c.Params("id")

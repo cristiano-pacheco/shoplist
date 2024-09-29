@@ -2,7 +2,7 @@ package telemetry
 
 import (
 	"fmt"
-	"log"
+	"os"
 
 	"go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
 	"go.opentelemetry.io/otel/exporters/zipkin"
@@ -12,9 +12,18 @@ import (
 )
 
 func newTraceProvider(config TelemetryConfig) (*sdktrace.TracerProvider, error) {
+	if !config.TraceEnabled {
+		return sdktrace.NewTracerProvider(), nil
+	}
+
 	exp, err := newExporter(config)
 	if err != nil {
 		return nil, err
+	}
+
+	appName := os.Getenv("APP_NAME")
+	if appName == "" {
+		appName = "gomodulith"
 	}
 
 	// Ensure default SDK resources and the required service name are set.
@@ -22,7 +31,7 @@ func newTraceProvider(config TelemetryConfig) (*sdktrace.TracerProvider, error) 
 		resource.Default(),
 		resource.NewWithAttributes(
 			semconv.SchemaURL,
-			semconv.ServiceName("ExampleService"),
+			semconv.ServiceName(appName),
 		),
 	)
 
@@ -43,7 +52,6 @@ func newExporter(config TelemetryConfig) (sdktrace.SpanExporter, error) {
 	if config.TraceProvider.String() == TraceProviderZipkin {
 		return zipkin.New(
 			config.TraceURL,
-			zipkin.WithLogger(log.Default()),
 		)
 	}
 

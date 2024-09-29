@@ -23,9 +23,11 @@ func Get() *pkg_telemetry.Telemetry {
 }
 
 func new(config config.Config) *pkg_telemetry.Telemetry {
-	traceProvider := config.Telemetry.TraceProvider
-	traceURL := config.Telemetry.TraceURL
-	telemetryConfig, err := pkg_telemetry.NewTelemetryConfig(traceProvider, traceURL)
+	telemetryConfig, err := pkg_telemetry.NewTelemetryConfig(
+		config.Telemetry.Enabled,
+		config.Telemetry.TraceProvider,
+		config.Telemetry.TraceURL,
+	)
 	if err != nil {
 		log.Fatalf("error creating telemetry config: %v", err)
 	}
