@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/config"
-	"github.com/gofiber/contrib/otelfiber/v2"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/healthcheck"
 	"github.com/gofiber/fiber/v2/middleware/recover"
@@ -49,7 +48,6 @@ func Init(conf config.Config, logger *slog.Logger, options ...fiber.Config) *Ser
 	app := fiber.New(config)
 	app.Use(recover.New(recover.Config{EnableStackTrace: true}))
 	app.Use(healthcheck.New())
-	app.Use(otelfiber.Middleware())
 
 	return &Server{app, logger, conf}
 }
