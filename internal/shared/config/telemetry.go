@@ -1,7 +1,7 @@
 package config
 
 type Telemetry struct {
-	Enabled       bool   `env:"TRACE_ENABLED,required"`
-	TraceProvider string `env:"TRACE_PROVIDER,required"`
-	TraceURL      string `env:"TRACE_URL,required"`
+	Enabled      bool   `env:"TRACER_ENABLED,required"`
+	TracerVendor string `env:"TRACER_VENDOR"`
+	TracerURL    string `env:"TRACER_URL"`
 }

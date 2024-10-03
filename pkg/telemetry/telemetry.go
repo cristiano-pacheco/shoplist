@@ -2,41 +2,71 @@ package telemetry
 
 import (
 	"context"
-	"os"
 
+	"go.opentelemetry.io/otel"
+
+	"go.opentelemetry.io/otel/propagation"
+	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
-
+	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
 	"go.opentelemetry.io/otel/trace"
 )
 
-type Telemetry struct {
-	tracerProvider trace.TracerProvider
+type TememetryI interface {
+	StartSpan(ctx context.Context, name string) (context.Context, trace.Span)
+	Shutdown(ctx context.Context) error
 }
 
-func New(config TelemetryConfig) (*Telemetry, error) {
-	traceProvider, err := newTraceProvider(config)
+type Telemetry struct {
+	tracer         trace.Tracer
+	tracerProvider *sdktrace.TracerProvider
+}
+
+func New(config TelemetryConfig) *Telemetry {
+	// Set up resource.
+	res, err := resource.Merge(
+		resource.Default(),
+		resource.NewWithAttributes(
+			semconv.SchemaURL,
+			semconv.ServiceName(config.AppName),
+		),
+	)
+
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
 
-	t := Telemetry{
-		tracerProvider: traceProvider,
+	// Set up tracer provider.
+	tp, err := newTracerProvider(config, res)
+	if err != nil {
+		panic(err)
 	}
 
-	return &t, nil
+	otel.SetTracerProvider(tp)
+
+	// Set up propagator.
+	otel.SetTextMapPropagator(newPropagator())
+
+	t := tp.Tracer("github.com/cristiano-pacheco/gomodulith")
+
+	telemetry := Telemetry{
+		tracer: t,
+	}
+
+	return &telemetry
+}
+
+func newPropagator() propagation.TextMapPropagator {
+	return propagation.NewCompositeTextMapPropagator(
+		propagation.TraceContext{},
+		propagation.Baggage{},
+	)
 }
 
 func (t *Telemetry) StartSpan(ctx context.Context, name string) (context.Context, trace.Span) {
-	appName := os.Getenv("APP_NAME")
-	if appName == "" {
-		appName = "gomodulith"
-	}
-	tracer := t.tracerProvider.Tracer(appName)
-	return tracer.Start(ctx, name)
+	return t.tracer.Start(ctx, name)
 }
 
-func (t *Telemetry) End(ctx context.Context) {
-	if tp, ok := t.tracerProvider.(*sdktrace.TracerProvider); ok {
-		tp.Shutdown(ctx)
-	}
+func (t *Telemetry) Shutdown(ctx context.Context) error {
+	return t.tracerProvider.Shutdown(ctx)
 }

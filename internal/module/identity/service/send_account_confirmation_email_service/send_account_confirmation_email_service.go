@@ -56,7 +56,7 @@ func (s *service) Execute(ctx context.Context, user model.UserModel) error {
 	// generate the account confirmation link
 	accountConfLink := fmt.Sprintf(
 		"%s/user/confirmation?id=%d&token=%s",
-		s.cfg.AppBaseURL,
+		s.cfg.App.BaseURL,
 		user.ID,
 		accountConfToken,
 	)

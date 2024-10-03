@@ -23,19 +23,28 @@ func Get() *pkg_telemetry.Telemetry {
 }
 
 func new(config config.Config) *pkg_telemetry.Telemetry {
-	telemetryConfig, err := pkg_telemetry.NewTelemetryConfig(
-		config.Telemetry.Enabled,
-		config.Telemetry.TraceProvider,
-		config.Telemetry.TraceURL,
-	)
-	if err != nil {
-		log.Fatalf("error creating telemetry config: %v", err)
+	if config.Telemetry.Enabled && config.Telemetry.TracerVendor == "" {
+		log.Fatalf("setting up telemetry: TELEMETRY_TRACER_VENDOR is not set")
+		return nil
 	}
 
-	t, err := pkg_telemetry.New(telemetryConfig)
-	if err != nil {
-		log.Fatalf("error creating telemetry: %v", err)
+	if config.Telemetry.Enabled && config.Telemetry.TracerURL == "" {
+		log.Fatalf("setting up telemetry: TELEMETRY_TRACER_URL is not set")
+		return nil
 	}
 
-	return t
+	tracerVendor, err := pkg_telemetry.NewTracerVendor(config.Telemetry.TracerVendor)
+	if err != nil {
+		log.Fatalf("error creating tracer vendor: %v", err)
+	}
+
+	tc := pkg_telemetry.TelemetryConfig{
+		AppName:      config.App.Name,
+		AppVersion:   config.App.Version,
+		TraceEnabled: config.Telemetry.Enabled,
+		TracerVendor: tracerVendor,
+		TraceURL:     config.Telemetry.TracerURL,
+	}
+
+	return pkg_telemetry.New(tc)
 }

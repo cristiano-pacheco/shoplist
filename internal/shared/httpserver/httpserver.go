@@ -42,7 +42,7 @@ func NewHTTPServer(lc fx.Lifecycle, logger *slog.Logger, conf config.Config) *Se
 func Init(conf config.Config, logger *slog.Logger, options ...fiber.Config) *Server {
 	config := fiber.Config{
 		EnablePrintRoutes: !conf.IsProduction(),
-		AppName:           conf.AppName,
+		AppName:           conf.App.Name,
 		IdleTimeout:       5 * time.Second,
 	}
 
