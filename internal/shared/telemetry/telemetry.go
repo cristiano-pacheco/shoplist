@@ -9,10 +9,8 @@ import (
 
 var _global *pkg_telemetry.Telemetry
 
-func Init() {
-	config.Init()
-	c := config.GetConfig()
-	_global = new(c)
+func Init(cfg config.Config) {
+	_global = new(cfg)
 }
 
 func Get() *pkg_telemetry.Telemetry {
