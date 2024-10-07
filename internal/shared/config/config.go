@@ -17,6 +17,7 @@ type Config struct {
 	HTTPPort    uint      `env:"HTTP_PORT"`
 	Telemetry   Telemetry `envPrefix:"TELEMETRY_"`
 	App         App       `envPrefix:"APP_"`
+	Log         Log       `envPrefix:"LOG_"`
 }
 
 const EnvProduction = "production"

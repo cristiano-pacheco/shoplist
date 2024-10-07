@@ -9,6 +9,7 @@ import (
 	"github.com/cristiano-pacheco/go-modulith/internal/module/identity/repository"
 	"github.com/cristiano-pacheco/go-modulith/internal/module/identity/service/hash_service"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/config"
+	"github.com/cristiano-pacheco/go-modulith/internal/shared/logger"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/mailer"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/model"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/telemetry"
@@ -26,6 +27,7 @@ type service struct {
 	mailer                        mailer.SmtpMailerI
 	accountConfirmationRepository repository.AccountConfirmationRepositoryI
 	hashService                   hash_service.ServiceI
+	logger                        logger.LoggerI
 	cfg                           config.Config
 }
 
@@ -34,9 +36,10 @@ func New(
 	smtpMailer mailer.SmtpMailerI,
 	accountConfirmationRepository repository.AccountConfirmationRepositoryI,
 	hashService hash_service.ServiceI,
+	logger logger.LoggerI,
 	cfg config.Config,
 ) ServiceI {
-	return &service{mailerTemplate, smtpMailer, accountConfirmationRepository, hashService, cfg}
+	return &service{mailerTemplate, smtpMailer, accountConfirmationRepository, hashService, logger, cfg}
 }
 
 func (s *service) Execute(ctx context.Context, user model.UserModel) error {
@@ -47,6 +50,8 @@ func (s *service) Execute(ctx context.Context, user model.UserModel) error {
 	// generate a random token
 	token, err := s.hashService.GenerateRandomBytes()
 	if err != nil {
+		message := "[send_account_confirmation_email_service] error generating random bytes"
+		s.logger.Error(message, "error", err)
 		return err
 	}
 
@@ -72,6 +77,8 @@ func (s *service) Execute(ctx context.Context, user model.UserModel) error {
 
 	content, err := s.mailerTemplate.CompileTemplate(emailTemplate, tplData)
 	if err != nil {
+		message := "[send_account_confirmation_email_service] error compiling template"
+		s.logger.Error(message, "error", err)
 		return err
 	}
 
@@ -84,6 +91,8 @@ func (s *service) Execute(ctx context.Context, user model.UserModel) error {
 	// persist the account confirmation in the database
 	err = s.accountConfirmationRepository.Create(ctx, acModel)
 	if err != nil {
+		message := "[send_account_confirmation_email_service] error creating account confirmation"
+		s.logger.Error(message, "error", err)
 		return err
 	}
 
@@ -97,6 +106,8 @@ func (s *service) Execute(ctx context.Context, user model.UserModel) error {
 
 	err = s.mailer.Send(md)
 	if err != nil {
+		message := "[send_account_confirmation_email_service] error sending email"
+		s.logger.Error(message, "error", err)
 		return err
 	}
 

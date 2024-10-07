@@ -2,11 +2,11 @@ package errormapper
 
 import (
 	"errors"
-	"log/slog"
 	"regexp"
 	"strings"
 
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/errs"
+	"github.com/cristiano-pacheco/go-modulith/internal/shared/logger"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/validator"
 	ut "github.com/go-playground/universal-translator"
 	lib_validator "github.com/go-playground/validator/v10"
@@ -15,13 +15,13 @@ import (
 type Mapper struct {
 	validate   validator.ValidateI
 	translator ut.Translator
-	logger     *slog.Logger
+	logger     logger.LoggerI
 }
 
 func New(
 	validate validator.ValidateI,
 	translator ut.Translator,
-	logger *slog.Logger,
+	logger logger.LoggerI,
 ) *Mapper {
 	return &Mapper{validate, translator, logger}
 }

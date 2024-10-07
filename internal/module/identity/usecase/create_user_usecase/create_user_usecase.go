@@ -6,6 +6,7 @@ import (
 	"github.com/cristiano-pacheco/go-modulith/internal/module/identity/repository"
 	"github.com/cristiano-pacheco/go-modulith/internal/module/identity/service/hash_service"
 	"github.com/cristiano-pacheco/go-modulith/internal/module/identity/service/send_account_confirmation_email_service"
+	"github.com/cristiano-pacheco/go-modulith/internal/shared/logger"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/model"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/telemetry"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/validator"
@@ -16,6 +17,7 @@ type UseCase struct {
 	validate                            validator.ValidateI
 	hashService                         hash_service.ServiceI
 	sendAccountConfirmationEmailService send_account_confirmation_email_service.ServiceI
+	logger                              logger.LoggerI
 }
 
 func New(
@@ -23,8 +25,9 @@ func New(
 	validate validator.ValidateI,
 	hashService hash_service.ServiceI,
 	sendAccountConfirmationEmailService send_account_confirmation_email_service.ServiceI,
+	logger logger.LoggerI,
 ) *UseCase {
-	return &UseCase{userRepo, validate, hashService, sendAccountConfirmationEmailService}
+	return &UseCase{userRepo, validate, hashService, sendAccountConfirmationEmailService, logger}
 }
 
 func (uc *UseCase) Execute(ctx context.Context, input Input) (Output, error) {
@@ -39,6 +42,8 @@ func (uc *UseCase) Execute(ctx context.Context, input Input) (Output, error) {
 
 	ph, err := uc.hashService.GenerateFromPassword([]byte(input.Password))
 	if err != nil {
+		message := "[create_user_usecase] error generating password hash"
+		uc.logger.Error(message, "error", err)
 		return Output{}, err
 	}
 
@@ -50,11 +55,15 @@ func (uc *UseCase) Execute(ctx context.Context, input Input) (Output, error) {
 
 	newUserModel, err := uc.userRepo.Create(ctx, userModel)
 	if err != nil {
+		message := "[create_user_usecase] error creating user"
+		uc.logger.Error(message, "error", err)
 		return Output{}, err
 	}
 
 	err = uc.sendAccountConfirmationEmailService.Execute(ctx, *newUserModel)
 	if err != nil {
+		message := "[create_user_usecase] error sending account confirmation email"
+		uc.logger.Error(message, "error", err)
 		return Output{}, err
 	}
 

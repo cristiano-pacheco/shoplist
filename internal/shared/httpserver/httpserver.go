@@ -3,7 +3,6 @@ package httpserver
 import (
 	"context"
 	"fmt"
-	"log/slog"
 	"time"
 
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/config"
@@ -14,18 +13,17 @@ import (
 )
 
 type Server struct {
-	app    *fiber.App
-	logger *slog.Logger
-	conf   config.Config
+	app  *fiber.App
+	conf config.Config
 }
 
-func NewHTTPServer(lc fx.Lifecycle, logger *slog.Logger, conf config.Config) *Server {
+func NewHTTPServer(lc fx.Lifecycle, conf config.Config) *Server {
 	fiberConfig := fiber.Config{
 		ReadBufferSize: 8192,
 		ProxyHeader:    "X-Real-IP",
 	}
 
-	server := Init(conf, logger, fiberConfig)
+	server := Init(conf, fiberConfig)
 
 	lc.Append(fx.Hook{
 		OnStart: func(context.Context) error {
@@ -38,7 +36,7 @@ func NewHTTPServer(lc fx.Lifecycle, logger *slog.Logger, conf config.Config) *Se
 	return server
 }
 
-func Init(conf config.Config, logger *slog.Logger, options ...fiber.Config) *Server {
+func Init(conf config.Config, options ...fiber.Config) *Server {
 	config := fiber.Config{
 		EnablePrintRoutes: !conf.IsProduction(),
 		AppName:           conf.App.Name,
@@ -49,7 +47,7 @@ func Init(conf config.Config, logger *slog.Logger, options ...fiber.Config) *Ser
 	app.Use(recover.New(recover.Config{EnableStackTrace: true}))
 	app.Use(healthcheck.New())
 
-	return &Server{app, logger, conf}
+	return &Server{app, conf}
 }
 
 func (s *Server) Get(path string, handler ...fiber.Handler) {

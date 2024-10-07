@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/config"
+	"github.com/cristiano-pacheco/go-modulith/internal/shared/logger"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/model"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/registry/privatekey_registry"
 	"github.com/golang-jwt/jwt/v5"
@@ -17,13 +18,15 @@ type ServiceI interface {
 type service struct {
 	privateKeyRegistry privatekey_registry.RegistryI
 	conf               config.Config
+	logger             logger.LoggerI
 }
 
 func New(
 	conf config.Config,
 	privateKeyRegistry privatekey_registry.RegistryI,
+	logger logger.LoggerI,
 ) ServiceI {
-	return &service{privateKeyRegistry, conf}
+	return &service{privateKeyRegistry, conf, logger}
 }
 
 func (s *service) Execute(user model.UserModel) (string, error) {
@@ -44,6 +47,8 @@ func (s *service) Execute(user model.UserModel) (string, error) {
 	pk := s.privateKeyRegistry.Get()
 	signedToken, err := token.SignedString(pk)
 	if err != nil {
+		message := "[generate_token_service] error signing token"
+		s.logger.Error(message, "error", err)
 		return "", err
 	}
 

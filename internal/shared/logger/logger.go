@@ -1,10 +1,18 @@
 package logger
 
 import (
-	"log/slog"
-	"os"
+	"github.com/cristiano-pacheco/go-modulith/internal/shared/config"
+	"github.com/cristiano-pacheco/go-modulith/pkg/logger"
 )
 
-func New() *slog.Logger {
-	return slog.New(slog.NewTextHandler(os.Stdout, nil))
+type LoggerI interface {
+	logger.LoggerI
+}
+
+func New(config config.Config) LoggerI {
+	logConfig := logger.LoggerConfig{
+		IsEnabled: config.Log.IsEnabled,
+		LogLevel:  logger.LogLevel(config.Log.LogLevel),
+	}
+	return logger.New(logConfig)
 }
