@@ -38,7 +38,7 @@ func (l *loggerAdapter) Debug(msg string, args ...any) {
 }
 
 func (l *loggerAdapter) DebugContext(ctx context.Context, msg string, args ...any) {
-	if l.shouldLog(slog.LevelDebug) {
+	if !l.shouldLog(slog.LevelDebug) {
 		return
 	}
 	l.logger.DebugContext(ctx, msg, args...)
@@ -52,35 +52,35 @@ func (l *loggerAdapter) Info(msg string, args ...any) {
 }
 
 func (l *loggerAdapter) InfoContext(ctx context.Context, msg string, args ...any) {
-	if l.shouldLog(slog.LevelInfo) {
+	if !l.shouldLog(slog.LevelInfo) {
 		return
 	}
 	l.logger.InfoContext(ctx, msg, args...)
 }
 
 func (l *loggerAdapter) Warn(msg string, args ...any) {
-	if l.shouldLog(slog.LevelWarn) {
+	if !l.shouldLog(slog.LevelWarn) {
 		return
 	}
 	l.logger.Warn(msg, args...)
 }
 
 func (l *loggerAdapter) WarnContext(ctx context.Context, msg string, args ...any) {
-	if l.shouldLog(slog.LevelWarn) {
+	if !l.shouldLog(slog.LevelWarn) {
 		return
 	}
 	l.logger.WarnContext(ctx, msg, args...)
 }
 
 func (l *loggerAdapter) Error(msg string, args ...any) {
-	if l.shouldLog(slog.LevelError) {
+	if !l.shouldLog(slog.LevelError) {
 		return
 	}
 	l.logger.Error(msg, args...)
 }
 
 func (l *loggerAdapter) ErrorContext(ctx context.Context, msg string, args ...any) {
-	if l.shouldLog(slog.LevelError) {
+	if !l.shouldLog(slog.LevelError) {
 		return
 	}
 	l.logger.ErrorContext(ctx, msg, args...)
@@ -90,6 +90,6 @@ func (l *loggerAdapter) shouldLog(level slog.Level) bool {
 	if !l.config.IsEnabled {
 		return false
 	}
-	configLevel := parseLogLevel(l.config.LogLevel)
+	configLevel := ParseLogLevel(l.config.LogLevel)
 	return level >= configLevel
 }

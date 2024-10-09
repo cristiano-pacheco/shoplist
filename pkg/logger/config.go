@@ -20,7 +20,7 @@ func (l LogLevel) String() string {
 	return string(l)
 }
 
-func parseLogLevel(level LogLevel) slog.Level {
+func ParseLogLevel(level LogLevel) slog.Level {
 	switch level.String() {
 	case "debug":
 		return slog.LevelDebug
