@@ -1,6 +1,6 @@
 module github.com/cristiano-pacheco/go-modulith
 
-go 1.23.0
+go 1.23.2
 
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.2
