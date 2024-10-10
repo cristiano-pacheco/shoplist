@@ -60,8 +60,13 @@ func (m *Middleware) Execute(c *fiber.Ctx) error {
 	}
 
 	ctx := context.Background()
-	isUserActivated := m.mediator.IsUserActivated(ctx, userID)
-	if !isUserActivated {
+	isUserActivated, err := m.mediator.Execute(ctx, "is_user_activated", userID)
+	if err != nil {
+		return m.handleError(c, err)
+	}
+
+	isUserActivatedBool, ok := isUserActivated.(bool)
+	if !ok || !isUserActivatedBool {
 		return m.handleError(c, errs.ErrInvalidToken)
 	}
 
