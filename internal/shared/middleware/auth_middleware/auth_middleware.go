@@ -8,7 +8,6 @@ import (
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/dto"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/errs"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/mapper/errormapper"
-	"github.com/cristiano-pacheco/go-modulith/internal/shared/mediator"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/registry/privatekey_registry"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/response"
 	"github.com/gofiber/fiber/v2"
@@ -19,16 +18,16 @@ type Middleware struct {
 	jwtParser          *jwt.Parser
 	errorMapper        *errormapper.Mapper
 	privateKeyRegistry privatekey_registry.RegistryI
-	mediator           mediator.MediatorI
+	isUserEnabledQuery *isUserEnabledQuery
 }
 
 func New(
 	jwtParser *jwt.Parser,
 	errorMapper *errormapper.Mapper,
 	privateKeyRegistry privatekey_registry.RegistryI,
-	mediator mediator.MediatorI,
+	isUserEnabledQuery *isUserEnabledQuery,
 ) *Middleware {
-	return &Middleware{jwtParser, errorMapper, privateKeyRegistry, mediator}
+	return &Middleware{jwtParser, errorMapper, privateKeyRegistry, isUserEnabledQuery}
 }
 
 func (m *Middleware) Execute(c *fiber.Ctx) error {
@@ -60,13 +59,12 @@ func (m *Middleware) Execute(c *fiber.Ctx) error {
 	}
 
 	ctx := context.Background()
-	isUserActivated, err := m.mediator.Execute(ctx, "is_user_activated", userID)
+	isUserEnabled, err := m.isUserEnabledQuery.Execute(ctx, userID)
 	if err != nil {
 		return m.handleError(c, err)
 	}
 
-	isUserActivatedBool, ok := isUserActivated.(bool)
-	if !ok || !isUserActivatedBool {
+	if !isUserEnabled {
 		return m.handleError(c, errs.ErrInvalidToken)
 	}
 

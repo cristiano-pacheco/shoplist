@@ -5,7 +5,6 @@ import (
 
 	"github.com/cristiano-pacheco/go-modulith/internal/module/billing"
 	"github.com/cristiano-pacheco/go-modulith/internal/module/identity"
-	"github.com/cristiano-pacheco/go-modulith/internal/module/mediator"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared"
 	"github.com/spf13/cobra"
 	"go.uber.org/fx"
@@ -21,7 +20,6 @@ var rootCmd = &cobra.Command{
 			shared.Module,
 			billing.Module,
 			identity.Module,
-			mediator.Module,
 		)
 		app.Run()
 	},

@@ -7,5 +7,5 @@ import (
 
 var Module = fx.Module(
 	"shared/middleware",
-	fx.Provide(auth_middleware.New),
+	auth_middleware.Module,
 )
