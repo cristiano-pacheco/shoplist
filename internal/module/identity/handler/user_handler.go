@@ -7,8 +7,8 @@ import (
 	"github.com/cristiano-pacheco/go-modulith/internal/module/identity/usecase/create_user_usecase"
 	"github.com/cristiano-pacheco/go-modulith/internal/module/identity/usecase/find_user_by_id_usecase"
 	"github.com/cristiano-pacheco/go-modulith/internal/module/identity/usecase/update_user_usecase"
+	"github.com/cristiano-pacheco/go-modulith/internal/shared/http/response"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/mapper/errormapper"
-	"github.com/cristiano-pacheco/go-modulith/internal/shared/response"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/telemetry"
 	"github.com/gofiber/fiber/v2"
 )

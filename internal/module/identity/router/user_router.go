@@ -2,7 +2,7 @@ package router
 
 import (
 	"github.com/cristiano-pacheco/go-modulith/internal/module/identity/handler"
-	"github.com/cristiano-pacheco/go-modulith/internal/shared/middleware/auth_middleware"
+	"github.com/cristiano-pacheco/go-modulith/internal/shared/http/middleware/auth_middleware"
 )
 
 func RegisterUserHandler(

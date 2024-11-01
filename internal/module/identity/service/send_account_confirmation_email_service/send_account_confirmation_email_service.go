@@ -5,13 +5,12 @@ import (
 	"encoding/base64"
 	"fmt"
 
-	identity_model "github.com/cristiano-pacheco/go-modulith/internal/module/identity/model"
+	"github.com/cristiano-pacheco/go-modulith/internal/module/identity/model"
 	"github.com/cristiano-pacheco/go-modulith/internal/module/identity/repository"
 	"github.com/cristiano-pacheco/go-modulith/internal/module/identity/service/hash_service"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/config"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/logger"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/mailer"
-	"github.com/cristiano-pacheco/go-modulith/internal/shared/model"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/telemetry"
 )
 
@@ -83,7 +82,7 @@ func (s *service) Execute(ctx context.Context, user model.UserModel) error {
 	}
 
 	// create the account confirmation model
-	acModel := identity_model.AccountConfirmationModel{
+	acModel := model.AccountConfirmationModel{
 		UserID: user.ID,
 		Token:  accountConfToken,
 	}

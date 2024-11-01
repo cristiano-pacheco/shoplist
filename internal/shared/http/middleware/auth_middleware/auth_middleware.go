@@ -7,9 +7,9 @@ import (
 
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/dto"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/errs"
+	"github.com/cristiano-pacheco/go-modulith/internal/shared/http/response"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/mapper/errormapper"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/registry/privatekey_registry"
-	"github.com/cristiano-pacheco/go-modulith/internal/shared/response"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
 )

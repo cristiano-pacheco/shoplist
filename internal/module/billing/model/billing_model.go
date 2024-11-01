@@ -4,11 +4,10 @@ import "github.com/cristiano-pacheco/go-modulith/internal/shared/model"
 
 type BillingModel struct {
 	model.Base
+	UserID     uint64
 	Category   CategoryModel
 	Name       string
-	User       model.UserModel
 	CategoryID uint64
-	UserID     uint64
 	Amount     float64
 }
 

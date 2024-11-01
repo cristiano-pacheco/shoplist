@@ -4,9 +4,9 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/cristiano-pacheco/go-modulith/internal/module/identity/model"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/config"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/logger"
-	"github.com/cristiano-pacheco/go-modulith/internal/shared/model"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/registry/privatekey_registry"
 	"github.com/golang-jwt/jwt/v5"
 )

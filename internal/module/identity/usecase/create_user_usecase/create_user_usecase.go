@@ -3,11 +3,11 @@ package create_user_usecase
 import (
 	"context"
 
+	"github.com/cristiano-pacheco/go-modulith/internal/module/identity/model"
 	"github.com/cristiano-pacheco/go-modulith/internal/module/identity/repository"
 	"github.com/cristiano-pacheco/go-modulith/internal/module/identity/service/hash_service"
 	"github.com/cristiano-pacheco/go-modulith/internal/module/identity/service/send_account_confirmation_email_service"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/logger"
-	"github.com/cristiano-pacheco/go-modulith/internal/shared/model"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/telemetry"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/validator"
 )

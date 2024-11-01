@@ -1,7 +1,7 @@
 package router
 
 import (
-	"github.com/cristiano-pacheco/go-modulith/internal/shared/httpserver"
+	"github.com/cristiano-pacheco/go-modulith/internal/shared/http/httpserver"
 	"github.com/gofiber/fiber/v2"
 )
 

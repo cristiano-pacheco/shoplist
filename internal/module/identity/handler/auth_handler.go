@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/cristiano-pacheco/go-modulith/internal/module/identity/usecase/generate_jwt_token_usecase"
+	"github.com/cristiano-pacheco/go-modulith/internal/shared/http/response"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/mapper/errormapper"
-	"github.com/cristiano-pacheco/go-modulith/internal/shared/response"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/telemetry"
 	"github.com/gofiber/fiber/v2"
 )
