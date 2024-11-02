@@ -1,11 +1,11 @@
-package generate_jwt_token_usecase
+package generate_token_usecase
 
 import (
 	"context"
 
 	"github.com/cristiano-pacheco/go-modulith/internal/identity/repository"
-	generate_token_service "github.com/cristiano-pacheco/go-modulith/internal/identity/service/generate_token"
-	hash_service "github.com/cristiano-pacheco/go-modulith/internal/identity/service/hash"
+	"github.com/cristiano-pacheco/go-modulith/internal/identity/service/generate_token_service"
+	"github.com/cristiano-pacheco/go-modulith/internal/identity/service/hash_service"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/errs"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/telemetry"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/validator"

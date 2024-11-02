@@ -1,4 +1,4 @@
-package find_user_by_id_usecase
+package find_user_usecase
 
 import (
 	"context"

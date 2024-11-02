@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"strconv"
 
-	create_user_usecase "github.com/cristiano-pacheco/go-modulith/internal/identity/usecase/create_user"
-	find_user_by_id_usecase "github.com/cristiano-pacheco/go-modulith/internal/identity/usecase/find_user_by_id"
-	update_user_usecase "github.com/cristiano-pacheco/go-modulith/internal/identity/usecase/update_user"
+	"github.com/cristiano-pacheco/go-modulith/internal/identity/usecase/create_user_usecase"
+	"github.com/cristiano-pacheco/go-modulith/internal/identity/usecase/find_user_usecase"
+	"github.com/cristiano-pacheco/go-modulith/internal/identity/usecase/update_user_usecase"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/http/response"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/mapper/errormapper"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/telemetry"
@@ -14,23 +14,23 @@ import (
 )
 
 type UserHandler struct {
-	errorMapper         *errormapper.Mapper
-	createUserUseCase   *create_user_usecase.UseCase
-	updateUserUseCase   *update_user_usecase.UseCase
-	findUserByIDUseCase *find_user_by_id_usecase.UseCase
+	errorMapper       *errormapper.Mapper
+	createUserUseCase *create_user_usecase.UseCase
+	updateUserUseCase *update_user_usecase.UseCase
+	findUserUseCase   *find_user_usecase.UseCase
 }
 
 func NewUserHandler(
 	errorMapper *errormapper.Mapper,
 	createUserUseCase *create_user_usecase.UseCase,
 	updateUserUseCase *update_user_usecase.UseCase,
-	findUserByIDUseCase *find_user_by_id_usecase.UseCase,
+	findUserUseCase *find_user_usecase.UseCase,
 ) *UserHandler {
 	return &UserHandler{
 		errorMapper,
 		createUserUseCase,
 		updateUserUseCase,
-		findUserByIDUseCase,
+		findUserUseCase,
 	}
 }
 
@@ -89,8 +89,8 @@ func (h *UserHandler) Update(c *fiber.Ctx) error {
 
 func (h *UserHandler) Show(c *fiber.Ctx) error {
 	var (
-		input  find_user_by_id_usecase.Input
-		output find_user_by_id_usecase.Output
+		input  find_user_usecase.Input
+		output find_user_usecase.Output
 	)
 
 	t := telemetry.Get()
@@ -104,7 +104,7 @@ func (h *UserHandler) Show(c *fiber.Ctx) error {
 	}
 
 	input.UserID = idUser
-	output, err = h.findUserByIDUseCase.Execute(ctx, input)
+	output, err = h.findUserUseCase.Execute(ctx, input)
 	if err != nil {
 		rError := h.errorMapper.MapErrorToResponseError(err)
 		return response.HandleErrorResponse(c, rError)

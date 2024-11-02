@@ -5,8 +5,8 @@ import (
 
 	"github.com/cristiano-pacheco/go-modulith/internal/identity/model"
 	"github.com/cristiano-pacheco/go-modulith/internal/identity/repository"
-	hash_service "github.com/cristiano-pacheco/go-modulith/internal/identity/service/hash"
-	send_account_confirmation_email_service "github.com/cristiano-pacheco/go-modulith/internal/identity/service/send_account_confirmation_email"
+	"github.com/cristiano-pacheco/go-modulith/internal/identity/service/hash_service"
+	"github.com/cristiano-pacheco/go-modulith/internal/identity/service/send_account_confirmation_email_service"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/logger"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/telemetry"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/validator"

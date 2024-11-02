@@ -1,4 +1,4 @@
-package generate_jwt_token_usecase
+package generate_token_usecase
 
 type Input struct {
 	Email    string `json:"email" validate:"required,email"`

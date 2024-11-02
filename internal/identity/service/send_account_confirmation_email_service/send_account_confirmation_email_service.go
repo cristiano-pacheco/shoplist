@@ -7,7 +7,7 @@ import (
 
 	"github.com/cristiano-pacheco/go-modulith/internal/identity/model"
 	"github.com/cristiano-pacheco/go-modulith/internal/identity/repository"
-	hash_service "github.com/cristiano-pacheco/go-modulith/internal/identity/service/hash"
+	"github.com/cristiano-pacheco/go-modulith/internal/identity/service/hash_service"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/config"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/logger"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/mailer"

@@ -3,7 +3,7 @@ package handler
 import (
 	"net/http"
 
-	generate_jwt_token_usecase "github.com/cristiano-pacheco/go-modulith/internal/identity/usecase/generate_jwt_token"
+	"github.com/cristiano-pacheco/go-modulith/internal/identity/usecase/generate_token_usecase"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/http/response"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/mapper/errormapper"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/telemetry"
@@ -11,21 +11,21 @@ import (
 )
 
 type AuthHandler struct {
-	errorMapper             *errormapper.Mapper
-	generateJWTTokenUseCase *generate_jwt_token_usecase.UseCase
+	errorMapper          *errormapper.Mapper
+	generateTokenUseCase *generate_token_usecase.UseCase
 }
 
 func NewAuthHandler(
 	errorMapper *errormapper.Mapper,
-	generateJWTTokenUseCase *generate_jwt_token_usecase.UseCase,
+	generateTokenUseCase *generate_token_usecase.UseCase,
 ) *AuthHandler {
-	return &AuthHandler{errorMapper, generateJWTTokenUseCase}
+	return &AuthHandler{errorMapper, generateTokenUseCase}
 }
 
 func (h *AuthHandler) Execute(c *fiber.Ctx) error {
 	var (
-		input  generate_jwt_token_usecase.Input
-		output generate_jwt_token_usecase.Output
+		input  generate_token_usecase.Input
+		output generate_token_usecase.Output
 	)
 
 	t := telemetry.Get()
@@ -37,7 +37,7 @@ func (h *AuthHandler) Execute(c *fiber.Ctx) error {
 		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}
 
-	output, err = h.generateJWTTokenUseCase.Execute(ctx, input)
+	output, err = h.generateTokenUseCase.Execute(ctx, input)
 	if err != nil {
 		rError := h.errorMapper.MapErrorToResponseError(err)
 		return response.HandleErrorResponse(c, rError)
