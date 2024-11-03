@@ -22,6 +22,20 @@ func NewAuthHandler(
 	return &AuthHandler{errorMapper, generateTokenUseCase}
 }
 
+// Auth godoc
+//
+// @Summary		Auth token
+// @Description	get token
+// @Tags		auth
+// @Accept		json
+// @Produce		json
+// @Success		200	{object}	model.Admin
+// @Failure		400	{object}	httputil.HTTPError
+// @Failure		401	{object}	httputil.HTTPError
+// @Failure		404	{object}	httputil.HTTPError
+// @Failure		500	{object}	httputil.HTTPError
+// @Security	ApiKeyAuth
+// @Router		/auth/token [post]
 func (h *AuthHandler) Execute(c *fiber.Ctx) error {
 	var (
 		input  generate_token_usecase.Input
