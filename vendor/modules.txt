@@ -1,7 +1,7 @@
 # github.com/DATA-DOG/go-sqlmock v1.5.2
 ## explicit; go 1.15
 github.com/DATA-DOG/go-sqlmock
-# github.com/andybalholm/brotli v1.1.0
+# github.com/andybalholm/brotli v1.1.1
 ## explicit; go 1.13
 github.com/andybalholm/brotli
 github.com/andybalholm/brotli/matchfinder
@@ -11,7 +11,7 @@ github.com/caarlos0/env/v11
 # github.com/davecgh/go-spew v1.1.1
 ## explicit
 github.com/davecgh/go-spew/spew
-# github.com/gabriel-vasile/mimetype v1.4.3
+# github.com/gabriel-vasile/mimetype v1.4.6
 ## explicit; go 1.20
 github.com/gabriel-vasile/mimetype
 github.com/gabriel-vasile/mimetype/internal/charset
@@ -35,7 +35,7 @@ github.com/go-playground/locales/en
 # github.com/go-playground/universal-translator v0.18.1
 ## explicit; go 1.18
 github.com/go-playground/universal-translator
-# github.com/go-playground/validator/v10 v10.22.0
+# github.com/go-playground/validator/v10 v10.22.1
 ## explicit; go 1.18
 github.com/go-playground/validator/v10
 github.com/go-playground/validator/v10/translations/en
@@ -50,8 +50,8 @@ github.com/gofiber/fiber/v2/utils
 # github.com/golang-jwt/jwt/v5 v5.2.1
 ## explicit; go 1.18
 github.com/golang-jwt/jwt/v5
-# github.com/golang-migrate/migrate/v4 v4.17.1
-## explicit; go 1.18
+# github.com/golang-migrate/migrate/v4 v4.18.1
+## explicit; go 1.22.0
 github.com/golang-migrate/migrate/v4
 github.com/golang-migrate/migrate/v4/database
 github.com/golang-migrate/migrate/v4/database/multistmt
@@ -75,25 +75,24 @@ github.com/inconshreveable/mousetrap
 # github.com/jackc/pgpassfile v1.0.0
 ## explicit; go 1.12
 github.com/jackc/pgpassfile
-# github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a
+# github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761
 ## explicit; go 1.14
 github.com/jackc/pgservicefile
-# github.com/jackc/pgx/v5 v5.5.5
-## explicit; go 1.19
+# github.com/jackc/pgx/v5 v5.7.1
+## explicit; go 1.21
 github.com/jackc/pgx/v5
-github.com/jackc/pgx/v5/internal/anynil
 github.com/jackc/pgx/v5/internal/iobufpool
 github.com/jackc/pgx/v5/internal/pgio
 github.com/jackc/pgx/v5/internal/sanitize
 github.com/jackc/pgx/v5/internal/stmtcache
 github.com/jackc/pgx/v5/pgconn
+github.com/jackc/pgx/v5/pgconn/ctxwatch
 github.com/jackc/pgx/v5/pgconn/internal/bgreader
-github.com/jackc/pgx/v5/pgconn/internal/ctxwatch
 github.com/jackc/pgx/v5/pgproto3
 github.com/jackc/pgx/v5/pgtype
 github.com/jackc/pgx/v5/pgxpool
 github.com/jackc/pgx/v5/stdlib
-# github.com/jackc/puddle/v2 v2.2.1
+# github.com/jackc/puddle/v2 v2.2.2
 ## explicit; go 1.19
 github.com/jackc/puddle/v2
 github.com/jackc/puddle/v2/internal/genstack
@@ -106,7 +105,7 @@ github.com/jinzhu/now
 # github.com/joho/godotenv v1.5.1
 ## explicit; go 1.12
 github.com/joho/godotenv
-# github.com/klauspost/compress v1.17.10
+# github.com/klauspost/compress v1.17.11
 ## explicit; go 1.21
 github.com/klauspost/compress
 github.com/klauspost/compress/flate
@@ -147,8 +146,6 @@ github.com/pmezard/go-difflib/difflib
 # github.com/rivo/uniseg v0.4.7
 ## explicit; go 1.18
 github.com/rivo/uniseg
-# github.com/rogpeppe/go-internal v1.12.0
-## explicit; go 1.20
 # github.com/spf13/cobra v1.8.1
 ## explicit; go 1.15
 github.com/spf13/cobra
@@ -165,8 +162,8 @@ github.com/stretchr/testify/mock
 # github.com/valyala/bytebufferpool v1.0.0
 ## explicit
 github.com/valyala/bytebufferpool
-# github.com/valyala/fasthttp v1.56.0
-## explicit; go 1.20
+# github.com/valyala/fasthttp v1.57.0
+## explicit; go 1.21
 github.com/valyala/fasthttp
 github.com/valyala/fasthttp/fasthttputil
 github.com/valyala/fasthttp/reuseport
@@ -174,7 +171,7 @@ github.com/valyala/fasthttp/stackless
 # github.com/valyala/tcplisten v1.0.0
 ## explicit; go 1.12
 github.com/valyala/tcplisten
-# go.opentelemetry.io/otel v1.30.0
+# go.opentelemetry.io/otel v1.31.0
 ## explicit; go 1.22
 go.opentelemetry.io/otel
 go.opentelemetry.io/otel/attribute
@@ -189,17 +186,17 @@ go.opentelemetry.io/otel/semconv/v1.20.0
 go.opentelemetry.io/otel/semconv/v1.21.0
 go.opentelemetry.io/otel/semconv/v1.25.0
 go.opentelemetry.io/otel/semconv/v1.26.0
-# go.opentelemetry.io/otel/exporters/stdout/stdouttrace v1.30.0
+# go.opentelemetry.io/otel/exporters/stdout/stdouttrace v1.31.0
 ## explicit; go 1.22
 go.opentelemetry.io/otel/exporters/stdout/stdouttrace
-# go.opentelemetry.io/otel/exporters/zipkin v1.30.0
+# go.opentelemetry.io/otel/exporters/zipkin v1.31.0
 ## explicit; go 1.22
 go.opentelemetry.io/otel/exporters/zipkin
-# go.opentelemetry.io/otel/metric v1.30.0
+# go.opentelemetry.io/otel/metric v1.31.0
 ## explicit; go 1.22
 go.opentelemetry.io/otel/metric
 go.opentelemetry.io/otel/metric/embedded
-# go.opentelemetry.io/otel/sdk v1.30.0
+# go.opentelemetry.io/otel/sdk v1.31.0
 ## explicit; go 1.22
 go.opentelemetry.io/otel/sdk
 go.opentelemetry.io/otel/sdk/instrumentation
@@ -208,13 +205,13 @@ go.opentelemetry.io/otel/sdk/internal/x
 go.opentelemetry.io/otel/sdk/resource
 go.opentelemetry.io/otel/sdk/trace
 go.opentelemetry.io/otel/sdk/trace/tracetest
-# go.opentelemetry.io/otel/trace v1.30.0
+# go.opentelemetry.io/otel/trace v1.31.0
 ## explicit; go 1.22
 go.opentelemetry.io/otel/trace
 go.opentelemetry.io/otel/trace/embedded
 go.opentelemetry.io/otel/trace/noop
-# go.uber.org/atomic v1.7.0
-## explicit; go 1.13
+# go.uber.org/atomic v1.11.0
+## explicit; go 1.18
 go.uber.org/atomic
 # go.uber.org/dig v1.18.0
 ## explicit; go 1.20
@@ -224,7 +221,7 @@ go.uber.org/dig/internal/digerror
 go.uber.org/dig/internal/digreflect
 go.uber.org/dig/internal/dot
 go.uber.org/dig/internal/graph
-# go.uber.org/fx v1.22.2
+# go.uber.org/fx v1.23.0
 ## explicit; go 1.20
 go.uber.org/fx
 go.uber.org/fx/fxevent
@@ -232,10 +229,10 @@ go.uber.org/fx/internal/fxclock
 go.uber.org/fx/internal/fxlog
 go.uber.org/fx/internal/fxreflect
 go.uber.org/fx/internal/lifecycle
-# go.uber.org/multierr v1.10.0
+# go.uber.org/multierr v1.11.0
 ## explicit; go 1.19
 go.uber.org/multierr
-# go.uber.org/zap v1.26.0
+# go.uber.org/zap v1.27.0
 ## explicit; go 1.19
 go.uber.org/zap
 go.uber.org/zap/buffer
@@ -246,26 +243,26 @@ go.uber.org/zap/internal/exit
 go.uber.org/zap/internal/pool
 go.uber.org/zap/internal/stacktrace
 go.uber.org/zap/zapcore
-# golang.org/x/crypto v0.27.0
+# golang.org/x/crypto v0.28.0
 ## explicit; go 1.20
 golang.org/x/crypto/bcrypt
 golang.org/x/crypto/blowfish
 golang.org/x/crypto/pbkdf2
 golang.org/x/crypto/sha3
-# golang.org/x/net v0.29.0
+# golang.org/x/net v0.30.0
 ## explicit; go 1.18
 golang.org/x/net/html
 golang.org/x/net/html/atom
 # golang.org/x/sync v0.8.0
 ## explicit; go 1.18
 golang.org/x/sync/semaphore
-# golang.org/x/sys v0.25.0
+# golang.org/x/sys v0.26.0
 ## explicit; go 1.18
 golang.org/x/sys/cpu
 golang.org/x/sys/unix
 golang.org/x/sys/windows
 golang.org/x/sys/windows/registry
-# golang.org/x/text v0.18.0
+# golang.org/x/text v0.19.0
 ## explicit; go 1.18
 golang.org/x/text/cases
 golang.org/x/text/internal
@@ -291,7 +288,7 @@ gopkg.in/yaml.v3
 # gorm.io/driver/postgres v1.5.9
 ## explicit; go 1.19
 gorm.io/driver/postgres
-# gorm.io/gorm v1.25.11
+# gorm.io/gorm v1.25.12
 ## explicit; go 1.18
 gorm.io/gorm
 gorm.io/gorm/callbacks
