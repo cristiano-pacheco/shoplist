@@ -3,22 +3,27 @@ package response
 import (
 	"net/http"
 
-	"github.com/cristiano-pacheco/go-modulith/internal/shared/mapper/errormapper"
+	"github.com/cristiano-pacheco/go-modulith/internal/shared/errs"
 	"github.com/gofiber/fiber/v2"
 )
 
-func HandleErrorResponse(c *fiber.Ctx, rError errormapper.ResponseError) error {
-	if rError.ErrorCode == errormapper.ValidationError {
-		return c.Status(http.StatusUnprocessableEntity).JSON(fiber.Map{"errors": rError.Errors})
+func Error(c *fiber.Ctx, err error) error {
+	rError, ok := err.(*errs.Error)
+	if !ok {
+		return err
 	}
 
-	if rError.ErrorCode == errormapper.AuthenticationError {
-		return c.Status(http.StatusUnauthorized).JSON(fiber.Map{"errors": rError.Errors})
+	if rError.Status == 0 {
+		rError.Status = http.StatusInternalServerError
 	}
 
-	// todo inserir logger aqui
-	serverError := errormapper.Error{
-		Message: errormapper.ServerErrorMessage,
+	return c.Status(rError.Status).JSON(rError)
+}
+
+func Success(c *fiber.Ctx, status int, data interface{}) error {
+	if status == 0 {
+		status = http.StatusOK
 	}
-	return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"errors": serverError})
+
+	return c.Status(status).JSON(Data{Data: data})
 }

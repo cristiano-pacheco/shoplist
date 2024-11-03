@@ -3,11 +3,11 @@ package shared
 import (
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/config"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/database"
+	"github.com/cristiano-pacheco/go-modulith/internal/shared/errs"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/http/httpserver"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/http/middleware"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/logger"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/mailer"
-	"github.com/cristiano-pacheco/go-modulith/internal/shared/mapper"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/parser"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/registry"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/translator"
@@ -22,10 +22,10 @@ var Module = fx.Module(
 	validator.Module,
 	translator.Module,
 	httpserver.Module,
-	mapper.Module,
 	logger.Module,
 	middleware.Module,
 	registry.Module,
 	parser.Module,
 	mailer.Module,
+	errs.Module,
 )

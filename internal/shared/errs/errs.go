@@ -1,10 +1,23 @@
 package errs
 
-type Error struct {
-	Code    int    `json:"code"`
-	Message string `json:"message"`
+import (
+	"github.com/cristiano-pacheco/go-modulith/internal/shared/validator"
+	ut "github.com/go-playground/universal-translator"
+)
+
+type ErrorMapperI interface {
+	Map(err error) error
 }
 
-func (e *Error) Error() string {
-	return e.Message
+type errorMapper struct {
+	validate   validator.ValidateI
+	translator ut.Translator
+}
+
+func New(validate validator.ValidateI, translator ut.Translator) ErrorMapperI {
+	return &errorMapper{validate, translator}
+}
+
+func (em *errorMapper) Map(err error) error {
+	return em.mapError(err)
 }

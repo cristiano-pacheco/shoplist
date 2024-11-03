@@ -4,19 +4,19 @@ import (
 	"net/http"
 
 	"github.com/cristiano-pacheco/go-modulith/internal/identity/usecase/generate_token_usecase"
+	"github.com/cristiano-pacheco/go-modulith/internal/shared/errs"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/http/response"
-	"github.com/cristiano-pacheco/go-modulith/internal/shared/mapper/errormapper"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/telemetry"
 	"github.com/gofiber/fiber/v2"
 )
 
 type AuthHandler struct {
-	errorMapper          *errormapper.Mapper
+	errorMapper          errs.ErrorMapperI
 	generateTokenUseCase *generate_token_usecase.UseCase
 }
 
 func NewAuthHandler(
-	errorMapper *errormapper.Mapper,
+	errorMapper errs.ErrorMapperI,
 	generateTokenUseCase *generate_token_usecase.UseCase,
 ) *AuthHandler {
 	return &AuthHandler{errorMapper, generateTokenUseCase}
@@ -48,14 +48,14 @@ func (h *AuthHandler) Execute(c *fiber.Ctx) error {
 
 	err := c.BodyParser(&input)
 	if err != nil {
-		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
+		return response.Error(c, err)
 	}
 
 	output, err = h.generateTokenUseCase.Execute(ctx, input)
 	if err != nil {
-		rError := h.errorMapper.MapErrorToResponseError(err)
-		return response.HandleErrorResponse(c, rError)
+		rError := h.errorMapper.Map(err)
+		return response.Error(c, rError)
 	}
 
-	return c.Status(http.StatusOK).JSON(fiber.Map{"data": output.Token})
+	return response.Success(c, http.StatusOK, output.Token)
 }

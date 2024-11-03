@@ -8,7 +8,6 @@ import (
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/dto"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/errs"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/http/response"
-	"github.com/cristiano-pacheco/go-modulith/internal/shared/mapper/errormapper"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/registry/privatekey_registry"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
@@ -16,14 +15,14 @@ import (
 
 type Middleware struct {
 	jwtParser          *jwt.Parser
-	errorMapper        *errormapper.Mapper
+	errorMapper        errs.ErrorMapperI
 	privateKeyRegistry privatekey_registry.RegistryI
 	isUserEnabledQuery *isUserEnabledQuery
 }
 
 func New(
 	jwtParser *jwt.Parser,
-	errorMapper *errormapper.Mapper,
+	errorMapper errs.ErrorMapperI,
 	privateKeyRegistry privatekey_registry.RegistryI,
 	isUserEnabledQuery *isUserEnabledQuery,
 ) *Middleware {
@@ -72,6 +71,6 @@ func (m *Middleware) Execute(c *fiber.Ctx) error {
 }
 
 func (m *Middleware) handleError(c *fiber.Ctx, err error) error {
-	rError := m.errorMapper.MapErrorToResponseError(err)
-	return response.HandleErrorResponse(c, rError)
+	rError := m.errorMapper.Map(err)
+	return response.Error(c, rError)
 }

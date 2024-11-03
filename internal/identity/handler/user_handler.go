@@ -7,21 +7,21 @@ import (
 	"github.com/cristiano-pacheco/go-modulith/internal/identity/usecase/create_user_usecase"
 	"github.com/cristiano-pacheco/go-modulith/internal/identity/usecase/find_user_usecase"
 	"github.com/cristiano-pacheco/go-modulith/internal/identity/usecase/update_user_usecase"
+	"github.com/cristiano-pacheco/go-modulith/internal/shared/errs"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/http/response"
-	"github.com/cristiano-pacheco/go-modulith/internal/shared/mapper/errormapper"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/telemetry"
 	"github.com/gofiber/fiber/v2"
 )
 
 type UserHandler struct {
-	errorMapper       *errormapper.Mapper
+	errorMapper       errs.ErrorMapperI
 	createUserUseCase *create_user_usecase.UseCase
 	updateUserUseCase *update_user_usecase.UseCase
 	findUserUseCase   *find_user_usecase.UseCase
 }
 
 func NewUserHandler(
-	errorMapper *errormapper.Mapper,
+	errorMapper errs.ErrorMapperI,
 	createUserUseCase *create_user_usecase.UseCase,
 	updateUserUseCase *update_user_usecase.UseCase,
 	findUserUseCase *find_user_usecase.UseCase,
@@ -50,11 +50,11 @@ func (h *UserHandler) Store(c *fiber.Ctx) error {
 
 	output, err = h.createUserUseCase.Execute(ctx, input)
 	if err != nil {
-		rError := h.errorMapper.MapErrorToResponseError(err)
-		return response.HandleErrorResponse(c, rError)
+		rError := h.errorMapper.Map(err)
+		return response.Error(c, rError)
 	}
 
-	return c.Status(http.StatusCreated).JSON(fiber.Map{"data": output})
+	return response.Success(c, http.StatusCreated, output)
 }
 
 func (h *UserHandler) Update(c *fiber.Ctx) error {
@@ -68,20 +68,22 @@ func (h *UserHandler) Update(c *fiber.Ctx) error {
 
 	err := c.BodyParser(&input)
 	if err != nil {
-		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
+		rError := h.errorMapper.Map(err)
+		return response.Error(c, rError)
 	}
 
 	id := c.Params("id")
 	idUser, err := strconv.ParseUint(id, 10, 64)
 	if err != nil {
-		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
+		rError := h.errorMapper.Map(err)
+		return response.Error(c, rError)
 	}
 	input.UserID = idUser
 
 	err = h.updateUserUseCase.Execute(ctx, input)
 	if err != nil {
-		rError := h.errorMapper.MapErrorToResponseError(err)
-		return response.HandleErrorResponse(c, rError)
+		rError := h.errorMapper.Map(err)
+		return response.Error(c, rError)
 	}
 
 	return c.SendStatus(http.StatusNoContent)
@@ -100,15 +102,16 @@ func (h *UserHandler) Show(c *fiber.Ctx) error {
 	id := c.Params("id")
 	idUser, err := strconv.ParseUint(id, 10, 64)
 	if err != nil {
-		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
+		rError := h.errorMapper.Map(err)
+		return response.Error(c, rError)
 	}
 
 	input.UserID = idUser
 	output, err = h.findUserUseCase.Execute(ctx, input)
 	if err != nil {
-		rError := h.errorMapper.MapErrorToResponseError(err)
-		return response.HandleErrorResponse(c, rError)
+		rError := h.errorMapper.Map(err)
+		return response.Error(c, rError)
 	}
 
-	return c.JSON(fiber.Map{"data": output})
+	return response.Success(c, http.StatusOK, output)
 }
