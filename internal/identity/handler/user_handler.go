@@ -45,7 +45,8 @@ func (h *UserHandler) Store(c *fiber.Ctx) error {
 
 	err := c.BodyParser(&input)
 	if err != nil {
-		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
+		rError := h.errorMapper.Map(err)
+		return response.Error(c, rError)
 	}
 
 	output, err = h.createUserUseCase.Execute(ctx, input)
