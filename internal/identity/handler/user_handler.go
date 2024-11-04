@@ -34,6 +34,18 @@ func NewUserHandler(
 	}
 }
 
+// @Summary		Create user
+// @Description	Creates a new user
+// @Tags		Users
+// @Accept		json
+// @Produce		json
+// @Param		request	body	create_user_usecase.Input	true	"User data"
+// @Success		201	{object}	response.Data{data=create_user_usecase.Output}	"Successfully created user"
+// @Failure		400	{object}	errs.Error	"Invalid request format or validation error"
+// @Failure		401	{object}	errs.Error	"Invalid credentials"
+// @Failure		404	{object}	errs.Error	"User not found"
+// @Failure		500	{object}	errs.Error	"Internal server error"
+// @Router		/api/v1/users [post]
 func (h *UserHandler) Store(c *fiber.Ctx) error {
 	var (
 		input  create_user_usecase.Input
@@ -58,6 +70,19 @@ func (h *UserHandler) Store(c *fiber.Ctx) error {
 	return response.Success(c, http.StatusCreated, output)
 }
 
+// @Summary		Update user
+// @Description	Updates an existing user
+// @Tags		Users
+// @Accept		json
+// @Produce		json
+// @Param		id		path	integer		true	"User ID"
+// @Param		request	body	update_user_usecase.Input	true	"User data"
+// @Success		204	{object}	response.Data	"Successfully updated user"
+// @Failure		400	{object}	errs.Error	"Invalid request format or validation error"
+// @Failure		401	{object}	errs.Error	"Invalid credentials"
+// @Failure		404	{object}	errs.Error	"User not found"
+// @Failure		500	{object}	errs.Error	"Internal server error"
+// @Router		/api/v1/users/{id} [put]
 func (h *UserHandler) Update(c *fiber.Ctx) error {
 	var (
 		input update_user_usecase.Input
@@ -90,6 +115,18 @@ func (h *UserHandler) Update(c *fiber.Ctx) error {
 	return c.SendStatus(http.StatusNoContent)
 }
 
+// @Summary		Find user
+// @Description	Finds an existing user
+// @Tags		Users
+// @Accept		json
+// @Produce		json
+// @Param		id		path	integer		true	"User ID"
+// @Success		200	{object}	response.Data{data=find_user_usecase.Output}	"Successfully found user"
+// @Failure		400	{object}	errs.Error	"Invalid request format or validation error"
+// @Failure		401	{object}	errs.Error	"Invalid credentials"
+// @Failure		404	{object}	errs.Error	"User not found"
+// @Failure		500	{object}	errs.Error	"Internal server error"
+// @Router		/api/v1/users/{id} [get]
 func (h *UserHandler) Show(c *fiber.Ctx) error {
 	var (
 		input  find_user_usecase.Input

@@ -24,18 +24,18 @@ func NewAuthHandler(
 
 // Auth godoc
 //
-// @Summary		Auth token
-// @Description	get token
-// @Tags		auth
+// @Summary		Generate authentication token
+// @Description	Authenticates user credentials and returns an access token
+// @Tags		Authentication
 // @Accept		json
 // @Produce		json
-// @Success		200	{object}	model.Admin
-// @Failure		400	{object}	httputil.HTTPError
-// @Failure		401	{object}	httputil.HTTPError
-// @Failure		404	{object}	httputil.HTTPError
-// @Failure		500	{object}	httputil.HTTPError
-// @Security	ApiKeyAuth
-// @Router		/auth/token [post]
+// @Param		request	body	generate_token_usecase.Input	true	"Login credentials (email and password)"
+// @Success		200	{object}	response.Data{data=string}	"Successfully generated token"
+// @Failure		400	{object}	errs.Error	"Invalid request format or validation error"
+// @Failure		401	{object}	errs.Error	"Invalid credentials"
+// @Failure		404	{object}	errs.Error	"User not found"
+// @Failure		500	{object}	errs.Error	"Internal server error"
+// @Router		/api/v1/auth/token [post]
 func (h *AuthHandler) Execute(c *fiber.Ctx) error {
 	var (
 		input  generate_token_usecase.Input

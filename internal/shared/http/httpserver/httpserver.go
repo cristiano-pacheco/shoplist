@@ -5,10 +5,12 @@ import (
 	"fmt"
 	"time"
 
+	_ "github.com/cristiano-pacheco/go-modulith/docs"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/config"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/healthcheck"
 	"github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/gofiber/swagger"
 	"go.uber.org/fx"
 )
 
@@ -46,6 +48,10 @@ func Init(conf config.Config, options ...fiber.Config) *Server {
 	app := fiber.New(config)
 	app.Use(recover.New(recover.Config{EnableStackTrace: true}))
 	app.Use(healthcheck.New())
+
+	app.Get("/swagger/*", swagger.New(swagger.Config{
+		Title: conf.App.Name,
+	}))
 
 	return &Server{app, conf}
 }

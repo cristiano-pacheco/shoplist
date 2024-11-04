@@ -53,6 +53,10 @@ tests-coverage:
 generate-mocks:
 	mockery
 
+update-swagger:
+	swag fmt -d docs
+	swag i --parseDependency
+
 # ==============================================================================
 # NOTES
 #
