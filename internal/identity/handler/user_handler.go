@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/cristiano-pacheco/go-modulith/internal/identity/usecase/activate_user_usecase"
 	"github.com/cristiano-pacheco/go-modulith/internal/identity/usecase/create_user_usecase"
 	"github.com/cristiano-pacheco/go-modulith/internal/identity/usecase/find_user_usecase"
 	"github.com/cristiano-pacheco/go-modulith/internal/identity/usecase/update_user_usecase"
@@ -14,10 +15,11 @@ import (
 )
 
 type UserHandler struct {
-	errorMapper       errs.ErrorMapperI
-	createUserUseCase *create_user_usecase.UseCase
-	updateUserUseCase *update_user_usecase.UseCase
-	findUserUseCase   *find_user_usecase.UseCase
+	errorMapper         errs.ErrorMapperI
+	createUserUseCase   *create_user_usecase.UseCase
+	updateUserUseCase   *update_user_usecase.UseCase
+	findUserUseCase     *find_user_usecase.UseCase
+	activateUserUseCase *activate_user_usecase.UseCase
 }
 
 func NewUserHandler(
@@ -25,12 +27,14 @@ func NewUserHandler(
 	createUserUseCase *create_user_usecase.UseCase,
 	updateUserUseCase *update_user_usecase.UseCase,
 	findUserUseCase *find_user_usecase.UseCase,
+	activateUserUseCase *activate_user_usecase.UseCase,
 ) *UserHandler {
 	return &UserHandler{
 		errorMapper,
 		createUserUseCase,
 		updateUserUseCase,
 		findUserUseCase,
+		activateUserUseCase,
 	}
 }
 
@@ -152,4 +156,38 @@ func (h *UserHandler) Show(c *fiber.Ctx) error {
 	}
 
 	return response.Success(c, http.StatusOK, output)
+}
+
+// @Summary		Activate user
+// @Description	Activates an existing user
+// @Tags		Users
+// @Accept		json
+// @Produce		json
+// @Param		request	body	activate_user_usecase.Input	true	"User data"
+// @Success		204		"Successfully activated user"
+// @Failure		400	{object}	errs.Error	"Invalid request format or validation error"
+// @Failure		500	{object}	errs.Error	"Internal server error"
+// @Router		/api/v1/users/activate [post]
+func (h *UserHandler) Activate(c *fiber.Ctx) error {
+	type requestInput struct {
+		UserID uint64 `json:"user_id"`
+		Token  string `json:"token"`
+	}
+	var rInput requestInput
+
+	err := c.BodyParser(&rInput)
+	if err != nil {
+		rError := h.errorMapper.Map(err)
+		return response.Error(c, rError)
+	}
+
+	input := activate_user_usecase.Input{UserID: rInput.UserID, Token: rInput.Token}
+
+	err = h.activateUserUseCase.Execute(c.UserContext(), input)
+	if err != nil {
+		rError := h.errorMapper.Map(err)
+		return response.Error(c, rError)
+	}
+
+	return c.SendStatus(http.StatusNoContent)
 }

@@ -35,6 +35,11 @@ func (em *errorMapper) mapError(err error) error {
 		return &e
 	}
 
+	var customErr *Error
+	if errors.As(err, &customErr) {
+		return customErr
+	}
+
 	var (
 		status = http.StatusInternalServerError
 		code   = codeUnknown
@@ -47,6 +52,10 @@ func (em *errorMapper) mapError(err error) error {
 		errors.Is(err, ErrInvalidToken):
 		status = http.StatusUnauthorized
 		code = codeUnauthorized
+	// Bad Request
+	case errors.Is(err, ErrBadRequest):
+		status = http.StatusBadRequest
+		code = codeBadRequest
 	default:
 		// Defaut: internal server error
 		code = codeUnknown

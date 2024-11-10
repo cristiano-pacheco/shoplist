@@ -1,4 +1,14 @@
 definitions:
+  activate_user_usecase.Input:
+    properties:
+      token:
+        type: string
+      user_id:
+        type: integer
+    required:
+    - token
+    - user_id
+    type: object
   create_user_usecase.Input:
     properties:
       email:
@@ -257,6 +267,34 @@ paths:
           schema:
             $ref: '#/definitions/errs.Error'
       summary: Update user
+      tags:
+      - Users
+  /api/v1/users/activate:
+    post:
+      consumes:
+      - application/json
+      description: Activates an existing user
+      parameters:
+      - description: User data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/activate_user_usecase.Input'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Successfully activated user
+        "400":
+          description: Invalid request format or validation error
+          schema:
+            $ref: '#/definitions/errs.Error'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/errs.Error'
+      summary: Activate user
       tags:
       - Users
 swagger: "2.0"

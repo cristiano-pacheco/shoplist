@@ -11,6 +11,7 @@ func RegisterUserHandler(
 	authMiddleware *auth_middleware.Middleware,
 ) {
 	r.Post("/users", userHandler.Store)
+	r.Post("/users/activate", userHandler.Activate)
 	r.Get("/users/:id", authMiddleware.Execute, userHandler.Show)
 	r.Put("/users/:id", authMiddleware.Execute, userHandler.Update)
 }

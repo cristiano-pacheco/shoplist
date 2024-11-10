@@ -44,5 +44,5 @@ func (r *accountConfirmationRepository) Delete(ctx context.Context, m model.Acco
 	t := telemetry.Get()
 	ctx, span := t.StartSpan(ctx, "account_confirmation_repository.delete")
 	defer span.End()
-	return r.db.WithContext(ctx).Delete(&m).Error
+	return r.db.WithContext(ctx).Where("user_id = ?", m.UserID).Delete(&m).Error
 }

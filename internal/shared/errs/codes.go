@@ -34,6 +34,9 @@ const (
 	// Data
 	codeInvalidState = "INVALID_STATE"
 
+	// Bad Request
+	codeBadRequest = "BAD_REQUEST"
+
 	// Unknown
 	codeUnknown = "UNKNOWN"
 )

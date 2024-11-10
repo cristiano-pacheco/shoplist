@@ -144,6 +144,49 @@
                 }
             }
         },
+        "/api/v1/users/activate": {
+            "post": {
+                "description": "Activates an existing user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Activate user",
+                "parameters": [
+                    {
+                        "description": "User data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/activate_user_usecase.Input"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successfully activated user"
+                    },
+                    "400": {
+                        "description": "Invalid request format or validation error",
+                        "schema": {
+                            "$ref": "#/definitions/errs.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/errs.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/users/{id}": {
             "get": {
                 "description": "Finds an existing user",
@@ -277,6 +320,21 @@
         }
     },
     "definitions": {
+        "activate_user_usecase.Input": {
+            "type": "object",
+            "required": [
+                "token",
+                "user_id"
+            ],
+            "properties": {
+                "token": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
         "create_user_usecase.Input": {
             "type": "object",
             "required": [
