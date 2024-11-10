@@ -1,8 +1,12 @@
 {
     "swagger": "2.0",
     "info": {
-        "contact": {}
+        "description": "Go modulith API",
+        "title": "Go modulith API",
+        "contact": {},
+        "version": "1.0"
     },
+    "basePath": "/",
     "paths": {
         "/api/v1/auth/token": {
             "post": {
@@ -177,6 +181,11 @@
         },
         "/api/v1/users/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Finds an existing user",
                 "consumes": [
                     "application/json"
@@ -237,6 +246,11 @@
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Updates an existing user",
                 "consumes": [
                     "application/json"
@@ -445,6 +459,14 @@
                     "type": "integer"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "description": "Enter your bearer token in the format **Bearer \u003ctoken\u003e**",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }

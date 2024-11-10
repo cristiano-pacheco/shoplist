@@ -1,3 +1,4 @@
+basePath: /
 definitions:
   activate_user_usecase.Input:
     properties:
@@ -98,6 +99,9 @@ definitions:
     type: object
 info:
   contact: {}
+  description: Go modulith API
+  title: Go modulith API
+  version: "1.0"
 paths:
   /api/v1/auth/token:
     post:
@@ -212,6 +216,8 @@ paths:
           description: Internal server error
           schema:
             $ref: '#/definitions/errs.Error'
+      security:
+      - BearerAuth: []
       summary: Find user
       tags:
       - Users
@@ -254,6 +260,8 @@ paths:
           description: Internal server error
           schema:
             $ref: '#/definitions/errs.Error'
+      security:
+      - BearerAuth: []
       summary: Update user
       tags:
       - Users
@@ -285,4 +293,10 @@ paths:
       summary: Activate user
       tags:
       - Users
+securityDefinitions:
+  BearerAuth:
+    description: Enter your bearer token in the format **Bearer <token>**
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

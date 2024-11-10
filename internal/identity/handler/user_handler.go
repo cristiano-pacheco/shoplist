@@ -77,6 +77,7 @@ func (h *UserHandler) Store(c *fiber.Ctx) error {
 // @Tags		Users
 // @Accept		json
 // @Produce		json
+// @Security 	BearerAuth
 // @Param		id		path	integer		true	"User ID"
 // @Param		request	body	update_user_usecase.Input	true	"User data"
 // @Success		204	{object}	response.Data	"Successfully updated user"
@@ -122,6 +123,7 @@ func (h *UserHandler) Update(c *fiber.Ctx) error {
 // @Tags		Users
 // @Accept		json
 // @Produce		json
+// @Security 	BearerAuth
 // @Param		id		path	integer		true	"User ID"
 // @Success		200	{object}	response.Data{data=find_user_usecase.Output}	"Successfully found user"
 // @Failure		401	{object}	errs.Error	"Invalid credentials"
