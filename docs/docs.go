@@ -128,20 +128,8 @@ const docTemplate = `{
                             ]
                         }
                     },
-                    "400": {
+                    "422": {
                         "description": "Invalid request format or validation error",
-                        "schema": {
-                            "$ref": "#/definitions/errs.Error"
-                        }
-                    },
-                    "401": {
-                        "description": "Invalid credentials",
-                        "schema": {
-                            "$ref": "#/definitions/errs.Error"
-                        }
-                    },
-                    "404": {
-                        "description": "User not found",
                         "schema": {
                             "$ref": "#/definitions/errs.Error"
                         }
@@ -239,12 +227,6 @@ const docTemplate = `{
                             ]
                         }
                     },
-                    "400": {
-                        "description": "Invalid request format or validation error",
-                        "schema": {
-                            "$ref": "#/definitions/errs.Error"
-                        }
-                    },
                     "401": {
                         "description": "Invalid credentials",
                         "schema": {
@@ -302,12 +284,6 @@ const docTemplate = `{
                             "$ref": "#/definitions/response.Data"
                         }
                     },
-                    "400": {
-                        "description": "Invalid request format or validation error",
-                        "schema": {
-                            "$ref": "#/definitions/errs.Error"
-                        }
-                    },
                     "401": {
                         "description": "Invalid credentials",
                         "schema": {
@@ -316,6 +292,12 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "User not found",
+                        "schema": {
+                            "$ref": "#/definitions/errs.Error"
+                        }
+                    },
+                    "422": {
+                        "description": "Invalid request format or validation error",
                         "schema": {
                             "$ref": "#/definitions/errs.Error"
                         }

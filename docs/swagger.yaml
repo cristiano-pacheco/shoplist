@@ -166,16 +166,8 @@ paths:
                 data:
                   $ref: '#/definitions/create_user_usecase.Output'
               type: object
-        "400":
+        "422":
           description: Invalid request format or validation error
-          schema:
-            $ref: '#/definitions/errs.Error'
-        "401":
-          description: Invalid credentials
-          schema:
-            $ref: '#/definitions/errs.Error'
-        "404":
-          description: User not found
           schema:
             $ref: '#/definitions/errs.Error'
         "500":
@@ -208,10 +200,6 @@ paths:
                 data:
                   $ref: '#/definitions/find_user_usecase.Output'
               type: object
-        "400":
-          description: Invalid request format or validation error
-          schema:
-            $ref: '#/definitions/errs.Error'
         "401":
           description: Invalid credentials
           schema:
@@ -250,16 +238,16 @@ paths:
           description: Successfully updated user
           schema:
             $ref: '#/definitions/response.Data'
-        "400":
-          description: Invalid request format or validation error
-          schema:
-            $ref: '#/definitions/errs.Error'
         "401":
           description: Invalid credentials
           schema:
             $ref: '#/definitions/errs.Error'
         "404":
           description: User not found
+          schema:
+            $ref: '#/definitions/errs.Error'
+        "422":
+          description: Invalid request format or validation error
           schema:
             $ref: '#/definitions/errs.Error'
         "500":

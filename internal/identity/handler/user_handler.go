@@ -45,9 +45,7 @@ func NewUserHandler(
 // @Produce		json
 // @Param		request	body	create_user_usecase.Input	true	"User data"
 // @Success		201	{object}	response.Data{data=create_user_usecase.Output}	"Successfully created user"
-// @Failure		400	{object}	errs.Error	"Invalid request format or validation error"
-// @Failure		401	{object}	errs.Error	"Invalid credentials"
-// @Failure		404	{object}	errs.Error	"User not found"
+// @Failure		422	{object}	errs.Error	"Invalid request format or validation error"
 // @Failure		500	{object}	errs.Error	"Internal server error"
 // @Router		/api/v1/users [post]
 func (h *UserHandler) Store(c *fiber.Ctx) error {
@@ -82,7 +80,7 @@ func (h *UserHandler) Store(c *fiber.Ctx) error {
 // @Param		id		path	integer		true	"User ID"
 // @Param		request	body	update_user_usecase.Input	true	"User data"
 // @Success		204	{object}	response.Data	"Successfully updated user"
-// @Failure		400	{object}	errs.Error	"Invalid request format or validation error"
+// @Failure		422	{object}	errs.Error	"Invalid request format or validation error"
 // @Failure		401	{object}	errs.Error	"Invalid credentials"
 // @Failure		404	{object}	errs.Error	"User not found"
 // @Failure		500	{object}	errs.Error	"Internal server error"
@@ -126,7 +124,6 @@ func (h *UserHandler) Update(c *fiber.Ctx) error {
 // @Produce		json
 // @Param		id		path	integer		true	"User ID"
 // @Success		200	{object}	response.Data{data=find_user_usecase.Output}	"Successfully found user"
-// @Failure		400	{object}	errs.Error	"Invalid request format or validation error"
 // @Failure		401	{object}	errs.Error	"Invalid credentials"
 // @Failure		404	{object}	errs.Error	"User not found"
 // @Failure		500	{object}	errs.Error	"Internal server error"

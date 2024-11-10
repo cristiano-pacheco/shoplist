@@ -117,20 +117,8 @@
                             ]
                         }
                     },
-                    "400": {
+                    "422": {
                         "description": "Invalid request format or validation error",
-                        "schema": {
-                            "$ref": "#/definitions/errs.Error"
-                        }
-                    },
-                    "401": {
-                        "description": "Invalid credentials",
-                        "schema": {
-                            "$ref": "#/definitions/errs.Error"
-                        }
-                    },
-                    "404": {
-                        "description": "User not found",
                         "schema": {
                             "$ref": "#/definitions/errs.Error"
                         }
@@ -228,12 +216,6 @@
                             ]
                         }
                     },
-                    "400": {
-                        "description": "Invalid request format or validation error",
-                        "schema": {
-                            "$ref": "#/definitions/errs.Error"
-                        }
-                    },
                     "401": {
                         "description": "Invalid credentials",
                         "schema": {
@@ -291,12 +273,6 @@
                             "$ref": "#/definitions/response.Data"
                         }
                     },
-                    "400": {
-                        "description": "Invalid request format or validation error",
-                        "schema": {
-                            "$ref": "#/definitions/errs.Error"
-                        }
-                    },
                     "401": {
                         "description": "Invalid credentials",
                         "schema": {
@@ -305,6 +281,12 @@
                     },
                     "404": {
                         "description": "User not found",
+                        "schema": {
+                            "$ref": "#/definitions/errs.Error"
+                        }
+                    },
+                    "422": {
+                        "description": "Invalid request format or validation error",
                         "schema": {
                             "$ref": "#/definitions/errs.Error"
                         }
