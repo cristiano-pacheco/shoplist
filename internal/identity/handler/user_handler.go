@@ -43,8 +43,8 @@ func NewUserHandler(
 // @Tags		Users
 // @Accept		json
 // @Produce		json
-// @Param		request	body	create_user_usecase.Input	true	"User data"
-// @Success		201	{object}	response.Data{data=create_user_usecase.Output}	"Successfully created user"
+// @Param		request	body	dto.CreateUserInputDTO	true	"User data"
+// @Success		201	{object}	response.Data{data=dto.CreateUserOutputDTO}	"Successfully created user"
 // @Failure		422	{object}	errs.Error	"Invalid request format or validation error"
 // @Failure		500	{object}	errs.Error	"Internal server error"
 // @Router		/api/v1/users [post]
@@ -79,7 +79,7 @@ func (h *UserHandler) Store(c *fiber.Ctx) error {
 // @Produce		json
 // @Security 	BearerAuth
 // @Param		id		path	integer		true	"User ID"
-// @Param		request	body	update_user_usecase.Input	true	"User data"
+// @Param		request	body	dto.UpdateUserInputDTO	true	"User data"
 // @Success		204	{object}	response.Data	"Successfully updated user"
 // @Failure		422	{object}	errs.Error	"Invalid request format or validation error"
 // @Failure		401	{object}	errs.Error	"Invalid credentials"
@@ -125,7 +125,7 @@ func (h *UserHandler) Update(c *fiber.Ctx) error {
 // @Produce		json
 // @Security 	BearerAuth
 // @Param		id		path	integer		true	"User ID"
-// @Success		200	{object}	response.Data{data=find_user_usecase.Output}	"Successfully found user"
+// @Success		200	{object}	response.Data{data=dto.FindUserOutputDTO}	"Successfully found user"
 // @Failure		401	{object}	errs.Error	"Invalid credentials"
 // @Failure		404	{object}	errs.Error	"User not found"
 // @Failure		500	{object}	errs.Error	"Internal server error"
@@ -162,7 +162,7 @@ func (h *UserHandler) Show(c *fiber.Ctx) error {
 // @Tags		Users
 // @Accept		json
 // @Produce		json
-// @Param		request	body	activate_user_usecase.Input	true	"User data"
+// @Param		request	body	dto.ActivateUserInputDTO	true	"User data"
 // @Success		204		"Successfully activated user"
 // @Failure		400	{object}	errs.Error	"Invalid request format or validation error"
 // @Failure		500	{object}	errs.Error	"Internal server error"

@@ -5,8 +5,8 @@ type Input struct {
 }
 
 type Output struct {
-	Name     string `json:"name"`
-	Email    string `json:"email"`
-	Password string `json:"-"`
-	UserID   uint64 `json:"user_id"`
+	UserID   uint64
+	Name     string
+	Email    string
+	Password string
 }

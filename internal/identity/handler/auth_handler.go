@@ -29,8 +29,8 @@ func NewAuthHandler(
 // @Tags		Authentication
 // @Accept		json
 // @Produce		json
-// @Param		request	body	generate_token_usecase.Input	true	"Login credentials (email and password)"
-// @Success		200	{object}	response.Data{data=string}	"Successfully generated token"
+// @Param		request	body	dto.GenerateTokenInputDTO	true	"Login credentials (email and password)"
+// @Success		200	{object}	response.Data{data=dto.GenerateTokenOutputDTO}	"Successfully generated token"
 // @Failure		400	{object}	errs.Error	"Invalid request format or validation error"
 // @Failure		401	{object}	errs.Error	"Invalid credentials"
 // @Failure		404	{object}	errs.Error	"User not found"

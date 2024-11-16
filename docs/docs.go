@@ -35,7 +35,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/generate_token_usecase.Input"
+                            "$ref": "#/definitions/dto.GenerateTokenInputDTO"
                         }
                     }
                 ],
@@ -51,7 +51,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "type": "string"
+                                            "$ref": "#/definitions/dto.GenerateTokenOutputDTO"
                                         }
                                     }
                                 }
@@ -105,7 +105,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/create_user_usecase.Input"
+                            "$ref": "#/definitions/dto.CreateUserInputDTO"
                         }
                     }
                 ],
@@ -121,7 +121,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/create_user_usecase.Output"
+                                            "$ref": "#/definitions/dto.CreateUserOutputDTO"
                                         }
                                     }
                                 }
@@ -163,7 +163,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/activate_user_usecase.Input"
+                            "$ref": "#/definitions/dto.ActivateUserInputDTO"
                         }
                     }
                 ],
@@ -225,7 +225,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/find_user_usecase.Output"
+                                            "$ref": "#/definitions/dto.FindUserOutputDTO"
                                         }
                                     }
                                 }
@@ -283,7 +283,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/update_user_usecase.Input"
+                            "$ref": "#/definitions/dto.UpdateUserInputDTO"
                         }
                     }
                 ],
@@ -323,12 +323,8 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "activate_user_usecase.Input": {
+        "dto.ActivateUserInputDTO": {
             "type": "object",
-            "required": [
-                "token",
-                "user_id"
-            ],
             "properties": {
                 "token": {
                     "type": "string"
@@ -338,29 +334,21 @@ const docTemplate = `{
                 }
             }
         },
-        "create_user_usecase.Input": {
+        "dto.CreateUserInputDTO": {
             "type": "object",
-            "required": [
-                "email",
-                "name",
-                "password"
-            ],
             "properties": {
                 "email": {
                     "type": "string"
                 },
                 "name": {
-                    "type": "string",
-                    "maxLength": 255,
-                    "minLength": 3
+                    "type": "string"
                 },
                 "password": {
-                    "type": "string",
-                    "minLength": 8
+                    "type": "string"
                 }
             }
         },
-        "create_user_usecase.Output": {
+        "dto.CreateUserOutputDTO": {
             "type": "object",
             "properties": {
                 "email": {
@@ -371,6 +359,47 @@ const docTemplate = `{
                 },
                 "user_id": {
                     "type": "integer"
+                }
+            }
+        },
+        "dto.FindUserOutputDTO": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.GenerateTokenInputDTO": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.GenerateTokenOutputDTO": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.UpdateUserInputDTO": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
                 }
             }
         },
@@ -410,61 +439,10 @@ const docTemplate = `{
                 }
             }
         },
-        "find_user_usecase.Output": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "user_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "generate_token_usecase.Input": {
-            "type": "object",
-            "required": [
-                "email",
-                "password"
-            ],
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                }
-            }
-        },
         "response.Data": {
             "type": "object",
             "properties": {
                 "data": {}
-            }
-        },
-        "update_user_usecase.Input": {
-            "type": "object",
-            "required": [
-                "name",
-                "password",
-                "userID"
-            ],
-            "properties": {
-                "name": {
-                    "type": "string",
-                    "maxLength": 255,
-                    "minLength": 3
-                },
-                "password": {
-                    "type": "string",
-                    "minLength": 8
-                },
-                "userID": {
-                    "type": "integer"
-                }
             }
         }
     },

@@ -1,32 +1,22 @@
 basePath: /
 definitions:
-  activate_user_usecase.Input:
+  dto.ActivateUserInputDTO:
     properties:
       token:
         type: string
       user_id:
         type: integer
-    required:
-    - token
-    - user_id
     type: object
-  create_user_usecase.Input:
+  dto.CreateUserInputDTO:
     properties:
       email:
         type: string
       name:
-        maxLength: 255
-        minLength: 3
         type: string
       password:
-        minLength: 8
         type: string
-    required:
-    - email
-    - name
-    - password
     type: object
-  create_user_usecase.Output:
+  dto.CreateUserOutputDTO:
     properties:
       email:
         type: string
@@ -34,6 +24,32 @@ definitions:
         type: string
       user_id:
         type: integer
+    type: object
+  dto.FindUserOutputDTO:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+    type: object
+  dto.GenerateTokenInputDTO:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  dto.GenerateTokenOutputDTO:
+    properties:
+      token:
+        type: string
+    type: object
+  dto.UpdateUserInputDTO:
+    properties:
+      name:
+        type: string
+      password:
+        type: string
     type: object
   errs.Error:
     properties:
@@ -58,44 +74,9 @@ definitions:
       message:
         type: string
     type: object
-  find_user_usecase.Output:
-    properties:
-      email:
-        type: string
-      name:
-        type: string
-      user_id:
-        type: integer
-    type: object
-  generate_token_usecase.Input:
-    properties:
-      email:
-        type: string
-      password:
-        type: string
-    required:
-    - email
-    - password
-    type: object
   response.Data:
     properties:
       data: {}
-    type: object
-  update_user_usecase.Input:
-    properties:
-      name:
-        maxLength: 255
-        minLength: 3
-        type: string
-      password:
-        minLength: 8
-        type: string
-      userID:
-        type: integer
-    required:
-    - name
-    - password
-    - userID
     type: object
 info:
   contact: {}
@@ -114,7 +95,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/generate_token_usecase.Input'
+          $ref: '#/definitions/dto.GenerateTokenInputDTO'
       produces:
       - application/json
       responses:
@@ -125,7 +106,7 @@ paths:
             - $ref: '#/definitions/response.Data'
             - properties:
                 data:
-                  type: string
+                  $ref: '#/definitions/dto.GenerateTokenOutputDTO'
               type: object
         "400":
           description: Invalid request format or validation error
@@ -157,7 +138,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/create_user_usecase.Input'
+          $ref: '#/definitions/dto.CreateUserInputDTO'
       produces:
       - application/json
       responses:
@@ -168,7 +149,7 @@ paths:
             - $ref: '#/definitions/response.Data'
             - properties:
                 data:
-                  $ref: '#/definitions/create_user_usecase.Output'
+                  $ref: '#/definitions/dto.CreateUserOutputDTO'
               type: object
         "422":
           description: Invalid request format or validation error
@@ -202,7 +183,7 @@ paths:
             - $ref: '#/definitions/response.Data'
             - properties:
                 data:
-                  $ref: '#/definitions/find_user_usecase.Output'
+                  $ref: '#/definitions/dto.FindUserOutputDTO'
               type: object
         "401":
           description: Invalid credentials
@@ -236,7 +217,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/update_user_usecase.Input'
+          $ref: '#/definitions/dto.UpdateUserInputDTO'
       produces:
       - application/json
       responses:
@@ -276,7 +257,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/activate_user_usecase.Input'
+          $ref: '#/definitions/dto.ActivateUserInputDTO'
       produces:
       - application/json
       responses:
