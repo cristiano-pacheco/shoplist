@@ -19,7 +19,7 @@ type categoryRepository struct {
 	db *database.DB
 }
 
-func NewcategoryRepository(db *database.DB) CategoryRepositoryI {
+func NewCategoryRepository(db *database.DB) CategoryRepositoryI {
 	return &categoryRepository{db}
 }
 
