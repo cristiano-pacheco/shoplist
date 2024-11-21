@@ -67,6 +67,8 @@ func (m *Middleware) Execute(c *fiber.Ctx) error {
 		return m.handleError(c, errs.ErrInvalidToken)
 	}
 
+	c.Locals("user_id", userID)
+
 	return c.Next()
 }
 
