@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 
-	"github.com/cristiano-pacheco/go-modulith/internal/buylist/model"
+	"github.com/cristiano-pacheco/go-modulith/internal/modules/list/model"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/database"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/errs"
 )
@@ -16,10 +16,10 @@ type CategoryRepositoryI interface {
 }
 
 type categoryRepository struct {
-	db *database.DB
+	db *database.ShoplistDB
 }
 
-func NewCategoryRepository(db *database.DB) CategoryRepositoryI {
+func NewCategoryRepository(db *database.ShoplistDB) CategoryRepositoryI {
 	return &categoryRepository{db}
 }
 

@@ -1,24 +1,26 @@
 package handler
 
 import (
-	"github.com/cristiano-pacheco/go-modulith/internal/buylist/dto"
-	"github.com/cristiano-pacheco/go-modulith/internal/buylist/usecase/category/create_category_usecase"
-	"github.com/cristiano-pacheco/go-modulith/internal/buylist/usecase/category/find_category_usecase"
+	"github.com/cristiano-pacheco/go-modulith/internal/modules/list/dto"
+	"github.com/cristiano-pacheco/go-modulith/internal/modules/list/usecase/category/create_category_usecase"
+	"github.com/cristiano-pacheco/go-modulith/internal/modules/list/usecase/category/find_category_usecase"
 	"github.com/gofiber/fiber/v2"
 )
 
 type CategoryHandler struct {
 	createCategoryUseCase create_category_usecase.UseCaseI
+	findCategoriesUseCase find_category_usecase.UseCaseI
 }
 
 func NewCategoryHandler(
 	createCategoryUseCase create_category_usecase.UseCaseI,
+	findCategoriesUseCase find_category_usecase.UseCaseI,
 ) *CategoryHandler {
-	return &CategoryHandler{createCategoryUseCase}
+	return &CategoryHandler{createCategoryUseCase, findCategoriesUseCase}
 }
 
-func (h *CategoryHandler) CreateCategory(c *fiber.Ctx) error {
-	var request dto.CreateCategoryRequestDTO
+func (h *CategoryHandler) Create(c *fiber.Ctx) error {
+	var request dto.CreateCategoryRequest
 
 	err := c.BodyParser(&request)
 	if err != nil {
@@ -40,12 +42,12 @@ func (h *CategoryHandler) CreateCategory(c *fiber.Ctx) error {
 		return c.SendStatus(fiber.StatusInternalServerError)
 	}
 
-	response := dto.CreateCategoryResponseDTO{
+	res := dto.CreateCategoryResponse{
 		ID:   output.CategoryModel.ID,
 		Name: output.CategoryModel.Name,
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(response)
+	return c.Status(fiber.StatusCreated).JSON(res)
 }
 
 func (h *CategoryHandler) GetCategories(c *fiber.Ctx) error {
@@ -58,5 +60,10 @@ func (h *CategoryHandler) GetCategories(c *fiber.Ctx) error {
 		UserID: userID,
 	}
 
-	output, err := h.getCategoriesUseCase.Execute(c.UserContext(), input)
+	output, err := h.findCategoriesUseCase.Execute(c.UserContext(), input)
+	if err != nil {
+		return c.SendStatus(fiber.StatusInternalServerError)
+	}
+
+	return c.Status(fiber.StatusOK).JSON(output)
 }

@@ -1,6 +1,6 @@
 package create_category_usecase
 
-import "github.com/cristiano-pacheco/go-modulith/internal/buylist/model"
+import "github.com/cristiano-pacheco/go-modulith/internal/modules/list/model"
 
 type Input struct {
 	UserID uint64 `validate:"required"`

@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/config"
+	"github.com/cristiano-pacheco/go-modulith/pkg/database"
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
@@ -20,7 +21,19 @@ var dbMigrateCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		config.Init()
 		cfg := config.GetConfig()
-		dsn := config.GeneratePostgresDatabaseDSN(cfg)
+		dbConfig := database.DatabaseConfig{
+			Host:               cfg.DB.Host,
+			User:               cfg.DB.User,
+			Password:           cfg.DB.Password,
+			Name:               cfg.DB.Name,
+			Port:               cfg.DB.Port,
+			MaxOpenConnections: cfg.DB.MaxOpenConnections,
+			MaxIdleConnections: cfg.DB.MaxIdleConnections,
+			SSLMode:            cfg.DB.SSLMode,
+			PrepareSTMT:        cfg.DB.PrepareSTMT,
+			EnableLogs:         cfg.DB.EnableLogs,
+		}
+		dsn := database.GeneratePostgresDatabaseDSN(dbConfig)
 
 		m, err := migrate.New("file://migrations", dsn)
 		if err != nil {

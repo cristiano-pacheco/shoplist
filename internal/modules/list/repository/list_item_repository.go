@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 
-	"github.com/cristiano-pacheco/go-modulith/internal/buylist/model"
+	"github.com/cristiano-pacheco/go-modulith/internal/modules/list/model"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/database"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/errs"
 )
@@ -16,10 +16,10 @@ type ListItemRepositoryI interface {
 }
 
 type listItemRepository struct {
-	db *database.DB
+	db *database.ShoplistDB
 }
 
-func NewListItemRepository(db *database.DB) ListItemRepositoryI {
+func NewListItemRepository(db *database.ShoplistDB) ListItemRepositoryI {
 	return &listItemRepository{db}
 }
 

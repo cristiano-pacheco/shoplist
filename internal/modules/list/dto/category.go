@@ -1,10 +1,10 @@
 package dto
 
-type CreateCategoryRequestDTO struct {
+type CreateCategoryRequest struct {
 	Name string `json:"name"`
 }
 
-type CreateCategoryResponseDTO struct {
+type CreateCategoryResponse struct {
 	ID   uint64 `json:"id"`
 	Name string `json:"name"`
 }

@@ -65,3 +65,14 @@ func generateGormDatabaseDSN(cfg DatabaseConfig) string {
 
 	return dsn
 }
+
+func GeneratePostgresDatabaseDSN(cfg DatabaseConfig) string {
+	return fmt.Sprintf(
+		"postgres://%s:%s@%s:%d/%s?sslmode=disable&TimeZone=UTC",
+		cfg.User,
+		cfg.Password,
+		cfg.Host,
+		cfg.Port,
+		cfg.Name,
+	)
+}

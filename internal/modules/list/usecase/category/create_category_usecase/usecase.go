@@ -3,8 +3,8 @@ package create_category_usecase
 import (
 	"context"
 
-	"github.com/cristiano-pacheco/go-modulith/internal/buylist/model"
-	"github.com/cristiano-pacheco/go-modulith/internal/buylist/repository"
+	"github.com/cristiano-pacheco/go-modulith/internal/modules/list/model"
+	"github.com/cristiano-pacheco/go-modulith/internal/modules/list/repository"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/validator"
 )
 

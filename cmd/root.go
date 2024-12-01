@@ -3,7 +3,8 @@ package cmd
 import (
 	"os"
 
-	"github.com/cristiano-pacheco/go-modulith/internal/identity"
+	"github.com/cristiano-pacheco/go-modulith/internal/modules/identity"
+	"github.com/cristiano-pacheco/go-modulith/internal/modules/list"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared"
 	"github.com/spf13/cobra"
 	"go.uber.org/fx"
@@ -18,6 +19,7 @@ var rootCmd = &cobra.Command{
 		app := fx.New(
 			shared.Module,
 			identity.Module,
+			list.Module,
 		)
 		app.Run()
 	},
