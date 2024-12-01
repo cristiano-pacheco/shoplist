@@ -5,9 +5,9 @@ import (
 	"encoding/base64"
 	"fmt"
 
-	"github.com/cristiano-pacheco/go-modulith/internal/identity/model"
-	"github.com/cristiano-pacheco/go-modulith/internal/identity/repository"
-	"github.com/cristiano-pacheco/go-modulith/internal/identity/service/hash_service"
+	"github.com/cristiano-pacheco/go-modulith/internal/modules/identity/model"
+	"github.com/cristiano-pacheco/go-modulith/internal/modules/identity/repository"
+	"github.com/cristiano-pacheco/go-modulith/internal/modules/identity/service/hash_service"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/config"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/logger"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/mailer"

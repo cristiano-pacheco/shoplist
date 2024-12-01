@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/cristiano-pacheco/go-modulith/internal/identity/model"
+	"github.com/cristiano-pacheco/go-modulith/internal/modules/identity/model"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/config"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/logger"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/registry/privatekey_registry"

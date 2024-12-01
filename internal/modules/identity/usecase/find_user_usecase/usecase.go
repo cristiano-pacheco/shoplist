@@ -3,7 +3,7 @@ package find_user_usecase
 import (
 	"context"
 
-	"github.com/cristiano-pacheco/go-modulith/internal/identity/repository"
+	"github.com/cristiano-pacheco/go-modulith/internal/modules/identity/repository"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/logger"
 )
 

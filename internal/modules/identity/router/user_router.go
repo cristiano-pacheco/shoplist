@@ -1,7 +1,7 @@
 package router
 
 import (
-	"github.com/cristiano-pacheco/go-modulith/internal/identity/handler"
+	"github.com/cristiano-pacheco/go-modulith/internal/modules/identity/handler"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/http/middleware/auth_middleware"
 )
 

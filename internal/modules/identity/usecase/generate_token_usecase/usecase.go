@@ -3,9 +3,9 @@ package generate_token_usecase
 import (
 	"context"
 
-	"github.com/cristiano-pacheco/go-modulith/internal/identity/repository"
-	"github.com/cristiano-pacheco/go-modulith/internal/identity/service/generate_token_service"
-	"github.com/cristiano-pacheco/go-modulith/internal/identity/service/hash_service"
+	"github.com/cristiano-pacheco/go-modulith/internal/modules/identity/repository"
+	"github.com/cristiano-pacheco/go-modulith/internal/modules/identity/service/generate_token_service"
+	"github.com/cristiano-pacheco/go-modulith/internal/modules/identity/service/hash_service"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/errs"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/telemetry"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/validator"

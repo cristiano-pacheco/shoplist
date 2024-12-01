@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/cristiano-pacheco/go-modulith/internal/identity/repository"
+	"github.com/cristiano-pacheco/go-modulith/internal/modules/identity/repository"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/errs"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/logger"
 )
