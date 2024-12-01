@@ -3,6 +3,7 @@ package handler
 import (
 	"github.com/cristiano-pacheco/go-modulith/internal/buylist/dto"
 	"github.com/cristiano-pacheco/go-modulith/internal/buylist/usecase/category/create_category_usecase"
+	"github.com/cristiano-pacheco/go-modulith/internal/buylist/usecase/category/find_category_usecase"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -45,4 +46,17 @@ func (h *CategoryHandler) CreateCategory(c *fiber.Ctx) error {
 	}
 
 	return c.Status(fiber.StatusCreated).JSON(response)
+}
+
+func (h *CategoryHandler) GetCategories(c *fiber.Ctx) error {
+	userID, ok := c.Locals("user_id").(uint64)
+	if !ok {
+		return c.SendStatus(fiber.StatusUnauthorized)
+	}
+
+	input := find_category_usecase.Input{
+		UserID: userID,
+	}
+
+	output, err := h.getCategoriesUseCase.Execute(c.UserContext(), input)
 }

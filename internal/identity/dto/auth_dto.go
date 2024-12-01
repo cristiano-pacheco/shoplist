@@ -1,10 +1,10 @@
 package dto
 
-type GenerateTokenInputDTO struct {
+type GenerateTokenRequest struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
-type GenerateTokenOutputDTO struct {
+type GenerateTokenResponse struct {
 	Token string `json:"token"`
 }
