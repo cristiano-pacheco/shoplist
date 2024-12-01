@@ -11,18 +11,20 @@ func IsEmpty(v interface{}) bool {
 	}
 
 	value := reflect.ValueOf(v)
+	return isEmptyValue(value)
+}
 
+// isEmptyValue handles the emptiness check for a reflect.Value
+func isEmptyValue(value reflect.Value) bool {
 	switch value.Kind() {
-	case reflect.String:
-		return len(value.String()) == 0
+	case reflect.String, reflect.Array, reflect.Slice, reflect.Map:
+		return value.Len() == 0
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		return value.Int() == 0
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 		return value.Uint() == 0
 	case reflect.Float32, reflect.Float64:
 		return value.Float() == 0
-	case reflect.Array, reflect.Slice, reflect.Map:
-		return value.Len() == 0
 	case reflect.Bool:
 		return !value.Bool()
 	case reflect.Chan:
@@ -30,11 +32,16 @@ func IsEmpty(v interface{}) bool {
 	case reflect.Struct:
 		return false // Structs are considered non-empty by default
 	case reflect.Ptr:
-		if value.IsNil() {
-			return true
-		}
-		return IsEmpty(value.Elem().Interface())
+		return isEmptyPointer(value)
 	default:
 		return true
 	}
+}
+
+// isEmptyPointer handles the emptiness check for pointer values
+func isEmptyPointer(value reflect.Value) bool {
+	if value.IsNil() {
+		return true
+	}
+	return IsEmpty(value.Elem().Interface())
 }

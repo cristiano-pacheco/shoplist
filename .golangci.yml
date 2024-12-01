@@ -30,7 +30,7 @@ linters-settings:
           - "!$test"
         allow:
           - $gostd
-          - "github.com/cristiano-pacheco/go-modulith"
+          - "github.com/cristiano-pacheco/shoplist"
           - "github.com/go-playground/validator"
           - "github.com/spf13/cobra"
           - "github.com/gofiber/fiber"
@@ -43,3 +43,4 @@ linters-settings:
           - "github.com/joho/godotenv"
           - "github.com/caarlos0/env"
           - "github.com/go-mail/mail/v2"
+          - "github.com/gofiber/swagger"

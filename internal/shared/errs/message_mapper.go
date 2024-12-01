@@ -1,7 +1,5 @@
 package errs
 
-type messageMapper map[string]string
-
 var mapping = map[string]string{
 	// Authentication & Authorization
 	codeUnauthorized: "Unauthorized request",

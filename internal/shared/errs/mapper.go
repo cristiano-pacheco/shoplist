@@ -42,7 +42,7 @@ func (em *errorMapper) mapError(err error) error {
 
 	var (
 		status = http.StatusInternalServerError
-		code   = codeUnknown
+		code   string
 	)
 
 	switch {
@@ -57,7 +57,7 @@ func (em *errorMapper) mapError(err error) error {
 		status = http.StatusBadRequest
 		code = codeBadRequest
 	default:
-		// Defaut: internal server error
+		// Default: internal server error
 		code = codeUnknown
 	}
 
