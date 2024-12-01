@@ -11,7 +11,7 @@ type isUserEnabledQuery struct {
 	db *gorm.DB
 }
 
-func newIsUserEnabledQuery(db *database.DB) *isUserEnabledQuery {
+func newIsUserEnabledQuery(db *database.ShoplistDB) *isUserEnabledQuery {
 	return &isUserEnabledQuery{db.DB}
 }
 

@@ -14,7 +14,7 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-func NewDBMock(t *testing.T) (*sql.DB, *database.DB, sqlmock.Sqlmock) {
+func NewDBMock(t *testing.T) (*sql.DB, *database.ShoplistDB, sqlmock.Sqlmock) {
 	sqldb, mock, err := sqlmock.New()
 	assert.NoError(t, err)
 

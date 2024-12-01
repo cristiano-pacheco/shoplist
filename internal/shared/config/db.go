@@ -1,11 +1,11 @@
 package config
 
 type DB struct {
-	DBHost             string `env:"HOST" envDefault:"localhost"`
-	DBName             string `env:"NAME" envDefault:"controlweb"`
-	DBUser             string `env:"USER" envDefault:"postgres"`
-	DBPassword         string `env:"PASSWORD" envDefault:"postgres"`
-	DBPort             uint   `env:"PORT" envDefault:"5432"`
+	Host               string `env:"HOST" envDefault:"localhost"`
+	Name               string `env:"NAME" envDefault:"shoplist"`
+	User               string `env:"USER" envDefault:"postgres"`
+	Password           string `env:"PASSWORD" envDefault:"postgres"`
+	Port               uint   `env:"PORT" envDefault:"5432"`
 	MaxOpenConnections int    `env:"MAX_OPEN_CONNECTIONS" envDefault:"10"`
 	MaxIdleConnections int    `env:"MAX_IDLE_CONNECTIONS" envDefault:"10"`
 	SSLMode            bool   `env:"SSL_MODE" envDefault:"false"`

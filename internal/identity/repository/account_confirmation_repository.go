@@ -15,10 +15,10 @@ type AccountConfirmationRepositoryI interface {
 }
 
 type accountConfirmationRepository struct {
-	db *database.DB
+	db *database.ShoplistDB
 }
 
-func NewAccountConfirmationRepository(db *database.DB) AccountConfirmationRepositoryI {
+func NewAccountConfirmationRepository(db *database.ShoplistDB) AccountConfirmationRepositoryI {
 	return &accountConfirmationRepository{db}
 }
 

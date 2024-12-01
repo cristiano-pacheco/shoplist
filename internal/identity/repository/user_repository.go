@@ -18,10 +18,10 @@ type UserRepositoryI interface {
 }
 
 type userRepository struct {
-	db *database.DB
+	db *database.ShoplistDB
 }
 
-func NewUserRepository(db *database.DB) UserRepositoryI {
+func NewUserRepository(db *database.ShoplistDB) UserRepositoryI {
 	return &userRepository{db}
 }
 
