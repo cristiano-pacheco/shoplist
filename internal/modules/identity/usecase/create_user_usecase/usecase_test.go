@@ -6,10 +6,10 @@ package create_user_usecase
 // 	"testing"
 // 	"time"
 
-// 	"github.com/cristiano-pacheco/go-modulith/internal/module/identity/repository/mocks"
-// 	hashservice_mocks "github.com/cristiano-pacheco/go-modulith/internal/module/identity/service/hashservice/mocks"
-// 	"github.com/cristiano-pacheco/go-modulith/internal/shared/model"
-// 	validator_mocks "github.com/cristiano-pacheco/go-modulith/internal/shared/validator/mocks"
+// 	"github.com/cristiano-pacheco/shoplist/internal/module/identity/repository/mocks"
+// 	hashservice_mocks "github.com/cristiano-pacheco/shoplist/internal/module/identity/service/hashservice/mocks"
+// 	"github.com/cristiano-pacheco/shoplist/internal/shared/model"
+// 	validator_mocks "github.com/cristiano-pacheco/shoplist/internal/shared/validator/mocks"
 // 	"github.com/stretchr/testify/assert"
 // )
 

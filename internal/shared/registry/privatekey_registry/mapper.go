@@ -5,7 +5,7 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 
-	"github.com/cristiano-pacheco/go-modulith/internal/shared/errs"
+	"github.com/cristiano-pacheco/shoplist/internal/shared/errs"
 )
 
 func mapPEMToRSAPrivateKey(key []byte) (*rsa.PrivateKey, error) {

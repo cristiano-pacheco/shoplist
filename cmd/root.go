@@ -3,9 +3,9 @@ package cmd
 import (
 	"os"
 
-	"github.com/cristiano-pacheco/go-modulith/internal/modules/identity"
-	"github.com/cristiano-pacheco/go-modulith/internal/modules/list"
-	"github.com/cristiano-pacheco/go-modulith/internal/shared"
+	"github.com/cristiano-pacheco/shoplist/internal/modules/identity"
+	"github.com/cristiano-pacheco/shoplist/internal/modules/list"
+	"github.com/cristiano-pacheco/shoplist/internal/shared"
 	"github.com/spf13/cobra"
 	"go.uber.org/fx"
 )

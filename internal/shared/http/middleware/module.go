@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"github.com/cristiano-pacheco/go-modulith/internal/shared/http/middleware/auth_middleware"
+	"github.com/cristiano-pacheco/shoplist/internal/shared/http/middleware/auth_middleware"
 	"go.uber.org/fx"
 )
 

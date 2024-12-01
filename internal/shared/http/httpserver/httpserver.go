@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	_ "github.com/cristiano-pacheco/go-modulith/docs"
-	"github.com/cristiano-pacheco/go-modulith/internal/shared/config"
+	_ "github.com/cristiano-pacheco/shoplist/docs"
+	"github.com/cristiano-pacheco/shoplist/internal/shared/config"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/healthcheck"
 	"github.com/gofiber/fiber/v2/middleware/recover"

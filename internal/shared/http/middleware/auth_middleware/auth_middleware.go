@@ -5,10 +5,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/cristiano-pacheco/go-modulith/internal/shared/dto"
-	"github.com/cristiano-pacheco/go-modulith/internal/shared/errs"
-	"github.com/cristiano-pacheco/go-modulith/internal/shared/http/response"
-	"github.com/cristiano-pacheco/go-modulith/internal/shared/registry/privatekey_registry"
+	"github.com/cristiano-pacheco/shoplist/internal/shared/dto"
+	"github.com/cristiano-pacheco/shoplist/internal/shared/errs"
+	"github.com/cristiano-pacheco/shoplist/internal/shared/http/response"
+	"github.com/cristiano-pacheco/shoplist/internal/shared/registry/privatekey_registry"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
 )

@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/cristiano-pacheco/go-modulith/cmd"
-	"github.com/cristiano-pacheco/go-modulith/internal/shared/config"
-	"github.com/cristiano-pacheco/go-modulith/internal/shared/telemetry"
+	"github.com/cristiano-pacheco/shoplist/cmd"
+	"github.com/cristiano-pacheco/shoplist/internal/shared/config"
+	"github.com/cristiano-pacheco/shoplist/internal/shared/telemetry"
 )
 
 // @title           Go modulith API

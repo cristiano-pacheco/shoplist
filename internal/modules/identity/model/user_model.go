@@ -1,6 +1,6 @@
 package model
 
-import "github.com/cristiano-pacheco/go-modulith/internal/shared/model"
+import "github.com/cristiano-pacheco/shoplist/internal/shared/model"
 
 type UserModel struct {
 	model.Base

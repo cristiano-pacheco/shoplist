@@ -3,7 +3,7 @@ package auth_middleware
 import (
 	"context"
 
-	"github.com/cristiano-pacheco/go-modulith/internal/shared/database"
+	"github.com/cristiano-pacheco/shoplist/internal/shared/database"
 	"gorm.io/gorm"
 )
 

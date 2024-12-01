@@ -1,7 +1,7 @@
 package errs
 
 import (
-	"github.com/cristiano-pacheco/go-modulith/internal/shared/validator"
+	"github.com/cristiano-pacheco/shoplist/internal/shared/validator"
 	ut "github.com/go-playground/universal-translator"
 )
 

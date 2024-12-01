@@ -3,8 +3,8 @@ package find_user_usecase
 import (
 	"context"
 
-	"github.com/cristiano-pacheco/go-modulith/internal/modules/identity/repository"
-	"github.com/cristiano-pacheco/go-modulith/internal/shared/logger"
+	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/repository"
+	"github.com/cristiano-pacheco/shoplist/internal/shared/logger"
 )
 
 type UseCase struct {

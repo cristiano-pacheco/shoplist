@@ -3,9 +3,9 @@ package create_category_usecase
 import (
 	"context"
 
-	"github.com/cristiano-pacheco/go-modulith/internal/modules/list/model"
-	"github.com/cristiano-pacheco/go-modulith/internal/modules/list/repository"
-	"github.com/cristiano-pacheco/go-modulith/internal/shared/validator"
+	"github.com/cristiano-pacheco/shoplist/internal/modules/list/model"
+	"github.com/cristiano-pacheco/shoplist/internal/modules/list/repository"
+	"github.com/cristiano-pacheco/shoplist/internal/shared/validator"
 )
 
 type UseCaseI interface {

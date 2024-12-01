@@ -3,7 +3,7 @@ package response
 import (
 	"net/http"
 
-	"github.com/cristiano-pacheco/go-modulith/internal/shared/errs"
+	"github.com/cristiano-pacheco/shoplist/internal/shared/errs"
 	"github.com/gofiber/fiber/v2"
 )
 

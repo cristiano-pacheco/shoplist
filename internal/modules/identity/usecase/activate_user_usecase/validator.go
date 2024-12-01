@@ -1,8 +1,8 @@
 package activate_user_usecase
 
 import (
-	"github.com/cristiano-pacheco/go-modulith/internal/shared/errs"
-	"github.com/cristiano-pacheco/go-modulith/internal/shared/sdk/empty"
+	"github.com/cristiano-pacheco/shoplist/internal/shared/errs"
+	"github.com/cristiano-pacheco/shoplist/internal/shared/sdk/empty"
 )
 
 func validateInput(input Input) error {

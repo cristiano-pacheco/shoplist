@@ -3,10 +3,10 @@ package repository
 import (
 	"context"
 
-	"github.com/cristiano-pacheco/go-modulith/internal/modules/identity/model"
-	"github.com/cristiano-pacheco/go-modulith/internal/shared/database"
-	"github.com/cristiano-pacheco/go-modulith/internal/shared/errs"
-	"github.com/cristiano-pacheco/go-modulith/internal/shared/telemetry"
+	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/model"
+	"github.com/cristiano-pacheco/shoplist/internal/shared/database"
+	"github.com/cristiano-pacheco/shoplist/internal/shared/errs"
+	"github.com/cristiano-pacheco/shoplist/internal/shared/telemetry"
 )
 
 type UserRepositoryI interface {

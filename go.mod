@@ -1,4 +1,4 @@
-module github.com/cristiano-pacheco/go-modulith
+module github.com/cristiano-pacheco/shoplist
 
 go 1.23.2
 

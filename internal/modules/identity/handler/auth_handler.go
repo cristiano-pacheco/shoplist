@@ -3,10 +3,10 @@ package handler
 import (
 	"net/http"
 
-	"github.com/cristiano-pacheco/go-modulith/internal/modules/identity/dto"
-	"github.com/cristiano-pacheco/go-modulith/internal/modules/identity/usecase/generate_token_usecase"
-	"github.com/cristiano-pacheco/go-modulith/internal/shared/errs"
-	"github.com/cristiano-pacheco/go-modulith/internal/shared/http/response"
+	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/dto"
+	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/usecase/generate_token_usecase"
+	"github.com/cristiano-pacheco/shoplist/internal/shared/errs"
+	"github.com/cristiano-pacheco/shoplist/internal/shared/http/response"
 	"github.com/gofiber/fiber/v2"
 )
 

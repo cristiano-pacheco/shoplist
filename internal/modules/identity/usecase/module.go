@@ -1,11 +1,11 @@
 package usecase
 
 import (
-	"github.com/cristiano-pacheco/go-modulith/internal/modules/identity/usecase/activate_user_usecase"
-	"github.com/cristiano-pacheco/go-modulith/internal/modules/identity/usecase/create_user_usecase"
-	"github.com/cristiano-pacheco/go-modulith/internal/modules/identity/usecase/find_user_usecase"
-	"github.com/cristiano-pacheco/go-modulith/internal/modules/identity/usecase/generate_token_usecase"
-	"github.com/cristiano-pacheco/go-modulith/internal/modules/identity/usecase/update_user_usecase"
+	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/usecase/activate_user_usecase"
+	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/usecase/create_user_usecase"
+	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/usecase/find_user_usecase"
+	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/usecase/generate_token_usecase"
+	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/usecase/update_user_usecase"
 	"go.uber.org/fx"
 )
 

@@ -9,8 +9,8 @@ package repository
 // 	"time"
 
 // 	"github.com/DATA-DOG/go-sqlmock"
-// 	"github.com/cristiano-pacheco/go-modulith/internal/shared/model"
-// 	"github.com/cristiano-pacheco/go-modulith/internal/shared/test/dbtest"
+// 	"github.com/cristiano-pacheco/shoplist/internal/shared/model"
+// 	"github.com/cristiano-pacheco/shoplist/internal/shared/test/dbtest"
 // 	"github.com/stretchr/testify/assert"
 // )
 

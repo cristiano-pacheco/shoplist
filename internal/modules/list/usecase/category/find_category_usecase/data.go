@@ -1,6 +1,6 @@
 package find_category_usecase
 
-import "github.com/cristiano-pacheco/go-modulith/internal/modules/list/model"
+import "github.com/cristiano-pacheco/shoplist/internal/modules/list/model"
 
 type Input struct {
 	UserID uint64

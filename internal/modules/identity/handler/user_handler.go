@@ -4,13 +4,13 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/cristiano-pacheco/go-modulith/internal/modules/identity/dto"
-	"github.com/cristiano-pacheco/go-modulith/internal/modules/identity/usecase/activate_user_usecase"
-	"github.com/cristiano-pacheco/go-modulith/internal/modules/identity/usecase/create_user_usecase"
-	"github.com/cristiano-pacheco/go-modulith/internal/modules/identity/usecase/find_user_usecase"
-	"github.com/cristiano-pacheco/go-modulith/internal/modules/identity/usecase/update_user_usecase"
-	"github.com/cristiano-pacheco/go-modulith/internal/shared/errs"
-	"github.com/cristiano-pacheco/go-modulith/internal/shared/http/response"
+	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/dto"
+	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/usecase/activate_user_usecase"
+	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/usecase/create_user_usecase"
+	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/usecase/find_user_usecase"
+	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/usecase/update_user_usecase"
+	"github.com/cristiano-pacheco/shoplist/internal/shared/errs"
+	"github.com/cristiano-pacheco/shoplist/internal/shared/http/response"
 	"github.com/gofiber/fiber/v2"
 )
 

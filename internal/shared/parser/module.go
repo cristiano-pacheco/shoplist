@@ -1,7 +1,7 @@
 package parser
 
 import (
-	"github.com/cristiano-pacheco/go-modulith/internal/shared/parser/jwtparser"
+	"github.com/cristiano-pacheco/shoplist/internal/shared/parser/jwtparser"
 	"go.uber.org/fx"
 )
 

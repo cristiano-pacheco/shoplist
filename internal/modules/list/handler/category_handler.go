@@ -1,9 +1,9 @@
 package handler
 
 import (
-	"github.com/cristiano-pacheco/go-modulith/internal/modules/list/dto"
-	"github.com/cristiano-pacheco/go-modulith/internal/modules/list/usecase/category/create_category_usecase"
-	"github.com/cristiano-pacheco/go-modulith/internal/modules/list/usecase/category/find_category_usecase"
+	"github.com/cristiano-pacheco/shoplist/internal/modules/list/dto"
+	"github.com/cristiano-pacheco/shoplist/internal/modules/list/usecase/category/create_category_usecase"
+	"github.com/cristiano-pacheco/shoplist/internal/modules/list/usecase/category/find_category_usecase"
 	"github.com/gofiber/fiber/v2"
 )
 

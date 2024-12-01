@@ -4,7 +4,7 @@ import (
 	"crypto/rsa"
 	"encoding/base64"
 
-	"github.com/cristiano-pacheco/go-modulith/internal/shared/config"
+	"github.com/cristiano-pacheco/shoplist/internal/shared/config"
 )
 
 type RegistryI interface {

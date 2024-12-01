@@ -1,11 +1,11 @@
 package identity
 
 import (
-	"github.com/cristiano-pacheco/go-modulith/internal/modules/identity/handler"
-	"github.com/cristiano-pacheco/go-modulith/internal/modules/identity/repository"
-	"github.com/cristiano-pacheco/go-modulith/internal/modules/identity/router"
-	"github.com/cristiano-pacheco/go-modulith/internal/modules/identity/service"
-	"github.com/cristiano-pacheco/go-modulith/internal/modules/identity/usecase"
+	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/handler"
+	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/repository"
+	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/router"
+	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/service"
+	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/usecase"
 	"go.uber.org/fx"
 )
 

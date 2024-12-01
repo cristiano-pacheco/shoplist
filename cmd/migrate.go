@@ -5,8 +5,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/cristiano-pacheco/go-modulith/internal/shared/config"
-	"github.com/cristiano-pacheco/go-modulith/pkg/database"
+	"github.com/cristiano-pacheco/shoplist/internal/shared/config"
+	"github.com/cristiano-pacheco/shoplist/pkg/database"
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"

@@ -3,9 +3,9 @@ package repository
 import (
 	"context"
 
-	"github.com/cristiano-pacheco/go-modulith/internal/modules/list/model"
-	"github.com/cristiano-pacheco/go-modulith/internal/shared/database"
-	"github.com/cristiano-pacheco/go-modulith/internal/shared/errs"
+	"github.com/cristiano-pacheco/shoplist/internal/modules/list/model"
+	"github.com/cristiano-pacheco/shoplist/internal/shared/database"
+	"github.com/cristiano-pacheco/shoplist/internal/shared/errs"
 )
 
 type CategoryRepositoryI interface {

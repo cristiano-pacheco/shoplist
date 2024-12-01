@@ -3,7 +3,7 @@ package translator
 import (
 	"fmt"
 
-	"github.com/cristiano-pacheco/go-modulith/internal/shared/validator"
+	"github.com/cristiano-pacheco/shoplist/internal/shared/validator"
 	"github.com/go-playground/locales/en"
 	ut "github.com/go-playground/universal-translator"
 

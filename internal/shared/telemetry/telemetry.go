@@ -3,8 +3,8 @@ package telemetry
 import (
 	"log"
 
-	"github.com/cristiano-pacheco/go-modulith/internal/shared/config"
-	pkg_telemetry "github.com/cristiano-pacheco/go-modulith/pkg/telemetry"
+	"github.com/cristiano-pacheco/shoplist/internal/shared/config"
+	pkg_telemetry "github.com/cristiano-pacheco/shoplist/pkg/telemetry"
 )
 
 var _global *pkg_telemetry.Telemetry
