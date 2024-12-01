@@ -4,13 +4,13 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/cristiano-pacheco/go-modulith/internal/identity/dto"
 	"github.com/cristiano-pacheco/go-modulith/internal/identity/usecase/activate_user_usecase"
 	"github.com/cristiano-pacheco/go-modulith/internal/identity/usecase/create_user_usecase"
 	"github.com/cristiano-pacheco/go-modulith/internal/identity/usecase/find_user_usecase"
 	"github.com/cristiano-pacheco/go-modulith/internal/identity/usecase/update_user_usecase"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/errs"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/http/response"
-	"github.com/cristiano-pacheco/go-modulith/internal/shared/telemetry"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -48,28 +48,33 @@ func NewUserHandler(
 // @Failure		422	{object}	errs.Error	"Invalid request format or validation error"
 // @Failure		500	{object}	errs.Error	"Internal server error"
 // @Router		/api/v1/users [post]
-func (h *UserHandler) Store(c *fiber.Ctx) error {
-	var (
-		input  create_user_usecase.Input
-		output create_user_usecase.Output
-	)
-	t := telemetry.Get()
-	ctx, span := t.StartSpan(c.Context(), "user_handler.store")
-	defer span.End()
-
-	err := c.BodyParser(&input)
+func (h *UserHandler) Create(c *fiber.Ctx) error {
+	var request dto.CreateUserRequest
+	err := c.BodyParser(&request)
 	if err != nil {
 		rError := h.errorMapper.Map(err)
 		return response.Error(c, rError)
 	}
 
-	output, err = h.createUserUseCase.Execute(ctx, input)
+	input := create_user_usecase.Input{
+		Name:     request.Name,
+		Email:    request.Email,
+		Password: request.Password,
+	}
+
+	output, err := h.createUserUseCase.Execute(c.UserContext(), input)
 	if err != nil {
 		rError := h.errorMapper.Map(err)
 		return response.Error(c, rError)
 	}
 
-	return response.Success(c, http.StatusCreated, output)
+	res := dto.CreateUserResponse{
+		UserID: output.UserID,
+		Name:   output.Name,
+		Email:  output.Email,
+	}
+
+	return response.Success(c, http.StatusCreated, res)
 }
 
 // @Summary		Update user
@@ -86,15 +91,8 @@ func (h *UserHandler) Store(c *fiber.Ctx) error {
 // @Failure		500	{object}	errs.Error	"Internal server error"
 // @Router		/api/v1/users/{id} [put]
 func (h *UserHandler) Update(c *fiber.Ctx) error {
-	var (
-		input update_user_usecase.Input
-	)
-
-	t := telemetry.Get()
-	ctx, span := t.StartSpan(c.Context(), "user_handler.update")
-	defer span.End()
-
-	err := c.BodyParser(&input)
+	var request dto.UpdateUserRequest
+	err := c.BodyParser(&request)
 	if err != nil {
 		rError := h.errorMapper.Map(err)
 		return response.Error(c, rError)
@@ -106,9 +104,13 @@ func (h *UserHandler) Update(c *fiber.Ctx) error {
 		rError := h.errorMapper.Map(err)
 		return response.Error(c, rError)
 	}
-	input.UserID = idUser
 
-	err = h.updateUserUseCase.Execute(ctx, input)
+	input := update_user_usecase.Input{
+		UserID: idUser,
+		Name:   request.Name,
+	}
+
+	err = h.updateUserUseCase.Execute(c.UserContext(), input)
 	if err != nil {
 		rError := h.errorMapper.Map(err)
 		return response.Error(c, rError)
@@ -129,16 +131,7 @@ func (h *UserHandler) Update(c *fiber.Ctx) error {
 // @Failure		404	{object}	errs.Error	"User not found"
 // @Failure		500	{object}	errs.Error	"Internal server error"
 // @Router		/api/v1/users/{id} [get]
-func (h *UserHandler) Show(c *fiber.Ctx) error {
-	var (
-		input  find_user_usecase.Input
-		output find_user_usecase.Output
-	)
-
-	t := telemetry.Get()
-	ctx, span := t.StartSpan(c.Context(), "user_handler.show")
-	defer span.End()
-
+func (h *UserHandler) FindByID(c *fiber.Ctx) error {
 	id := c.Params("id")
 	idUser, err := strconv.ParseUint(id, 10, 64)
 	if err != nil {
@@ -146,14 +139,19 @@ func (h *UserHandler) Show(c *fiber.Ctx) error {
 		return response.Error(c, rError)
 	}
 
-	input.UserID = idUser
-	output, err = h.findUserUseCase.Execute(ctx, input)
+	input := find_user_usecase.Input{UserID: idUser}
+	output, err := h.findUserUseCase.Execute(c.UserContext(), input)
 	if err != nil {
 		rError := h.errorMapper.Map(err)
 		return response.Error(c, rError)
 	}
 
-	return response.Success(c, http.StatusOK, output)
+	res := dto.FindUserResponse{
+		Name:  output.Name,
+		Email: output.Email,
+	}
+
+	return response.Success(c, http.StatusOK, res)
 }
 
 // @Summary		Activate user
@@ -167,20 +165,14 @@ func (h *UserHandler) Show(c *fiber.Ctx) error {
 // @Failure		500	{object}	errs.Error	"Internal server error"
 // @Router		/api/v1/users/activate [post]
 func (h *UserHandler) Activate(c *fiber.Ctx) error {
-	type requestInput struct {
-		UserID uint64 `json:"user_id"`
-		Token  string `json:"token"`
-	}
-	var rInput requestInput
-
-	err := c.BodyParser(&rInput)
+	var request dto.ActivateUserRequest
+	err := c.BodyParser(&request)
 	if err != nil {
 		rError := h.errorMapper.Map(err)
 		return response.Error(c, rError)
 	}
 
-	input := activate_user_usecase.Input{UserID: rInput.UserID, Token: rInput.Token}
-
+	input := activate_user_usecase.Input{UserID: request.UserID, Token: request.Token}
 	err = h.activateUserUseCase.Execute(c.UserContext(), input)
 	if err != nil {
 		rError := h.errorMapper.Map(err)

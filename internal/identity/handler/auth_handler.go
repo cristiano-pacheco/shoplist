@@ -7,7 +7,6 @@ import (
 	"github.com/cristiano-pacheco/go-modulith/internal/identity/usecase/generate_token_usecase"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/errs"
 	"github.com/cristiano-pacheco/go-modulith/internal/shared/http/response"
-	"github.com/cristiano-pacheco/go-modulith/internal/shared/telemetry"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -44,16 +43,12 @@ func (h *AuthHandler) GenerateToken(c *fiber.Ctx) error {
 		request dto.GenerateTokenRequest
 	)
 
-	t := telemetry.Get()
-	ctx, span := t.StartSpan(c.Context(), "auth_handler.execute")
-	defer span.End()
-
 	err := c.BodyParser(&request)
 	if err != nil {
 		return response.Error(c, err)
 	}
 
-	output, err = h.generateTokenUseCase.Execute(ctx, input)
+	output, err = h.generateTokenUseCase.Execute(c.UserContext(), input)
 	if err != nil {
 		rError := h.errorMapper.Map(err)
 		return response.Error(c, rError)
