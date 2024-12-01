@@ -19,11 +19,3 @@ func Error(c *fiber.Ctx, err error) error {
 
 	return c.Status(rError.Status).JSON(rError)
 }
-
-func Success(c *fiber.Ctx, status int, data interface{}) error {
-	if status == 0 {
-		status = http.StatusOK
-	}
-
-	return c.Status(status).JSON(Data{Data: data})
-}

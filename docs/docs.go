@@ -35,7 +35,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.GenerateTokenInputDTO"
+                            "$ref": "#/definitions/dto.GenerateTokenRequest"
                         }
                     }
                 ],
@@ -43,19 +43,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Successfully generated token",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/response.Data"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/dto.GenerateTokenOutputDTO"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/response.Data-dto_GenerateTokenResponse"
                         }
                     },
                     "400": {
@@ -105,7 +93,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.CreateUserInputDTO"
+                            "$ref": "#/definitions/dto.CreateUserRequest"
                         }
                     }
                 ],
@@ -113,19 +101,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Successfully created user",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/response.Data"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/dto.CreateUserOutputDTO"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/response.Data-dto_CreateUserResponse"
                         }
                     },
                     "422": {
@@ -163,7 +139,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.ActivateUserInputDTO"
+                            "$ref": "#/definitions/dto.ActivateUserRequest"
                         }
                     }
                 ],
@@ -217,19 +193,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Successfully found user",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/response.Data"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/dto.FindUserOutputDTO"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/response.Data-dto_FindUserResponse"
                         }
                     },
                     "401": {
@@ -283,17 +247,11 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.UpdateUserInputDTO"
+                            "$ref": "#/definitions/dto.UpdateUserRequest"
                         }
                     }
                 ],
                 "responses": {
-                    "204": {
-                        "description": "Successfully updated user",
-                        "schema": {
-                            "$ref": "#/definitions/response.Data"
-                        }
-                    },
                     "401": {
                         "description": "Invalid credentials",
                         "schema": {
@@ -323,7 +281,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "dto.ActivateUserInputDTO": {
+        "dto.ActivateUserRequest": {
             "type": "object",
             "properties": {
                 "token": {
@@ -334,7 +292,7 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.CreateUserInputDTO": {
+        "dto.CreateUserRequest": {
             "type": "object",
             "properties": {
                 "email": {
@@ -348,7 +306,7 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.CreateUserOutputDTO": {
+        "dto.CreateUserResponse": {
             "type": "object",
             "properties": {
                 "email": {
@@ -362,7 +320,7 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.FindUserOutputDTO": {
+        "dto.FindUserResponse": {
             "type": "object",
             "properties": {
                 "email": {
@@ -373,7 +331,7 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.GenerateTokenInputDTO": {
+        "dto.GenerateTokenRequest": {
             "type": "object",
             "properties": {
                 "email": {
@@ -384,7 +342,7 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.GenerateTokenOutputDTO": {
+        "dto.GenerateTokenResponse": {
             "type": "object",
             "properties": {
                 "token": {
@@ -392,7 +350,7 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.UpdateUserInputDTO": {
+        "dto.UpdateUserRequest": {
             "type": "object",
             "properties": {
                 "name": {
@@ -439,10 +397,28 @@ const docTemplate = `{
                 }
             }
         },
-        "response.Data": {
+        "response.Data-dto_CreateUserResponse": {
             "type": "object",
             "properties": {
-                "data": {}
+                "data": {
+                    "$ref": "#/definitions/dto.CreateUserResponse"
+                }
+            }
+        },
+        "response.Data-dto_FindUserResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/dto.FindUserResponse"
+                }
+            }
+        },
+        "response.Data-dto_GenerateTokenResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/dto.GenerateTokenResponse"
+                }
             }
         }
     },

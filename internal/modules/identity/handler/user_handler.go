@@ -44,7 +44,7 @@ func NewUserHandler(
 // @Accept		json
 // @Produce		json
 // @Param		request	body	dto.CreateUserRequest	true	"User data"
-// @Success		201	{object}	response.Data{data=dto.CreateUserResponse}	"Successfully created user"
+// @Success		201	{object}	response.Data[dto.CreateUserResponse]	"Successfully created user"
 // @Failure		422	{object}	errs.Error	"Invalid request format or validation error"
 // @Failure		500	{object}	errs.Error	"Internal server error"
 // @Router		/api/v1/users [post]
@@ -68,13 +68,14 @@ func (h *UserHandler) Create(c *fiber.Ctx) error {
 		return response.Error(c, rError)
 	}
 
-	res := dto.CreateUserResponse{
+	resData := dto.CreateUserResponse{
 		UserID: output.UserID,
 		Name:   output.Name,
 		Email:  output.Email,
 	}
 
-	return response.Success(c, http.StatusCreated, res)
+	res := response.NewData(resData)
+	return c.Status(http.StatusCreated).JSON(res)
 }
 
 // @Summary		Update user
@@ -126,7 +127,7 @@ func (h *UserHandler) Update(c *fiber.Ctx) error {
 // @Produce		json
 // @Security 	BearerAuth
 // @Param		id		path	integer		true	"User ID"
-// @Success		200	{object}	response.Data{data=dto.FindUserResponse}	"Successfully found user"
+// @Success		200	{object}	response.Data[dto.FindUserResponse]	"Successfully found user"
 // @Failure		401	{object}	errs.Error	"Invalid credentials"
 // @Failure		404	{object}	errs.Error	"User not found"
 // @Failure		500	{object}	errs.Error	"Internal server error"
@@ -146,12 +147,13 @@ func (h *UserHandler) FindByID(c *fiber.Ctx) error {
 		return response.Error(c, rError)
 	}
 
-	res := dto.FindUserResponse{
+	resData := dto.FindUserResponse{
 		Name:  output.Name,
 		Email: output.Email,
 	}
 
-	return response.Success(c, http.StatusOK, res)
+	res := response.NewData(resData)
+	return c.Status(http.StatusOK).JSON(res)
 }
 
 // @Summary		Activate user

@@ -30,7 +30,7 @@ func NewAuthHandler(
 // @Accept		json
 // @Produce		json
 // @Param		request	body	dto.GenerateTokenRequest	true	"Login credentials (email and password)"
-// @Success		200	{object}	response.Data{data=dto.GenerateTokenResponse}	"Successfully generated token"
+// @Success		200	{object}	response.Data[dto.GenerateTokenResponse]	"Successfully generated token"
 // @Failure		400	{object}	errs.Error	"Invalid request format or validation error"
 // @Failure		401	{object}	errs.Error	"Invalid credentials"
 // @Failure		404	{object}	errs.Error	"User not found"
@@ -54,5 +54,6 @@ func (h *AuthHandler) GenerateToken(c *fiber.Ctx) error {
 		return response.Error(c, rError)
 	}
 
-	return response.Success(c, http.StatusOK, output.Token)
+	res := response.NewData(dto.GenerateTokenResponse{Token: output.Token})
+	return c.Status(http.StatusOK).JSON(res)
 }

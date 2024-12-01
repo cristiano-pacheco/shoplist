@@ -1,13 +1,13 @@
 basePath: /
 definitions:
-  dto.ActivateUserInputDTO:
+  dto.ActivateUserRequest:
     properties:
       token:
         type: string
       user_id:
         type: integer
     type: object
-  dto.CreateUserInputDTO:
+  dto.CreateUserRequest:
     properties:
       email:
         type: string
@@ -16,7 +16,7 @@ definitions:
       password:
         type: string
     type: object
-  dto.CreateUserOutputDTO:
+  dto.CreateUserResponse:
     properties:
       email:
         type: string
@@ -25,26 +25,26 @@ definitions:
       user_id:
         type: integer
     type: object
-  dto.FindUserOutputDTO:
+  dto.FindUserResponse:
     properties:
       email:
         type: string
       name:
         type: string
     type: object
-  dto.GenerateTokenInputDTO:
+  dto.GenerateTokenRequest:
     properties:
       email:
         type: string
       password:
         type: string
     type: object
-  dto.GenerateTokenOutputDTO:
+  dto.GenerateTokenResponse:
     properties:
       token:
         type: string
     type: object
-  dto.UpdateUserInputDTO:
+  dto.UpdateUserRequest:
     properties:
       name:
         type: string
@@ -74,9 +74,20 @@ definitions:
       message:
         type: string
     type: object
-  response.Data:
+  response.Data-dto_CreateUserResponse:
     properties:
-      data: {}
+      data:
+        $ref: '#/definitions/dto.CreateUserResponse'
+    type: object
+  response.Data-dto_FindUserResponse:
+    properties:
+      data:
+        $ref: '#/definitions/dto.FindUserResponse'
+    type: object
+  response.Data-dto_GenerateTokenResponse:
+    properties:
+      data:
+        $ref: '#/definitions/dto.GenerateTokenResponse'
     type: object
 info:
   contact: {}
@@ -95,19 +106,14 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/dto.GenerateTokenInputDTO'
+          $ref: '#/definitions/dto.GenerateTokenRequest'
       produces:
       - application/json
       responses:
         "200":
           description: Successfully generated token
           schema:
-            allOf:
-            - $ref: '#/definitions/response.Data'
-            - properties:
-                data:
-                  $ref: '#/definitions/dto.GenerateTokenOutputDTO'
-              type: object
+            $ref: '#/definitions/response.Data-dto_GenerateTokenResponse'
         "400":
           description: Invalid request format or validation error
           schema:
@@ -138,19 +144,14 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/dto.CreateUserInputDTO'
+          $ref: '#/definitions/dto.CreateUserRequest'
       produces:
       - application/json
       responses:
         "201":
           description: Successfully created user
           schema:
-            allOf:
-            - $ref: '#/definitions/response.Data'
-            - properties:
-                data:
-                  $ref: '#/definitions/dto.CreateUserOutputDTO'
-              type: object
+            $ref: '#/definitions/response.Data-dto_CreateUserResponse'
         "422":
           description: Invalid request format or validation error
           schema:
@@ -179,12 +180,7 @@ paths:
         "200":
           description: Successfully found user
           schema:
-            allOf:
-            - $ref: '#/definitions/response.Data'
-            - properties:
-                data:
-                  $ref: '#/definitions/dto.FindUserOutputDTO'
-              type: object
+            $ref: '#/definitions/response.Data-dto_FindUserResponse'
         "401":
           description: Invalid credentials
           schema:
@@ -217,14 +213,10 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/dto.UpdateUserInputDTO'
+          $ref: '#/definitions/dto.UpdateUserRequest'
       produces:
       - application/json
       responses:
-        "204":
-          description: Successfully updated user
-          schema:
-            $ref: '#/definitions/response.Data'
         "401":
           description: Invalid credentials
           schema:
@@ -257,7 +249,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/dto.ActivateUserInputDTO'
+          $ref: '#/definitions/dto.ActivateUserRequest'
       produces:
       - application/json
       responses:
