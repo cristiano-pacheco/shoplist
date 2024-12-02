@@ -37,18 +37,18 @@ func NewAuthHandler(
 // @Failure		500	{object}	errs.Error	"Internal server error"
 // @Router		/api/v1/auth/token [post]
 func (h *AuthHandler) GenerateToken(c *fiber.Ctx) error {
-	var (
-		input   generate_token_usecase.Input
-		output  generate_token_usecase.Output
-		request dto.GenerateTokenRequest
-	)
-
+	var request dto.GenerateTokenRequest
 	err := c.BodyParser(&request)
 	if err != nil {
 		return response.Error(c, err)
 	}
 
-	output, err = h.generateTokenUseCase.Execute(c.UserContext(), input)
+	input := generate_token_usecase.Input{
+		Email:    request.Email,
+		Password: request.Password,
+	}
+
+	output, err := h.generateTokenUseCase.Execute(c.UserContext(), input)
 	if err != nil {
 		rError := h.errorMapper.Map(err)
 		return response.Error(c, rError)

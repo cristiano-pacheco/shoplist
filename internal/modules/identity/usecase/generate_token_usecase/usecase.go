@@ -2,6 +2,7 @@ package generate_token_usecase
 
 import (
 	"context"
+	"errors"
 
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/repository"
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/service/generate_token_service"
@@ -39,11 +40,14 @@ func (uc *UseCase) Execute(ctx context.Context, input Input) (Output, error) {
 
 	err := uc.validator.Struct(input)
 	if err != nil {
-		return Output{}, nil
+		return Output{}, err
 	}
 
 	user, err := uc.userRepo.FindByEmail(ctx, input.Email)
 	if err != nil {
+		if errors.Is(err, errs.ErrNotFound) {
+			return Output{}, errs.ErrInvalidCredentials
+		}
 		return Output{}, err
 	}
 
