@@ -4,14 +4,12 @@ import (
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/handler"
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/repository"
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/router"
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/service/generate_token_service"
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/service/hash_service"
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/service/send_account_confirmation_email_service"
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/usecase/activate_user_usecase"
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/usecase/create_user_usecase"
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/usecase/find_user_usecase"
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/usecase/generate_token_usecase"
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/usecase/update_user_usecase"
+	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/service"
+	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/usecase/activate_user"
+	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/usecase/create_user"
+	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/usecase/find_user"
+	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/usecase/generate_token"
+	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/usecase/update_user"
 	"go.uber.org/fx"
 )
 
@@ -29,16 +27,16 @@ var Module = fx.Module(
 		repository.NewAccountConfirmationRepository,
 
 		// services
-		generate_token_service.New,
-		hash_service.New,
-		send_account_confirmation_email_service.New,
+		service.NewGenerateTokenService,
+		service.NewHashService,
+		service.NewSendAccountConfirmationEmailService,
 
 		// usecases
-		create_user_usecase.New,
-		activate_user_usecase.New,
-		update_user_usecase.New,
-		find_user_usecase.New,
-		generate_token_usecase.New,
+		create_user.New,
+		activate_user.New,
+		update_user.New,
+		find_user.New,
+		generate_token.New,
 	),
 	fx.Invoke(
 		router.RegisterUserHandler,

@@ -5,10 +5,10 @@ import (
 	"strconv"
 
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/dto"
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/usecase/activate_user_usecase"
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/usecase/create_user_usecase"
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/usecase/find_user_usecase"
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/usecase/update_user_usecase"
+	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/usecase/activate_user"
+	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/usecase/create_user"
+	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/usecase/find_user"
+	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/usecase/update_user"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/errs"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/http/response"
 	"github.com/gofiber/fiber/v2"
@@ -16,18 +16,18 @@ import (
 
 type UserHandler struct {
 	errorMapper         errs.ErrorMapperI
-	createUserUseCase   *create_user_usecase.UseCase
-	updateUserUseCase   *update_user_usecase.UseCase
-	findUserUseCase     *find_user_usecase.UseCase
-	activateUserUseCase *activate_user_usecase.UseCase
+	createUserUseCase   *create_user.CreateUserUseCase
+	updateUserUseCase   *update_user.UpdateUserUseCase
+	findUserUseCase     *find_user.FindUserUseCase
+	activateUserUseCase *activate_user.ActivateUserUseCase
 }
 
 func NewUserHandler(
 	errorMapper errs.ErrorMapperI,
-	createUserUseCase *create_user_usecase.UseCase,
-	updateUserUseCase *update_user_usecase.UseCase,
-	findUserUseCase *find_user_usecase.UseCase,
-	activateUserUseCase *activate_user_usecase.UseCase,
+	createUserUseCase *create_user.CreateUserUseCase,
+	updateUserUseCase *update_user.UpdateUserUseCase,
+	findUserUseCase *find_user.FindUserUseCase,
+	activateUserUseCase *activate_user.ActivateUserUseCase,
 ) *UserHandler {
 	return &UserHandler{
 		errorMapper,
@@ -56,7 +56,7 @@ func (h *UserHandler) Create(c *fiber.Ctx) error {
 		return response.Error(c, rError)
 	}
 
-	input := create_user_usecase.Input{
+	input := create_user.Input{
 		Name:     request.Name,
 		Email:    request.Email,
 		Password: request.Password,
@@ -106,7 +106,7 @@ func (h *UserHandler) Update(c *fiber.Ctx) error {
 		return response.Error(c, rError)
 	}
 
-	input := update_user_usecase.Input{
+	input := update_user.Input{
 		UserID: idUser,
 		Name:   request.Name,
 	}
@@ -140,7 +140,7 @@ func (h *UserHandler) FindByID(c *fiber.Ctx) error {
 		return response.Error(c, rError)
 	}
 
-	input := find_user_usecase.Input{UserID: idUser}
+	input := find_user.Input{UserID: idUser}
 	output, err := h.findUserUseCase.Execute(c.UserContext(), input)
 	if err != nil {
 		rError := h.errorMapper.Map(err)
@@ -174,7 +174,7 @@ func (h *UserHandler) Activate(c *fiber.Ctx) error {
 		return response.Error(c, rError)
 	}
 
-	input := activate_user_usecase.Input{UserID: request.UserID, Token: request.Token}
+	input := activate_user.Input{UserID: request.UserID, Token: request.Token}
 	err = h.activateUserUseCase.Execute(c.UserContext(), input)
 	if err != nil {
 		rError := h.errorMapper.Map(err)

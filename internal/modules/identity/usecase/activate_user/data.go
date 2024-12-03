@@ -1,4 +1,4 @@
-package activate_user_usecase
+package activate_user
 
 type Input struct {
 	UserID uint64 `validate:"required,number"`

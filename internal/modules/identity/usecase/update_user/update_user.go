@@ -1,4 +1,4 @@
-package update_user_usecase
+package update_user
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 	"github.com/cristiano-pacheco/shoplist/internal/shared/validator"
 )
 
-type UseCase struct {
+type UpdateUserUseCase struct {
 	validate validator.ValidateI
 	userRepo repository.UserRepositoryI
 	logger   logger.LoggerI
@@ -18,11 +18,11 @@ func New(
 	validate validator.ValidateI,
 	userRepo repository.UserRepositoryI,
 	logger logger.LoggerI,
-) *UseCase {
-	return &UseCase{validate, userRepo, logger}
+) *UpdateUserUseCase {
+	return &UpdateUserUseCase{validate, userRepo, logger}
 }
 
-func (uc *UseCase) Execute(ctx context.Context, input Input) error {
+func (uc *UpdateUserUseCase) Execute(ctx context.Context, input Input) error {
 	err := uc.validate.Struct(input)
 	if err != nil {
 		return err

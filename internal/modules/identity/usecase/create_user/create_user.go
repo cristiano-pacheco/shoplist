@@ -1,36 +1,35 @@
-package create_user_usecase
+package create_user
 
 import (
 	"context"
 
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/model"
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/repository"
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/service/hash_service"
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/service/send_account_confirmation_email_service"
+	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/service"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/logger"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/telemetry"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/validator"
 )
 
-type UseCase struct {
+type CreateUserUseCase struct {
+	sendAccountConfirmationEmailService service.SendAccountConfirmationEmailServiceI
+	hashService                         service.HashServiceI
 	userRepo                            repository.UserRepositoryI
 	validate                            validator.ValidateI
-	hashService                         hash_service.ServiceI
-	sendAccountConfirmationEmailService send_account_confirmation_email_service.ServiceI
 	logger                              logger.LoggerI
 }
 
 func New(
+	sendAccountConfirmationEmailService service.SendAccountConfirmationEmailServiceI,
+	hashService service.HashServiceI,
 	userRepo repository.UserRepositoryI,
 	validate validator.ValidateI,
-	hashService hash_service.ServiceI,
-	sendAccountConfirmationEmailService send_account_confirmation_email_service.ServiceI,
 	logger logger.LoggerI,
-) *UseCase {
-	return &UseCase{userRepo, validate, hashService, sendAccountConfirmationEmailService, logger}
+) *CreateUserUseCase {
+	return &CreateUserUseCase{sendAccountConfirmationEmailService, hashService, userRepo, validate, logger}
 }
 
-func (uc *UseCase) Execute(ctx context.Context, input Input) (Output, error) {
+func (uc *CreateUserUseCase) Execute(ctx context.Context, input Input) (Output, error) {
 	t := telemetry.Get()
 	ctx, span := t.StartSpan(ctx, "create_user_usecase.Execute")
 	defer span.End()

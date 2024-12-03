@@ -1,4 +1,4 @@
-package hash_service
+package service
 
 import (
 	"crypto/rand"
@@ -6,30 +6,30 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type ServiceI interface {
+type HashServiceI interface {
 	GenerateFromPassword(password []byte) ([]byte, error)
 	CompareHashAndPassword(hashedPassword, password []byte) error
 	GenerateRandomBytes() ([]byte, error)
 }
 
-type service struct {
+type HashService struct {
 }
 
-func New() ServiceI {
-	return service{}
+func NewHashService() HashServiceI {
+	return &HashService{}
 }
 
 const defaultTotalRandomBytesSize = 128
 
-func (s service) GenerateFromPassword(password []byte) ([]byte, error) {
+func (s HashService) GenerateFromPassword(password []byte) ([]byte, error) {
 	return bcrypt.GenerateFromPassword(password, bcrypt.DefaultCost)
 }
 
-func (s service) CompareHashAndPassword(hashedPassword, password []byte) error {
+func (s HashService) CompareHashAndPassword(hashedPassword, password []byte) error {
 	return bcrypt.CompareHashAndPassword(hashedPassword, password)
 }
 
-func (s service) GenerateRandomBytes() ([]byte, error) {
+func (s HashService) GenerateRandomBytes() ([]byte, error) {
 	buffer := make([]byte, defaultTotalRandomBytesSize)
 	_, err := rand.Read(buffer)
 	if err != nil {

@@ -1,4 +1,4 @@
-package activate_user_usecase
+package activate_user
 
 import (
 	"github.com/cristiano-pacheco/shoplist/internal/shared/errs"

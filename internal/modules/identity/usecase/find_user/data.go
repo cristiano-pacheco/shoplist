@@ -1,4 +1,4 @@
-package find_user_usecase
+package find_user
 
 type Input struct {
 	UserID uint64

@@ -1,4 +1,4 @@
-package send_account_confirmation_email_service
+package service
 
 import (
 	"context"
@@ -7,49 +7,50 @@ import (
 
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/model"
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/repository"
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/service/hash_service"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/config"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/logger"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/mailer"
-	"github.com/cristiano-pacheco/shoplist/internal/shared/telemetry"
 )
 
-const emailTemplate = "account_confirmation.gohtml"
-const emailSubject = "Account Confirmation"
+const sendAccountConfirmationEmailTemplate = "account_confirmation.gohtml"
+const sendAccountConfirmationEmailSubject = "Account Confirmation"
 
-type ServiceI interface {
+type SendAccountConfirmationEmailServiceI interface {
 	Execute(ctx context.Context, user model.UserModel) error
 }
 
-type service struct {
+type SendAccountConfirmationEmailService struct {
 	mailerTemplate                mailer.MailerTemplateI
 	mailer                        mailer.SmtpMailerI
 	accountConfirmationRepository repository.AccountConfirmationRepositoryI
-	hashService                   hash_service.ServiceI
+	hashService                   HashServiceI
 	logger                        logger.LoggerI
 	cfg                           config.Config
 }
 
-func New(
+func NewSendAccountConfirmationEmailService(
 	mailerTemplate mailer.MailerTemplateI,
 	smtpMailer mailer.SmtpMailerI,
 	accountConfirmationRepository repository.AccountConfirmationRepositoryI,
-	hashService hash_service.ServiceI,
+	hashService HashServiceI,
 	logger logger.LoggerI,
 	cfg config.Config,
-) ServiceI {
-	return &service{mailerTemplate, smtpMailer, accountConfirmationRepository, hashService, logger, cfg}
+) SendAccountConfirmationEmailServiceI {
+	return &SendAccountConfirmationEmailService{
+		mailerTemplate,
+		smtpMailer,
+		accountConfirmationRepository,
+		hashService,
+		logger,
+		cfg,
+	}
 }
 
-func (s *service) Execute(ctx context.Context, user model.UserModel) error {
-	t := telemetry.Get()
-	ctx, span := t.StartSpan(ctx, "send_account_confirmation_email_service.execute")
-	defer span.End()
-
+func (s *SendAccountConfirmationEmailService) Execute(ctx context.Context, user model.UserModel) error {
 	// generate a random token
 	token, err := s.hashService.GenerateRandomBytes()
 	if err != nil {
-		message := "[send_account_confirmation_email_service] error generating random bytes"
+		message := "error generating random bytes"
 		s.logger.Error(message, "error", err)
 		return err
 	}
@@ -74,9 +75,9 @@ func (s *service) Execute(ctx context.Context, user model.UserModel) error {
 		AccountConfirmationLink: accountConfLink,
 	}
 
-	content, err := s.mailerTemplate.CompileTemplate(emailTemplate, tplData)
+	content, err := s.mailerTemplate.CompileTemplate(sendAccountConfirmationEmailTemplate, tplData)
 	if err != nil {
-		message := "[send_account_confirmation_email_service] error compiling template"
+		message := "error compiling template"
 		s.logger.Error(message, "error", err)
 		return err
 	}
@@ -90,7 +91,7 @@ func (s *service) Execute(ctx context.Context, user model.UserModel) error {
 	// persist the account confirmation in the database
 	err = s.accountConfirmationRepository.Create(ctx, acModel)
 	if err != nil {
-		message := "[send_account_confirmation_email_service] error creating account confirmation"
+		message := "error creating account confirmation"
 		s.logger.Error(message, "error", err)
 		return err
 	}
@@ -99,13 +100,13 @@ func (s *service) Execute(ctx context.Context, user model.UserModel) error {
 		Sender:  s.cfg.MAIL.Sender,
 		ToName:  user.Name,
 		ToEmail: user.Email,
-		Subject: emailSubject,
+		Subject: sendAccountConfirmationEmailSubject,
 		Content: content,
 	}
 
 	err = s.mailer.Send(md)
 	if err != nil {
-		message := "[send_account_confirmation_email_service] error sending email"
+		message := "error sending email"
 		s.logger.Error(message, "error", err)
 		return err
 	}

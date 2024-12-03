@@ -1,4 +1,4 @@
-package generate_token_usecase
+package generate_token
 
 type Input struct {
 	Email    string `validate:"required,email"`

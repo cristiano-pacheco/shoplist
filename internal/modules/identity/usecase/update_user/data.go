@@ -1,4 +1,4 @@
-package update_user_usecase
+package update_user
 
 type Input struct {
 	Name     string `validate:"required,min=3,max=255"`

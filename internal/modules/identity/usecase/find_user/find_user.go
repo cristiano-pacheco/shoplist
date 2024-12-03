@@ -1,4 +1,4 @@
-package find_user_usecase
+package find_user
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 	"github.com/cristiano-pacheco/shoplist/internal/shared/logger"
 )
 
-type UseCase struct {
+type FindUserUseCase struct {
 	userRepo repository.UserRepositoryI
 	logger   logger.LoggerI
 }
@@ -15,11 +15,11 @@ type UseCase struct {
 func New(
 	userRepo repository.UserRepositoryI,
 	logger logger.LoggerI,
-) *UseCase {
-	return &UseCase{userRepo, logger}
+) *FindUserUseCase {
+	return &FindUserUseCase{userRepo, logger}
 }
 
-func (uc *UseCase) Execute(ctx context.Context, input Input) (Output, error) {
+func (uc *FindUserUseCase) Execute(ctx context.Context, input Input) (Output, error) {
 	userModel, err := uc.userRepo.FindByID(ctx, input.UserID)
 	if err != nil {
 		message := "[find_user_by_id_usecase] error finding user by id"

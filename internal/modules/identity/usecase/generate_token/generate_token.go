@@ -1,31 +1,30 @@
-package generate_token_usecase
+package generate_token
 
 import (
 	"context"
 	"errors"
 
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/repository"
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/service/generate_token_service"
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/service/hash_service"
+	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/service"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/errs"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/telemetry"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/validator"
 )
 
-type UseCase struct {
+type GenerateTokenUseCase struct {
 	validator            validator.ValidateI
 	userRepo             repository.UserRepositoryI
-	hashService          hash_service.ServiceI
-	generateTokenService generate_token_service.ServiceI
+	hashService          service.HashServiceI
+	generateTokenService service.GenerateTokenServiceI
 }
 
 func New(
 	validator validator.ValidateI,
 	userRepo repository.UserRepositoryI,
-	hashService hash_service.ServiceI,
-	generateTokenService generate_token_service.ServiceI,
-) *UseCase {
-	return &UseCase{
+	hashService service.HashServiceI,
+	generateTokenService service.GenerateTokenServiceI,
+) *GenerateTokenUseCase {
+	return &GenerateTokenUseCase{
 		validator,
 		userRepo,
 		hashService,
@@ -33,7 +32,7 @@ func New(
 	}
 }
 
-func (uc *UseCase) Execute(ctx context.Context, input Input) (Output, error) {
+func (uc *GenerateTokenUseCase) Execute(ctx context.Context, input Input) (Output, error) {
 	t := telemetry.Get()
 	ctx, span := t.StartSpan(ctx, "Generate JWT Token")
 	defer span.End()

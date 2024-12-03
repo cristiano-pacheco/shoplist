@@ -1,4 +1,4 @@
-package create_user_usecase
+package create_user
 
 type Input struct {
 	Name     string `validate:"required,min=3,max=255"`

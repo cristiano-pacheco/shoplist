@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/dto"
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/usecase/generate_token_usecase"
+	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/usecase/generate_token"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/errs"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/http/response"
 	"github.com/gofiber/fiber/v2"
@@ -12,12 +12,12 @@ import (
 
 type AuthHandler struct {
 	errorMapper          errs.ErrorMapperI
-	generateTokenUseCase *generate_token_usecase.UseCase
+	generateTokenUseCase *generate_token.GenerateTokenUseCase
 }
 
 func NewAuthHandler(
 	errorMapper errs.ErrorMapperI,
-	generateTokenUseCase *generate_token_usecase.UseCase,
+	generateTokenUseCase *generate_token.GenerateTokenUseCase,
 ) *AuthHandler {
 	return &AuthHandler{errorMapper, generateTokenUseCase}
 }
@@ -43,7 +43,7 @@ func (h *AuthHandler) GenerateToken(c *fiber.Ctx) error {
 		return response.Error(c, err)
 	}
 
-	input := generate_token_usecase.Input{
+	input := generate_token.Input{
 		Email:    request.Email,
 		Password: request.Password,
 	}
