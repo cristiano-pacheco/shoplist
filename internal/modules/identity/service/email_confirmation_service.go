@@ -15,11 +15,11 @@ import (
 const sendAccountConfirmationEmailTemplate = "account_confirmation.gohtml"
 const sendAccountConfirmationEmailSubject = "Account Confirmation"
 
-type SendAccountConfirmationEmailServiceI interface {
-	Execute(ctx context.Context, user model.UserModel) error
+type EmailConfirmationServiceI interface {
+	Send(ctx context.Context, user model.UserModel) error
 }
 
-type SendAccountConfirmationEmailService struct {
+type EmailConfirmationService struct {
 	mailerTemplate                mailer.MailerTemplateI
 	mailer                        mailer.SmtpMailerI
 	accountConfirmationRepository repository.AccountConfirmationRepositoryI
@@ -28,15 +28,15 @@ type SendAccountConfirmationEmailService struct {
 	cfg                           config.Config
 }
 
-func NewSendAccountConfirmationEmailService(
+func NewEmailConfirmationService(
 	mailerTemplate mailer.MailerTemplateI,
 	smtpMailer mailer.SmtpMailerI,
 	accountConfirmationRepository repository.AccountConfirmationRepositoryI,
 	hashService HashServiceI,
 	logger logger.LoggerI,
 	cfg config.Config,
-) SendAccountConfirmationEmailServiceI {
-	return &SendAccountConfirmationEmailService{
+) EmailConfirmationServiceI {
+	return &EmailConfirmationService{
 		mailerTemplate,
 		smtpMailer,
 		accountConfirmationRepository,
@@ -46,7 +46,7 @@ func NewSendAccountConfirmationEmailService(
 	}
 }
 
-func (s *SendAccountConfirmationEmailService) Execute(ctx context.Context, user model.UserModel) error {
+func (s *EmailConfirmationService) Send(ctx context.Context, user model.UserModel) error {
 	// generate a random token
 	token, err := s.hashService.GenerateRandomBytes()
 	if err != nil {

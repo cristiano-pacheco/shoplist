@@ -27,9 +27,9 @@ var Module = fx.Module(
 		repository.NewAccountConfirmationRepository,
 
 		// services
-		service.NewGenerateTokenService,
+		service.NewTokenService,
 		service.NewHashService,
-		service.NewSendAccountConfirmationEmailService,
+		service.NewEmailConfirmationService,
 
 		// usecases
 		create_user.New,

@@ -11,25 +11,25 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-type GenerateTokenServiceI interface {
-	Execute(user model.UserModel) (string, error)
+type TokenServiceI interface {
+	Generate(user model.UserModel) (string, error)
 }
 
-type GenerateTokenService struct {
+type TokenService struct {
 	privateKeyRegistry privatekey_registry.RegistryI
 	conf               config.Config
 	logger             logger.LoggerI
 }
 
-func NewGenerateTokenService(
+func NewTokenService(
 	conf config.Config,
 	privateKeyRegistry privatekey_registry.RegistryI,
 	logger logger.LoggerI,
-) GenerateTokenServiceI {
-	return &GenerateTokenService{privateKeyRegistry, conf, logger}
+) TokenServiceI {
+	return &TokenService{privateKeyRegistry, conf, logger}
 }
 
-func (s *GenerateTokenService) Execute(user model.UserModel) (string, error) {
+func (s *TokenService) Generate(user model.UserModel) (string, error) {
 	now := time.Now()
 	duration := time.Duration(s.conf.JWT.ExpirationInSeconds) * time.Second
 	expires := now.Add(duration)

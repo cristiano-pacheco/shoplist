@@ -12,23 +12,23 @@ import (
 )
 
 type GenerateTokenUseCase struct {
-	validator            validator.ValidateI
-	userRepo             repository.UserRepositoryI
-	hashService          service.HashServiceI
-	generateTokenService service.GenerateTokenServiceI
+	validator    validator.ValidateI
+	userRepo     repository.UserRepositoryI
+	hashService  service.HashServiceI
+	tokenService service.TokenServiceI
 }
 
 func New(
 	validator validator.ValidateI,
 	userRepo repository.UserRepositoryI,
 	hashService service.HashServiceI,
-	generateTokenService service.GenerateTokenServiceI,
+	tokenService service.TokenServiceI,
 ) *GenerateTokenUseCase {
 	return &GenerateTokenUseCase{
 		validator,
 		userRepo,
 		hashService,
-		generateTokenService,
+		tokenService,
 	}
 }
 
@@ -61,7 +61,7 @@ func (uc *GenerateTokenUseCase) Execute(ctx context.Context, input Input) (Outpu
 		return Output{}, errs.ErrInvalidCredentials
 	}
 
-	token, err := uc.generateTokenService.Execute(*user)
+	token, err := uc.tokenService.Generate(*user)
 	if err != nil {
 		return Output{}, err
 	}

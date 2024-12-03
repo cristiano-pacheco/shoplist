@@ -12,21 +12,21 @@ import (
 )
 
 type CreateUserUseCase struct {
-	sendAccountConfirmationEmailService service.SendAccountConfirmationEmailServiceI
-	hashService                         service.HashServiceI
-	userRepo                            repository.UserRepositoryI
-	validate                            validator.ValidateI
-	logger                              logger.LoggerI
+	emailConfirmationService service.EmailConfirmationServiceI
+	hashService              service.HashServiceI
+	userRepo                 repository.UserRepositoryI
+	validate                 validator.ValidateI
+	logger                   logger.LoggerI
 }
 
 func New(
-	sendAccountConfirmationEmailService service.SendAccountConfirmationEmailServiceI,
+	emailConfirmationService service.EmailConfirmationServiceI,
 	hashService service.HashServiceI,
 	userRepo repository.UserRepositoryI,
 	validate validator.ValidateI,
 	logger logger.LoggerI,
 ) *CreateUserUseCase {
-	return &CreateUserUseCase{sendAccountConfirmationEmailService, hashService, userRepo, validate, logger}
+	return &CreateUserUseCase{emailConfirmationService, hashService, userRepo, validate, logger}
 }
 
 func (uc *CreateUserUseCase) Execute(ctx context.Context, input Input) (Output, error) {
@@ -59,7 +59,7 @@ func (uc *CreateUserUseCase) Execute(ctx context.Context, input Input) (Output, 
 		return Output{}, err
 	}
 
-	err = uc.sendAccountConfirmationEmailService.Execute(ctx, *newUserModel)
+	err = uc.emailConfirmationService.Send(ctx, *newUserModel)
 	if err != nil {
 		message := "[create_user_usecase] error sending account confirmation email"
 		uc.logger.Error(message, "error", err)
