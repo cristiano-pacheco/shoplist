@@ -1,4 +1,4 @@
-package create_category_usecase
+package category_create
 
 import "github.com/cristiano-pacheco/shoplist/internal/modules/list/model"
 

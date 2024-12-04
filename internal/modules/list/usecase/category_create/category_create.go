@@ -1,4 +1,4 @@
-package create_category_usecase
+package category_create
 
 import (
 	"context"
@@ -8,11 +8,11 @@ import (
 	"github.com/cristiano-pacheco/shoplist/internal/shared/validator"
 )
 
-type UseCaseI interface {
+type CategoryCreateUseCaseI interface {
 	Execute(ctx context.Context, input Input) (Output, error)
 }
 
-type useCase struct {
+type CategoryCreateUseCase struct {
 	categoryRepository repository.CategoryRepositoryI
 	validate           validator.ValidateI
 }
@@ -20,11 +20,11 @@ type useCase struct {
 func New(
 	categoryRepository repository.CategoryRepositoryI,
 	validate validator.ValidateI,
-) UseCaseI {
-	return &useCase{categoryRepository, validate}
+) CategoryCreateUseCaseI {
+	return &CategoryCreateUseCase{categoryRepository, validate}
 }
 
-func (uc *useCase) Execute(ctx context.Context, input Input) (Output, error) {
+func (uc *CategoryCreateUseCase) Execute(ctx context.Context, input Input) (Output, error) {
 	err := uc.validate.Struct(input)
 	if err != nil {
 		return Output{}, err
