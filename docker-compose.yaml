@@ -1,17 +1,17 @@
 services:
-  gomodulith-postgres:
+  shoplist-postgres:
     image: postgres:16-alpine
     volumes:
       - postgres:/data/postgres
     environment:
-      POSTGRES_DB: gomodulith
+      POSTGRES_DB: shoplist
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 'postgres'
       PGDATA: /data/postgres
     ports:
       - '5432:5432'
     networks:
-      - gomodulith_internal
+      - shoplist_internal
 
 # https://github.com/openzipkin/zipkin/blob/master/docker/examples/docker-compose.yml
   zipkin:
@@ -22,9 +22,32 @@ services:
     ports:
       - 9411:9411
 
+  faktory:
+    image: contribsys/faktory:latest
+    container_name: faktory
+    volumes:
+      - faktory:/var/lib/faktory/db
+    ports:
+      - "7419:7419"
+      - "7420:7420"
+    command: /faktory -b :7419 -w :7420 -e production
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis:/data
+    command: redis-server --appendonly yes
+    networks:
+      - shoplist_internal
+
 networks:
-  gomodulith_internal:
-    name: gomodulith_internal
+  shoplist_internal:
+    name: shoplist_internal
 
 volumes:
   postgres:
+  faktory:
+  redis:
