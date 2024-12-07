@@ -1,15 +1,18 @@
 package faktory
 
-import "context"
+import (
+	"context"
+)
 
 type FactoryWorkerConfig struct {
-	Concurrency int
-	Jobs        []Job
+	Concurrency     int
+	PoolCapacity    int
+	ShutdownTimeout int
 }
 
 type Job struct {
-	Name     string
-	Callback Callback
+	Name string
+	Fn   Fn
 }
 
-type Callback func(ctx context.Context, args ...interface{}) error
+type Fn func(ctx context.Context, args ...interface{}) error
