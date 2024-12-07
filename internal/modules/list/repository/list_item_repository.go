@@ -8,7 +8,7 @@ import (
 	"github.com/cristiano-pacheco/shoplist/internal/shared/errs"
 )
 
-type ListItemRepositoryI interface {
+type ListItemRepository interface {
 	Create(ctx context.Context, model model.ListItemModel) (*model.ListItemModel, error)
 	Update(ctx context.Context, model model.ListItemModel) error
 	Find(ctx context.Context, criteria FindListItemsCriteria) ([]*model.ListItemModel, error)
@@ -19,7 +19,7 @@ type listItemRepository struct {
 	db *database.ShoplistDB
 }
 
-func NewListItemRepository(db *database.ShoplistDB) ListItemRepositoryI {
+func NewListItemRepository(db *database.ShoplistDB) ListItemRepository {
 	return &listItemRepository{db}
 }
 

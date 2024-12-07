@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-type LoggerI interface {
+type Logger interface {
 	Debug(msg string, args ...any)
 	DebugContext(ctx context.Context, msg string, args ...any)
 	Info(msg string, args ...any)
@@ -22,7 +22,7 @@ type loggerAdapter struct {
 	config LoggerConfig
 }
 
-func New(config LoggerConfig) LoggerI {
+func New(config LoggerConfig) Logger {
 	slogger := slog.New(slog.NewTextHandler(os.Stdout, nil))
 	return &loggerAdapter{
 		logger: slogger,

@@ -44,3 +44,5 @@ linters-settings:
           - "github.com/caarlos0/env"
           - "github.com/go-mail/mail/v2"
           - "github.com/gofiber/swagger"
+          - "github.com/contribsys/faktory_worker_go"
+          - "github.com/contribsys/faktory/client"

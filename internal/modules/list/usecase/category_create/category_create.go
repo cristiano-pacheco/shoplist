@@ -8,19 +8,15 @@ import (
 	"github.com/cristiano-pacheco/shoplist/internal/shared/validator"
 )
 
-type CategoryCreateUseCaseI interface {
-	Execute(ctx context.Context, input Input) (Output, error)
-}
-
 type CategoryCreateUseCase struct {
-	categoryRepository repository.CategoryRepositoryI
-	validate           validator.ValidateI
+	categoryRepository repository.CategoryRepository
+	validate           validator.Validate
 }
 
 func New(
-	categoryRepository repository.CategoryRepositoryI,
-	validate validator.ValidateI,
-) CategoryCreateUseCaseI {
+	categoryRepository repository.CategoryRepository,
+	validate validator.Validate,
+) *CategoryCreateUseCase {
 	return &CategoryCreateUseCase{categoryRepository, validate}
 }
 

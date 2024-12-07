@@ -10,15 +10,15 @@ import (
 )
 
 type ActivateUserUseCase struct {
-	userRepo                repository.UserRepositoryI
-	accountConfirmationRepo repository.AccountConfirmationRepositoryI
-	logger                  logger.LoggerI
+	userRepo                repository.UserRepository
+	accountConfirmationRepo repository.AccountConfirmationRepository
+	logger                  logger.Logger
 }
 
 func New(
-	userRepo repository.UserRepositoryI,
-	accountConfirmationRepo repository.AccountConfirmationRepositoryI,
-	logger logger.LoggerI,
+	userRepo repository.UserRepository,
+	accountConfirmationRepo repository.AccountConfirmationRepository,
+	logger logger.Logger,
 ) *ActivateUserUseCase {
 	return &ActivateUserUseCase{userRepo, accountConfirmationRepo, logger}
 }

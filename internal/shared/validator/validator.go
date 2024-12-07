@@ -2,10 +2,10 @@ package validator
 
 import "github.com/go-playground/validator/v10"
 
-type ValidateI interface {
+type Validate interface {
 	Struct(s interface{}) error
 }
 
-func New() ValidateI {
+func New() Validate {
 	return validator.New(validator.WithRequiredStructEnabled())
 }

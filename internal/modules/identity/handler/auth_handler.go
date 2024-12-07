@@ -11,12 +11,12 @@ import (
 )
 
 type AuthHandler struct {
-	errorMapper          errs.ErrorMapperI
+	errorMapper          errs.ErrorMapper
 	generateTokenUseCase *generate_token.GenerateTokenUseCase
 }
 
 func NewAuthHandler(
-	errorMapper errs.ErrorMapperI,
+	errorMapper errs.ErrorMapper,
 	generateTokenUseCase *generate_token.GenerateTokenUseCase,
 ) *AuthHandler {
 	return &AuthHandler{errorMapper, generateTokenUseCase}

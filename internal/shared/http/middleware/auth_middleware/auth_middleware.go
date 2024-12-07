@@ -8,22 +8,22 @@ import (
 	"github.com/cristiano-pacheco/shoplist/internal/shared/dto"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/errs"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/http/response"
-	"github.com/cristiano-pacheco/shoplist/internal/shared/registry/privatekey_registry"
+	"github.com/cristiano-pacheco/shoplist/internal/shared/registry"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
 )
 
 type Middleware struct {
 	jwtParser          *jwt.Parser
-	errorMapper        errs.ErrorMapperI
-	privateKeyRegistry privatekey_registry.RegistryI
+	errorMapper        errs.ErrorMapper
+	privateKeyRegistry registry.PrivateKeyRegistry
 	isUserEnabledQuery *isUserEnabledQuery
 }
 
 func New(
 	jwtParser *jwt.Parser,
-	errorMapper errs.ErrorMapperI,
-	privateKeyRegistry privatekey_registry.RegistryI,
+	errorMapper errs.ErrorMapper,
+	privateKeyRegistry registry.PrivateKeyRegistry,
 	isUserEnabledQuery *isUserEnabledQuery,
 ) *Middleware {
 	return &Middleware{jwtParser, errorMapper, privateKeyRegistry, isUserEnabledQuery}

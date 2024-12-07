@@ -12,19 +12,19 @@ import (
 )
 
 type CreateUserUseCase struct {
-	emailConfirmationService service.EmailConfirmationServiceI
-	hashService              service.HashServiceI
-	userRepo                 repository.UserRepositoryI
-	validate                 validator.ValidateI
-	logger                   logger.LoggerI
+	emailConfirmationService service.EmailConfirmationService
+	hashService              service.HashService
+	userRepo                 repository.UserRepository
+	validate                 validator.Validate
+	logger                   logger.Logger
 }
 
 func New(
-	emailConfirmationService service.EmailConfirmationServiceI,
-	hashService service.HashServiceI,
-	userRepo repository.UserRepositoryI,
-	validate validator.ValidateI,
-	logger logger.LoggerI,
+	emailConfirmationService service.EmailConfirmationService,
+	hashService service.HashService,
+	userRepo repository.UserRepository,
+	validate validator.Validate,
+	logger logger.Logger,
 ) *CreateUserUseCase {
 	return &CreateUserUseCase{emailConfirmationService, hashService, userRepo, validate, logger}
 }

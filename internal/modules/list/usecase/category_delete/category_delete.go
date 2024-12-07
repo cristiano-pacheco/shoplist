@@ -7,16 +7,12 @@ import (
 	"github.com/cristiano-pacheco/shoplist/internal/shared/validator"
 )
 
-type CategoryDeleteUseCaseI interface {
-	Execute(ctx context.Context, input Input) error
-}
-
 type CategoryDeleteUseCase struct {
-	categoryRepository repository.CategoryRepositoryI
-	validate           validator.ValidateI
+	categoryRepository repository.CategoryRepository
+	validate           validator.Validate
 }
 
-func New(categoryRepository repository.CategoryRepositoryI, validate validator.ValidateI) CategoryDeleteUseCaseI {
+func New(categoryRepository repository.CategoryRepository, validate validator.Validate) *CategoryDeleteUseCase {
 	return &CategoryDeleteUseCase{categoryRepository, validate}
 }
 

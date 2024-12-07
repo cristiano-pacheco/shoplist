@@ -8,13 +8,13 @@ import (
 )
 
 type FindUserUseCase struct {
-	userRepo repository.UserRepositoryI
-	logger   logger.LoggerI
+	userRepo repository.UserRepository
+	logger   logger.Logger
 }
 
 func New(
-	userRepo repository.UserRepositoryI,
-	logger logger.LoggerI,
+	userRepo repository.UserRepository,
+	logger logger.Logger,
 ) *FindUserUseCase {
 	return &FindUserUseCase{userRepo, logger}
 }

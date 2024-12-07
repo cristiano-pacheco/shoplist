@@ -9,15 +9,15 @@ import (
 )
 
 type UpdateUserUseCase struct {
-	validate validator.ValidateI
-	userRepo repository.UserRepositoryI
-	logger   logger.LoggerI
+	validate validator.Validate
+	userRepo repository.UserRepository
+	logger   logger.Logger
 }
 
 func New(
-	validate validator.ValidateI,
-	userRepo repository.UserRepositoryI,
-	logger logger.LoggerI,
+	validate validator.Validate,
+	userRepo repository.UserRepository,
+	logger logger.Logger,
 ) *UpdateUserUseCase {
 	return &UpdateUserUseCase{validate, userRepo, logger}
 }

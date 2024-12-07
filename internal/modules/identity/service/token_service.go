@@ -7,29 +7,29 @@ import (
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/model"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/config"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/logger"
-	"github.com/cristiano-pacheco/shoplist/internal/shared/registry/privatekey_registry"
+	"github.com/cristiano-pacheco/shoplist/internal/shared/registry"
 	"github.com/golang-jwt/jwt/v5"
 )
 
-type TokenServiceI interface {
+type TokenService interface {
 	Generate(user model.UserModel) (string, error)
 }
 
-type TokenService struct {
-	privateKeyRegistry privatekey_registry.RegistryI
+type tokenService struct {
+	privateKeyRegistry registry.PrivateKeyRegistry
 	conf               config.Config
-	logger             logger.LoggerI
+	logger             logger.Logger
 }
 
 func NewTokenService(
 	conf config.Config,
-	privateKeyRegistry privatekey_registry.RegistryI,
-	logger logger.LoggerI,
-) TokenServiceI {
-	return &TokenService{privateKeyRegistry, conf, logger}
+	privateKeyRegistry registry.PrivateKeyRegistry,
+	logger logger.Logger,
+) TokenService {
+	return &tokenService{privateKeyRegistry, conf, logger}
 }
 
-func (s *TokenService) Generate(user model.UserModel) (string, error) {
+func (s *tokenService) Generate(user model.UserModel) (string, error) {
 	now := time.Now()
 	duration := time.Duration(s.conf.JWT.ExpirationInSeconds) * time.Second
 	expires := now.Add(duration)

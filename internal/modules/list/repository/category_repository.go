@@ -8,7 +8,7 @@ import (
 	"github.com/cristiano-pacheco/shoplist/internal/shared/errs"
 )
 
-type CategoryRepositoryI interface {
+type CategoryRepository interface {
 	Create(ctx context.Context, model model.CategoryModel) (*model.CategoryModel, error)
 	Update(ctx context.Context, model model.CategoryModel) error
 	Find(ctx context.Context, criteria FindCategoriesCriteria) ([]*model.CategoryModel, error)
@@ -19,7 +19,7 @@ type categoryRepository struct {
 	db *database.ShoplistDB
 }
 
-func NewCategoryRepository(db *database.ShoplistDB) CategoryRepositoryI {
+func NewCategoryRepository(db *database.ShoplistDB) CategoryRepository {
 	return &categoryRepository{db}
 }
 

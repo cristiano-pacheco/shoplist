@@ -4,7 +4,7 @@ import (
 	"github.com/go-mail/mail/v2"
 )
 
-type SmtpMailerI interface {
+type SmtpMailer interface {
 	Send(md MailData) error
 }
 
@@ -12,7 +12,7 @@ type smtpMailer struct {
 	dialer *mail.Dialer
 }
 
-func NewSmtpMailer(dialer *mail.Dialer) SmtpMailerI {
+func NewSmtpMailer(dialer *mail.Dialer) SmtpMailer {
 	return &smtpMailer{dialer}
 }
 

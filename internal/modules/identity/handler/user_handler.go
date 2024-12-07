@@ -15,7 +15,7 @@ import (
 )
 
 type UserHandler struct {
-	errorMapper         errs.ErrorMapperI
+	errorMapper         errs.ErrorMapper
 	createUserUseCase   *create_user.CreateUserUseCase
 	updateUserUseCase   *update_user.UpdateUserUseCase
 	findUserUseCase     *find_user.FindUserUseCase
@@ -23,7 +23,7 @@ type UserHandler struct {
 }
 
 func NewUserHandler(
-	errorMapper errs.ErrorMapperI,
+	errorMapper errs.ErrorMapper,
 	createUserUseCase *create_user.CreateUserUseCase,
 	updateUserUseCase *update_user.UpdateUserUseCase,
 	findUserUseCase *find_user.FindUserUseCase,

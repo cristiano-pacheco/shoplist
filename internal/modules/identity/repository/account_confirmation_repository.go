@@ -8,7 +8,7 @@ import (
 	"github.com/cristiano-pacheco/shoplist/internal/shared/telemetry"
 )
 
-type AccountConfirmationRepositoryI interface {
+type AccountConfirmationRepository interface {
 	Create(ctx context.Context, m model.AccountConfirmationModel) error
 	FindByUserID(ctx context.Context, userID uint64) (model.AccountConfirmationModel, error)
 	Delete(ctx context.Context, m model.AccountConfirmationModel) error
@@ -18,7 +18,7 @@ type accountConfirmationRepository struct {
 	db *database.ShoplistDB
 }
 
-func NewAccountConfirmationRepository(db *database.ShoplistDB) AccountConfirmationRepositoryI {
+func NewAccountConfirmationRepository(db *database.ShoplistDB) AccountConfirmationRepository {
 	return &accountConfirmationRepository{db}
 }
 

@@ -9,13 +9,13 @@ import (
 )
 
 type CategoryHandler struct {
-	createCategoryUseCase category_create.CategoryCreateUseCaseI
-	findCategoriesUseCase category_find.CategoryFindUseCaseI
+	createCategoryUseCase *category_create.CategoryCreateUseCase
+	findCategoriesUseCase *category_find.CategoryFindUseCase
 }
 
 func NewCategoryHandler(
-	createCategoryUseCase category_create.CategoryCreateUseCaseI,
-	findCategoriesUseCase category_find.CategoryFindUseCaseI,
+	createCategoryUseCase *category_create.CategoryCreateUseCase,
+	findCategoriesUseCase *category_find.CategoryFindUseCase,
 ) *CategoryHandler {
 	return &CategoryHandler{createCategoryUseCase, findCategoriesUseCase}
 }

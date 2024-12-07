@@ -9,7 +9,7 @@ import (
 	"github.com/cristiano-pacheco/shoplist/internal/shared/telemetry"
 )
 
-type UserRepositoryI interface {
+type UserRepository interface {
 	Create(ctx context.Context, model model.UserModel) (*model.UserModel, error)
 	Update(ctx context.Context, model model.UserModel) error
 	FindByID(ctx context.Context, id uint64) (*model.UserModel, error)
@@ -21,7 +21,7 @@ type userRepository struct {
 	db *database.ShoplistDB
 }
 
-func NewUserRepository(db *database.ShoplistDB) UserRepositoryI {
+func NewUserRepository(db *database.ShoplistDB) UserRepository {
 	return &userRepository{db}
 }
 

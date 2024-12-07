@@ -11,7 +11,7 @@ import (
 	en_translations "github.com/go-playground/validator/v10/translations/en"
 )
 
-func New(v validator.ValidateI) ut.Translator {
+func New(v validator.Validate) ut.Translator {
 	en := en.New()
 	uni := ut.New(en, en)
 	trans, _ := uni.GetTranslator("en")

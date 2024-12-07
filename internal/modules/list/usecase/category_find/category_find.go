@@ -6,15 +6,11 @@ import (
 	"github.com/cristiano-pacheco/shoplist/internal/modules/list/repository"
 )
 
-type CategoryFindUseCaseI interface {
-	Execute(ctx context.Context, input Input) (Output, error)
-}
-
 type CategoryFindUseCase struct {
-	categoryRepo repository.CategoryRepositoryI
+	categoryRepo repository.CategoryRepository
 }
 
-func New(categoryRepo repository.CategoryRepositoryI) CategoryFindUseCaseI {
+func New(categoryRepo repository.CategoryRepository) *CategoryFindUseCase {
 	return &CategoryFindUseCase{categoryRepo}
 }
 

@@ -5,16 +5,16 @@ import (
 	ut "github.com/go-playground/universal-translator"
 )
 
-type ErrorMapperI interface {
+type ErrorMapper interface {
 	Map(err error) error
 }
 
 type errorMapper struct {
-	validate   validator.ValidateI
+	validate   validator.Validate
 	translator ut.Translator
 }
 
-func New(validate validator.ValidateI, translator ut.Translator) ErrorMapperI {
+func New(validate validator.Validate, translator ut.Translator) ErrorMapper {
 	return &errorMapper{validate, translator}
 }
 
