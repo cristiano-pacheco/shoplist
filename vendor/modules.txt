@@ -11,6 +11,14 @@ github.com/andybalholm/brotli/matchfinder
 # github.com/caarlos0/env/v11 v11.2.2
 ## explicit; go 1.18
 github.com/caarlos0/env/v11
+# github.com/contribsys/faktory v1.8.0
+## explicit; go 1.21
+github.com/contribsys/faktory/client
+github.com/contribsys/faktory/internal/pool
+github.com/contribsys/faktory/util
+# github.com/contribsys/faktory_worker_go v1.7.0
+## explicit; go 1.21
+github.com/contribsys/faktory_worker_go
 # github.com/davecgh/go-spew v1.1.1
 ## explicit
 github.com/davecgh/go-spew/spew

@@ -10,6 +10,10 @@ github.com/andybalholm/brotli v1.1.1 h1:PR2pgnyFznKEugtsUo0xLdDop5SKXd5Qf5ysW+7X
 github.com/andybalholm/brotli v1.1.1/go.mod h1:05ib4cKhjx3OQYUY22hTVd34Bc8upXjOLL2rKwwZBoA=
 github.com/caarlos0/env/v11 v11.2.2 h1:95fApNrUyueipoZN/EhA8mMxiNxrBwDa+oAZrMWl3Kg=
 github.com/caarlos0/env/v11 v11.2.2/go.mod h1:JBfcdeQiBoI3Zh1QRAWfe+tpiNTmDtcCj/hHHHMx0vc=
+github.com/contribsys/faktory v1.8.0 h1:Rkxdph/1Tv9g60J8pyO2F7jKao77sRECh7HDBhgtuvI=
+github.com/contribsys/faktory v1.8.0/go.mod h1:SP+Y2Pr+JqLY9YJL3YNlJhdzTinm/oUe2CcOpwDHQR0=
+github.com/contribsys/faktory_worker_go v1.7.0 h1:YSZRj/nSjn+2ms9ooHIOHAahHJehXutgD46b+0lHDP4=
+github.com/contribsys/faktory_worker_go v1.7.0/go.mod h1:JRw4PvanwLgX5IIQazw6W5zg/Rg7/Fg6YrkdH4gJJPc=
 github.com/cpuguy83/go-md2man/v2 v2.0.4/go.mod h1:tgQtvFlXSQOSOSIRvRPT7W67SCa46tRHOmNcaadrF8o=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
