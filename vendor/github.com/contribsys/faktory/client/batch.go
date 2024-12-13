@@ -3,6 +3,8 @@ package client
 import (
 	"encoding/json"
 	"fmt"
+
+	"github.com/contribsys/faktory/util"
 )
 
 type BatchStatus struct {
@@ -37,17 +39,15 @@ type Batch struct {
 	new       bool
 }
 
-//
 // Allocate a new Batch.
 // Caller must set one or more callbacks and
 // push one or more jobs in the batch.
 //
-//   b := faktory.NewBatch(cl)
-//   b.Success = faktory.NewJob("MySuccessCallback", 12345)
-//   b.Jobs(func() error {
-//     b.Push(...)
-//   })
-//
+//	b := faktory.NewBatch(cl)
+//	b.Success = faktory.NewJob("MySuccessCallback", 12345)
+//	b.Jobs(func() error {
+//	  b.Push(...)
+//	})
 func NewBatch(cl *Client) *Batch {
 	return &Batch{
 		committed: false,
@@ -87,6 +87,22 @@ func (b *Batch) Push(job *Job) error {
 	}
 	job.SetCustom("bid", b.Bid)
 	return b.faktory.Push(job)
+}
+
+// Result is map[JID]ErrorMessage
+func (b *Batch) PushBulk(jobs []*Job) (map[string]string, error) {
+	if b.new {
+		return nil, ErrBatchNotOpen
+	}
+	if b.faktory == nil || b.committed {
+		return nil, ErrBatchAlreadyCommitted
+	}
+
+	for _, job := range jobs {
+		job.SetCustom("bid", b.Bid)
+	}
+
+	return b.faktory.PushBulk(jobs)
 }
 
 // Commit any pushed jobs in the batch to Redis so they can fire callbacks.
@@ -162,7 +178,7 @@ func (c *Client) BatchStatus(bid string) (*BatchStatus, error) {
 	}
 
 	var stat BatchStatus
-	err = json.Unmarshal(data, &stat)
+	err = util.JsonUnmarshal(data, &stat)
 	if err != nil {
 		return nil, err
 	}
