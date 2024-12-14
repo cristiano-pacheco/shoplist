@@ -6,7 +6,7 @@ import (
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/model"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/database"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/errs"
-	"github.com/cristiano-pacheco/shoplist/internal/shared/telemetry"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type UserRepository interface {
@@ -26,8 +26,7 @@ func NewUserRepository(db *database.ShoplistDB) UserRepository {
 }
 
 func (r *userRepository) Create(ctx context.Context, userModel model.UserModel) (*model.UserModel, error) {
-	t := telemetry.Get()
-	ctx, span := t.StartSpan(ctx, "user_repository.create")
+	span := trace.SpanFromContext(ctx)
 	defer span.End()
 	result := r.db.WithContext(ctx).Create(&userModel)
 	if result.Error != nil {
@@ -37,8 +36,7 @@ func (r *userRepository) Create(ctx context.Context, userModel model.UserModel) 
 }
 
 func (r *userRepository) Update(ctx context.Context, model model.UserModel) error {
-	t := telemetry.Get()
-	ctx, span := t.StartSpan(ctx, "user_repository.update")
+	span := trace.SpanFromContext(ctx)
 	defer span.End()
 	result := r.db.WithContext(ctx).Omit("created_at", "updated_at").Save(&model)
 	if result.Error != nil {
@@ -48,8 +46,7 @@ func (r *userRepository) Update(ctx context.Context, model model.UserModel) erro
 }
 
 func (r *userRepository) FindByID(ctx context.Context, id uint64) (*model.UserModel, error) {
-	t := telemetry.Get()
-	ctx, span := t.StartSpan(ctx, "user_repository.find_by_id")
+	span := trace.SpanFromContext(ctx)
 	defer span.End()
 	var userModel model.UserModel
 	r.db.WithContext(ctx).First(&userModel, id)
@@ -60,8 +57,7 @@ func (r *userRepository) FindByID(ctx context.Context, id uint64) (*model.UserMo
 }
 
 func (r *userRepository) FindByEmail(ctx context.Context, email string) (*model.UserModel, error) {
-	t := telemetry.Get()
-	ctx, span := t.StartSpan(ctx, "user_repository.find_by_email")
+	span := trace.SpanFromContext(ctx)
 	defer span.End()
 	var userModel model.UserModel
 	r.db.WithContext(ctx).Where("email = ?", email).First(&userModel)

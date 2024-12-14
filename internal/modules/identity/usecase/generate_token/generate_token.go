@@ -7,8 +7,8 @@ import (
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/repository"
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/service"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/errs"
-	"github.com/cristiano-pacheco/shoplist/internal/shared/telemetry"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/validator"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type GenerateTokenUseCase struct {
@@ -33,8 +33,7 @@ func New(
 }
 
 func (uc *GenerateTokenUseCase) Execute(ctx context.Context, input Input) (Output, error) {
-	t := telemetry.Get()
-	ctx, span := t.StartSpan(ctx, "Generate JWT Token")
+	span := trace.SpanFromContext(ctx)
 	defer span.End()
 
 	err := uc.validator.Struct(input)
@@ -61,7 +60,7 @@ func (uc *GenerateTokenUseCase) Execute(ctx context.Context, input Input) (Outpu
 		return Output{}, errs.ErrInvalidCredentials
 	}
 
-	token, err := uc.tokenService.Generate(*user)
+	token, err := uc.tokenService.Generate(ctx, *user)
 	if err != nil {
 		return Output{}, err
 	}

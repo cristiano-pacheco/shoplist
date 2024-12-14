@@ -7,6 +7,7 @@ import (
 
 	_ "github.com/cristiano-pacheco/shoplist/docs"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/config"
+	"github.com/gofiber/contrib/otelfiber/v2"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/healthcheck"
 	"github.com/gofiber/fiber/v2/middleware/recover"
@@ -48,6 +49,7 @@ func Init(conf config.Config, options ...fiber.Config) *Server {
 	app := fiber.New(config)
 	app.Use(recover.New(recover.Config{EnableStackTrace: true}))
 	app.Use(healthcheck.New())
+	app.Use(otelfiber.Middleware())
 
 	app.Get("/swagger/*", swagger.New(swagger.Config{
 		Title: conf.App.Name,

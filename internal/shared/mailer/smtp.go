@@ -1,11 +1,14 @@
 package mailer
 
 import (
+	"context"
+
 	"github.com/go-mail/mail/v2"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type SmtpMailer interface {
-	Send(md MailData) error
+	Send(ctx context.Context, md MailData) error
 }
 
 type smtpMailer struct {
@@ -16,7 +19,10 @@ func NewSmtpMailer(dialer *mail.Dialer) SmtpMailer {
 	return &smtpMailer{dialer}
 }
 
-func (m *smtpMailer) Send(md MailData) error {
+func (m *smtpMailer) Send(ctx context.Context, md MailData) error {
+	span := trace.SpanFromContext(ctx)
+	defer span.End()
+
 	msg := mail.NewMessage()
 	msg.SetHeader("To", md.ToEmail)
 	msg.SetHeader("From", md.Sender)

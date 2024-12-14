@@ -12,6 +12,7 @@ import (
 	"github.com/cristiano-pacheco/shoplist/internal/shared/errs"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/http/response"
 	"github.com/gofiber/fiber/v2"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type UserHandler struct {
@@ -49,6 +50,9 @@ func NewUserHandler(
 // @Failure		500	{object}	errs.Error	"Internal server error"
 // @Router		/api/v1/users [post]
 func (h *UserHandler) Create(c *fiber.Ctx) error {
+	span := trace.SpanFromContext(c.UserContext())
+	defer span.End()
+
 	var request dto.CreateUserRequest
 	err := c.BodyParser(&request)
 	if err != nil {
@@ -92,6 +96,9 @@ func (h *UserHandler) Create(c *fiber.Ctx) error {
 // @Failure		500	{object}	errs.Error	"Internal server error"
 // @Router		/api/v1/users/{id} [put]
 func (h *UserHandler) Update(c *fiber.Ctx) error {
+	span := trace.SpanFromContext(c.UserContext())
+	defer span.End()
+
 	var request dto.UpdateUserRequest
 	err := c.BodyParser(&request)
 	if err != nil {
@@ -133,6 +140,9 @@ func (h *UserHandler) Update(c *fiber.Ctx) error {
 // @Failure		500	{object}	errs.Error	"Internal server error"
 // @Router		/api/v1/users/{id} [get]
 func (h *UserHandler) FindByID(c *fiber.Ctx) error {
+	span := trace.SpanFromContext(c.UserContext())
+	defer span.End()
+
 	id := c.Params("id")
 	idUser, err := strconv.ParseUint(id, 10, 64)
 	if err != nil {
@@ -167,6 +177,9 @@ func (h *UserHandler) FindByID(c *fiber.Ctx) error {
 // @Failure		500	{object}	errs.Error	"Internal server error"
 // @Router		/api/v1/users/activate [post]
 func (h *UserHandler) Activate(c *fiber.Ctx) error {
+	span := trace.SpanFromContext(c.UserContext())
+	defer span.End()
+
 	var request dto.ActivateUserRequest
 	err := c.BodyParser(&request)
 	if err != nil {

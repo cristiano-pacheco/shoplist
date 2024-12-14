@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"strconv"
 	"time"
 
@@ -9,10 +10,11 @@ import (
 	"github.com/cristiano-pacheco/shoplist/internal/shared/logger"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/registry"
 	"github.com/golang-jwt/jwt/v5"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type TokenService interface {
-	Generate(user model.UserModel) (string, error)
+	Generate(ctx context.Context, user model.UserModel) (string, error)
 }
 
 type tokenService struct {
@@ -29,7 +31,10 @@ func NewTokenService(
 	return &tokenService{privateKeyRegistry, conf, logger}
 }
 
-func (s *tokenService) Generate(user model.UserModel) (string, error) {
+func (s *tokenService) Generate(ctx context.Context, user model.UserModel) (string, error) {
+	span := trace.SpanFromContext(ctx)
+	defer span.End()
+
 	now := time.Now()
 	duration := time.Duration(s.conf.JWT.ExpirationInSeconds) * time.Second
 	expires := now.Add(duration)

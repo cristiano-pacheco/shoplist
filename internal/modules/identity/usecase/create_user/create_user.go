@@ -7,8 +7,8 @@ import (
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/repository"
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/service"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/logger"
-	"github.com/cristiano-pacheco/shoplist/internal/shared/telemetry"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/validator"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type CreateUserUseCase struct {
@@ -30,8 +30,7 @@ func New(
 }
 
 func (uc *CreateUserUseCase) Execute(ctx context.Context, input Input) (Output, error) {
-	t := telemetry.Get()
-	ctx, span := t.StartSpan(ctx, "create_user_usecase.Execute")
+	span := trace.SpanFromContext(ctx)
 	defer span.End()
 
 	err := uc.validate.Struct(input)

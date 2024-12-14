@@ -1,9 +1,12 @@
 package main
 
 import (
+	"context"
+	"log"
+
 	"github.com/cristiano-pacheco/shoplist/cmd"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/config"
-	"github.com/cristiano-pacheco/shoplist/internal/shared/telemetry"
+	"github.com/cristiano-pacheco/shoplist/pkg/trace"
 )
 
 // @title           Go modulith API
@@ -18,7 +21,15 @@ import (
 // @BasePath  /
 func main() {
 	config.Init()
-	cfg := config.GetConfig()
-	telemetry.Init(cfg)
+	//cfg := config.GetConfig()
+	//telemetry.Init(cfg)
+
+	tp := trace.InitTracer("shoplist")
+	defer func() {
+		if err := tp.Shutdown(context.Background()); err != nil {
+			log.Printf("Error shutting down tracer provider: %v", err)
+		}
+	}()
+
 	cmd.Execute()
 }

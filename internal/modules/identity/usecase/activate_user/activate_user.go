@@ -7,6 +7,7 @@ import (
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/repository"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/errs"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/logger"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type ActivateUserUseCase struct {
@@ -24,6 +25,9 @@ func New(
 }
 
 func (u *ActivateUserUseCase) Execute(ctx context.Context, input Input) error {
+	span := trace.SpanFromContext(ctx)
+	defer span.End()
+
 	err := validateInput(input)
 	if err != nil {
 		u.logger.InfoContext(ctx, "[activate_user] invalid input", "error", err)

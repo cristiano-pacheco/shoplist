@@ -8,6 +8,7 @@ import (
 	"github.com/cristiano-pacheco/shoplist/internal/shared/errs"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/http/response"
 	"github.com/gofiber/fiber/v2"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type AuthHandler struct {
@@ -37,6 +38,9 @@ func NewAuthHandler(
 // @Failure		500	{object}	errs.Error	"Internal server error"
 // @Router		/api/v1/auth/token [post]
 func (h *AuthHandler) GenerateToken(c *fiber.Ctx) error {
+	span := trace.SpanFromContext(c.UserContext())
+	defer span.End()
+
 	var request dto.GenerateTokenRequest
 	err := c.BodyParser(&request)
 	if err != nil {
