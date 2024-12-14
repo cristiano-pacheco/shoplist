@@ -12,9 +12,14 @@ import (
 	semconv "go.opentelemetry.io/otel/semconv/v1.27.0"
 )
 
-func InitTracer(serviceName, jaegerURL string) *sdktrace.TracerProvider {
+type TracerConfig struct {
+	ServiceName string
+	TracerURL   string
+}
+
+func InitTracer(cfg TracerConfig) *sdktrace.TracerProvider {
 	exporter, err := otlptracehttp.New(context.Background(),
-		otlptracehttp.WithEndpoint(jaegerURL),
+		otlptracehttp.WithEndpoint(cfg.TracerURL),
 		otlptracehttp.WithInsecure(),
 	)
 	if err != nil {
@@ -27,7 +32,7 @@ func InitTracer(serviceName, jaegerURL string) *sdktrace.TracerProvider {
 		sdktrace.WithResource(
 			resource.NewWithAttributes(
 				semconv.SchemaURL,
-				semconv.ServiceNameKey.String(serviceName),
+				semconv.ServiceNameKey.String(cfg.ServiceName),
 			)),
 	)
 

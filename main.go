@@ -24,7 +24,13 @@ func main() {
 	//cfg := config.GetConfig()
 	//telemetry.Init(cfg)
 
-	tp := trace.InitTracer("shoplist")
+	cfg := config.GetConfig()
+	tracerCfg := trace.TracerConfig{
+		ServiceName: cfg.App.Name,
+		TracerURL:   cfg.Telemetry.TracerURL,
+	}
+
+	tp := trace.InitTracer(tracerCfg)
 	defer func() {
 		if err := tp.Shutdown(context.Background()); err != nil {
 			log.Printf("Error shutting down tracer provider: %v", err)
