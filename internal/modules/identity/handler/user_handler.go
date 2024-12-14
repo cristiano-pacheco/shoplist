@@ -11,8 +11,8 @@ import (
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/usecase/update_user"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/errs"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/http/response"
+	"github.com/cristiano-pacheco/shoplist/internal/shared/otel"
 	"github.com/gofiber/fiber/v2"
-	"go.opentelemetry.io/otel/trace"
 )
 
 type UserHandler struct {
@@ -50,7 +50,7 @@ func NewUserHandler(
 // @Failure		500	{object}	errs.Error	"Internal server error"
 // @Router		/api/v1/users [post]
 func (h *UserHandler) Create(c *fiber.Ctx) error {
-	span := trace.SpanFromContext(c.UserContext())
+	ctx, span := otel.Trace().StartSpan(c.UserContext(), "UserHandler.Create")
 	defer span.End()
 
 	var request dto.CreateUserRequest
@@ -66,7 +66,7 @@ func (h *UserHandler) Create(c *fiber.Ctx) error {
 		Password: request.Password,
 	}
 
-	output, err := h.createUserUseCase.Execute(c.UserContext(), input)
+	output, err := h.createUserUseCase.Execute(ctx, input)
 	if err != nil {
 		rError := h.errorMapper.Map(err)
 		return response.Error(c, rError)
@@ -96,7 +96,7 @@ func (h *UserHandler) Create(c *fiber.Ctx) error {
 // @Failure		500	{object}	errs.Error	"Internal server error"
 // @Router		/api/v1/users/{id} [put]
 func (h *UserHandler) Update(c *fiber.Ctx) error {
-	span := trace.SpanFromContext(c.UserContext())
+	ctx, span := otel.Trace().StartSpan(c.UserContext(), "UserHandler.Update")
 	defer span.End()
 
 	var request dto.UpdateUserRequest
@@ -118,7 +118,7 @@ func (h *UserHandler) Update(c *fiber.Ctx) error {
 		Name:   request.Name,
 	}
 
-	err = h.updateUserUseCase.Execute(c.UserContext(), input)
+	err = h.updateUserUseCase.Execute(ctx, input)
 	if err != nil {
 		rError := h.errorMapper.Map(err)
 		return response.Error(c, rError)
@@ -140,7 +140,7 @@ func (h *UserHandler) Update(c *fiber.Ctx) error {
 // @Failure		500	{object}	errs.Error	"Internal server error"
 // @Router		/api/v1/users/{id} [get]
 func (h *UserHandler) FindByID(c *fiber.Ctx) error {
-	span := trace.SpanFromContext(c.UserContext())
+	ctx, span := otel.Trace().StartSpan(c.UserContext(), "UserHandler.FindByID")
 	defer span.End()
 
 	id := c.Params("id")
@@ -151,7 +151,7 @@ func (h *UserHandler) FindByID(c *fiber.Ctx) error {
 	}
 
 	input := find_user.Input{UserID: idUser}
-	output, err := h.findUserUseCase.Execute(c.UserContext(), input)
+	output, err := h.findUserUseCase.Execute(ctx, input)
 	if err != nil {
 		rError := h.errorMapper.Map(err)
 		return response.Error(c, rError)
@@ -177,7 +177,7 @@ func (h *UserHandler) FindByID(c *fiber.Ctx) error {
 // @Failure		500	{object}	errs.Error	"Internal server error"
 // @Router		/api/v1/users/activate [post]
 func (h *UserHandler) Activate(c *fiber.Ctx) error {
-	span := trace.SpanFromContext(c.UserContext())
+	ctx, span := otel.Trace().StartSpan(c.UserContext(), "UserHandler.Activate")
 	defer span.End()
 
 	var request dto.ActivateUserRequest
@@ -188,7 +188,7 @@ func (h *UserHandler) Activate(c *fiber.Ctx) error {
 	}
 
 	input := activate_user.Input{UserID: request.UserID, Token: request.Token}
-	err = h.activateUserUseCase.Execute(c.UserContext(), input)
+	err = h.activateUserUseCase.Execute(ctx, input)
 	if err != nil {
 		rError := h.errorMapper.Map(err)
 		return response.Error(c, rError)

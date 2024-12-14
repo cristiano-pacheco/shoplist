@@ -5,7 +5,7 @@ import (
 
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/repository"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/logger"
-	"go.opentelemetry.io/otel/trace"
+	"github.com/cristiano-pacheco/shoplist/internal/shared/otel"
 )
 
 type FindUserUseCase struct {
@@ -21,13 +21,13 @@ func New(
 }
 
 func (uc *FindUserUseCase) Execute(ctx context.Context, input Input) (Output, error) {
-	span := trace.SpanFromContext(ctx)
+	ctx, span := otel.Trace().StartSpan(ctx, "FindUserUseCase.Execute")
 	defer span.End()
 
 	userModel, err := uc.userRepo.FindByID(ctx, input.UserID)
 	if err != nil {
-		message := "[find_user_by_id_usecase] error finding user by id"
-		uc.logger.Error(message, "error", err)
+		message := "[find_user] error finding user by id %d"
+		uc.logger.Error(message, "error", err, "id", input.UserID)
 		return Output{}, err
 	}
 

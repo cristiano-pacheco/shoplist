@@ -6,7 +6,7 @@ import (
 
 	"github.com/cristiano-pacheco/shoplist/cmd"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/config"
-	"github.com/cristiano-pacheco/shoplist/pkg/trace"
+	"github.com/cristiano-pacheco/shoplist/internal/shared/otel"
 )
 
 // @title           Go modulith API
@@ -21,18 +21,12 @@ import (
 // @BasePath  /
 func main() {
 	config.Init()
-	//cfg := config.GetConfig()
-	//telemetry.Init(cfg)
 
 	cfg := config.GetConfig()
-	tracerCfg := trace.TracerConfig{
-		ServiceName: cfg.App.Name,
-		TracerURL:   cfg.Telemetry.TracerURL,
-	}
+	otel.Init(cfg)
 
-	tp := trace.InitTracer(tracerCfg)
 	defer func() {
-		if err := tp.Shutdown(context.Background()); err != nil {
+		if err := otel.Trace().Shutdown(context.Background()); err != nil {
 			log.Printf("Error shutting down tracer provider: %v", err)
 		}
 	}()

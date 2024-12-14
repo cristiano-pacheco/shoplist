@@ -8,9 +8,9 @@ import (
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/model"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/config"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/logger"
+	"github.com/cristiano-pacheco/shoplist/internal/shared/otel"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/registry"
 	"github.com/golang-jwt/jwt/v5"
-	"go.opentelemetry.io/otel/trace"
 )
 
 type TokenService interface {
@@ -32,7 +32,7 @@ func NewTokenService(
 }
 
 func (s *tokenService) Generate(ctx context.Context, user model.UserModel) (string, error) {
-	span := trace.SpanFromContext(ctx)
+	ctx, span := otel.Trace().StartSpan(ctx, "TokenService.Generate")
 	defer span.End()
 
 	now := time.Now()

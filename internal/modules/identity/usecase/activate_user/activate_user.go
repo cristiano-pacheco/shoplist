@@ -7,7 +7,7 @@ import (
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/repository"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/errs"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/logger"
-	"go.opentelemetry.io/otel/trace"
+	"github.com/cristiano-pacheco/shoplist/internal/shared/otel"
 )
 
 type ActivateUserUseCase struct {
@@ -25,7 +25,7 @@ func New(
 }
 
 func (u *ActivateUserUseCase) Execute(ctx context.Context, input Input) error {
-	span := trace.SpanFromContext(ctx)
+	ctx, span := otel.Trace().StartSpan(ctx, "ActivateUserUseCase.Execute")
 	defer span.End()
 
 	err := validateInput(input)

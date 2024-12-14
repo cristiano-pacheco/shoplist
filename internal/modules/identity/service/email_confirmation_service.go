@@ -10,7 +10,7 @@ import (
 	"github.com/cristiano-pacheco/shoplist/internal/shared/config"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/logger"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/mailer"
-	"go.opentelemetry.io/otel/trace"
+	"github.com/cristiano-pacheco/shoplist/internal/shared/otel"
 )
 
 const sendAccountConfirmationEmailTemplate = "account_confirmation.gohtml"
@@ -51,7 +51,7 @@ func NewEmailConfirmationService(
 }
 
 func (s *emailConfirmationService) Send(ctx context.Context, userID uint64) error {
-	span := trace.SpanFromContext(ctx)
+	ctx, span := otel.Trace().StartSpan(ctx, "EmailConfirmationService.Send")
 	defer span.End()
 
 	user, err := s.userRepository.FindByID(ctx, userID)

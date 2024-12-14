@@ -5,8 +5,8 @@ import (
 
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/repository"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/logger"
+	"github.com/cristiano-pacheco/shoplist/internal/shared/otel"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/validator"
-	"go.opentelemetry.io/otel/trace"
 )
 
 type UpdateUserUseCase struct {
@@ -24,7 +24,7 @@ func New(
 }
 
 func (uc *UpdateUserUseCase) Execute(ctx context.Context, input Input) error {
-	span := trace.SpanFromContext(ctx)
+	ctx, span := otel.Trace().StartSpan(ctx, "UpdateUserUseCase.Execute")
 	defer span.End()
 
 	err := uc.validate.Struct(input)
@@ -42,8 +42,8 @@ func (uc *UpdateUserUseCase) Execute(ctx context.Context, input Input) error {
 
 	err = uc.userRepo.Update(ctx, *userModel)
 	if err != nil {
-		message := "[update_user_usecase] error updating user"
-		uc.logger.Error(message, "error", err)
+		message := "[update_user] error updating user with id %d"
+		uc.logger.Error(message, "error", err, "id", input.UserID)
 		return err
 	}
 

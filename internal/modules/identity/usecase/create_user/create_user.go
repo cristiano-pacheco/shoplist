@@ -7,8 +7,8 @@ import (
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/repository"
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/service"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/logger"
+	"github.com/cristiano-pacheco/shoplist/internal/shared/otel"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/validator"
-	"go.opentelemetry.io/otel/trace"
 )
 
 type CreateUserUseCase struct {
@@ -30,7 +30,7 @@ func New(
 }
 
 func (uc *CreateUserUseCase) Execute(ctx context.Context, input Input) (Output, error) {
-	span := trace.SpanFromContext(ctx)
+	ctx, span := otel.Trace().StartSpan(ctx, "CreateUserUseCase.Execute")
 	defer span.End()
 
 	err := uc.validate.Struct(input)
@@ -40,7 +40,7 @@ func (uc *CreateUserUseCase) Execute(ctx context.Context, input Input) (Output, 
 
 	ph, err := uc.hashService.GenerateFromPassword([]byte(input.Password))
 	if err != nil {
-		message := "[create_user_usecase] error generating password hash"
+		message := "[create_user] error generating password hash"
 		uc.logger.Error(message, "error", err)
 		return Output{}, err
 	}
@@ -53,14 +53,14 @@ func (uc *CreateUserUseCase) Execute(ctx context.Context, input Input) (Output, 
 
 	newUserModel, err := uc.userRepo.Create(ctx, userModel)
 	if err != nil {
-		message := "[create_user_usecase] error creating user"
+		message := "[create_user] error creating user"
 		uc.logger.Error(message, "error", err)
 		return Output{}, err
 	}
 
 	err = uc.emailConfirmationService.Send(ctx, newUserModel.ID)
 	if err != nil {
-		message := "[create_user_usecase] error sending account confirmation email"
+		message := "[create_user] error sending account confirmation email"
 		uc.logger.Error(message, "error", err)
 		return Output{}, err
 	}

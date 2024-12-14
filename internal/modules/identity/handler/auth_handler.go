@@ -7,8 +7,8 @@ import (
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/usecase/generate_token"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/errs"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/http/response"
+	"github.com/cristiano-pacheco/shoplist/internal/shared/otel"
 	"github.com/gofiber/fiber/v2"
-	"go.opentelemetry.io/otel/trace"
 )
 
 type AuthHandler struct {
@@ -38,7 +38,7 @@ func NewAuthHandler(
 // @Failure		500	{object}	errs.Error	"Internal server error"
 // @Router		/api/v1/auth/token [post]
 func (h *AuthHandler) GenerateToken(c *fiber.Ctx) error {
-	span := trace.SpanFromContext(c.UserContext())
+	ctx, span := otel.Trace().StartSpan(c.UserContext(), "AuthHandler.GenerateToken")
 	defer span.End()
 
 	var request dto.GenerateTokenRequest
@@ -52,7 +52,7 @@ func (h *AuthHandler) GenerateToken(c *fiber.Ctx) error {
 		Password: request.Password,
 	}
 
-	output, err := h.generateTokenUseCase.Execute(c.UserContext(), input)
+	output, err := h.generateTokenUseCase.Execute(ctx, input)
 	if err != nil {
 		rError := h.errorMapper.Map(err)
 		return response.Error(c, rError)

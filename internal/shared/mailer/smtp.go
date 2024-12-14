@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/go-mail/mail/v2"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 )
 
@@ -21,6 +22,7 @@ func NewSmtpMailer(dialer *mail.Dialer) SmtpMailer {
 
 func (m *smtpMailer) Send(ctx context.Context, md MailData) error {
 	span := trace.SpanFromContext(ctx)
+	span.SetAttributes(attribute.String("method", "SmtpMailer.Send"))
 	defer span.End()
 
 	msg := mail.NewMessage()

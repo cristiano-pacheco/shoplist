@@ -6,7 +6,7 @@ import (
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/model"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/database"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/errs"
-	"go.opentelemetry.io/otel/trace"
+	"github.com/cristiano-pacheco/shoplist/internal/shared/otel"
 )
 
 type UserRepository interface {
@@ -26,7 +26,7 @@ func NewUserRepository(db *database.ShoplistDB) UserRepository {
 }
 
 func (r *userRepository) Create(ctx context.Context, userModel model.UserModel) (*model.UserModel, error) {
-	span := trace.SpanFromContext(ctx)
+	ctx, span := otel.Trace().StartSpan(ctx, "UserRepository.Create")
 	defer span.End()
 	result := r.db.WithContext(ctx).Create(&userModel)
 	if result.Error != nil {
@@ -36,7 +36,7 @@ func (r *userRepository) Create(ctx context.Context, userModel model.UserModel) 
 }
 
 func (r *userRepository) Update(ctx context.Context, model model.UserModel) error {
-	span := trace.SpanFromContext(ctx)
+	ctx, span := otel.Trace().StartSpan(ctx, "UserRepository.Update")
 	defer span.End()
 	result := r.db.WithContext(ctx).Omit("created_at", "updated_at").Save(&model)
 	if result.Error != nil {
@@ -46,7 +46,7 @@ func (r *userRepository) Update(ctx context.Context, model model.UserModel) erro
 }
 
 func (r *userRepository) FindByID(ctx context.Context, id uint64) (*model.UserModel, error) {
-	span := trace.SpanFromContext(ctx)
+	ctx, span := otel.Trace().StartSpan(ctx, "UserRepository.FindByID")
 	defer span.End()
 	var userModel model.UserModel
 	r.db.WithContext(ctx).First(&userModel, id)
@@ -57,7 +57,7 @@ func (r *userRepository) FindByID(ctx context.Context, id uint64) (*model.UserMo
 }
 
 func (r *userRepository) FindByEmail(ctx context.Context, email string) (*model.UserModel, error) {
-	span := trace.SpanFromContext(ctx)
+	ctx, span := otel.Trace().StartSpan(ctx, "UserRepository.FindByEmail")
 	defer span.End()
 	var userModel model.UserModel
 	r.db.WithContext(ctx).Where("email = ?", email).First(&userModel)
@@ -68,6 +68,8 @@ func (r *userRepository) FindByEmail(ctx context.Context, email string) (*model.
 }
 
 func (r *userRepository) IsActivated(ctx context.Context, userID uint64) bool {
+	ctx, span := otel.Trace().StartSpan(ctx, "UserRepository.IsActivated")
+	defer span.End()
 	var userModel model.UserModel
 	r.db.WithContext(ctx).Where("id = ?", userID).First(&userModel)
 	if userModel.ID == 0 {
