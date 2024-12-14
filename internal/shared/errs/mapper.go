@@ -49,7 +49,8 @@ func (em *errorMapper) mapError(err error) error {
 	// Authentication
 	case errors.Is(err, ErrInvalidCredentials),
 		errors.Is(err, ErrUserIsNotActivated),
-		errors.Is(err, ErrInvalidToken):
+		errors.Is(err, ErrInvalidToken),
+		errors.Is(err, ErrInvalidAccountConfirmationToken):
 		status = http.StatusUnauthorized
 		code = codeUnauthorized
 	// Bad Request
