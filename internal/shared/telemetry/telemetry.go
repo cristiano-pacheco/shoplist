@@ -7,20 +7,22 @@ import (
 	pkg_telemetry "github.com/cristiano-pacheco/shoplist/pkg/telemetry"
 )
 
-var _global *pkg_telemetry.Telemetry
+type Telemetry pkg_telemetry.Telemetry
+
+var _global pkg_telemetry.Telemetry
 
 func Init(cfg config.Config) {
 	_global = new(cfg)
 }
 
-func Get() *pkg_telemetry.Telemetry {
+func Get() Telemetry {
 	if _global == nil {
 		log.Fatalf("telemetry not initialized")
 	}
 	return _global
 }
 
-func new(config config.Config) *pkg_telemetry.Telemetry {
+func new(config config.Config) pkg_telemetry.Telemetry {
 	if config.Telemetry.Enabled && config.Telemetry.TracerVendor == "" {
 		log.Fatalf("setting up telemetry: TELEMETRY_TRACER_VENDOR is not set")
 		return nil
@@ -44,5 +46,5 @@ func new(config config.Config) *pkg_telemetry.Telemetry {
 		TraceURL:     config.Telemetry.TracerURL,
 	}
 
-	return pkg_telemetry.New(tc)
+	return Telemetry(pkg_telemetry.New(tc))
 }

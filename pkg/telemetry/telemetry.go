@@ -12,17 +12,17 @@ import (
 	"go.opentelemetry.io/otel/trace"
 )
 
-type TememetryI interface {
+type Telemetry interface {
 	StartSpan(ctx context.Context, name string) (context.Context, trace.Span)
 	Shutdown(ctx context.Context) error
 }
 
-type Telemetry struct {
+type telemetry struct {
 	tracer         trace.Tracer
 	tracerProvider *sdktrace.TracerProvider
 }
 
-func New(config TelemetryConfig) *Telemetry {
+func New(config TelemetryConfig) Telemetry {
 	// Set up resource.
 	res, err := resource.Merge(
 		resource.Default(),
@@ -47,9 +47,9 @@ func New(config TelemetryConfig) *Telemetry {
 	// Set up propagator.
 	otel.SetTextMapPropagator(newPropagator())
 
-	t := tp.Tracer("github.com/cristiano-pacheco/gomodulith")
+	t := tp.Tracer("shoplist")
 
-	telemetry := Telemetry{
+	telemetry := telemetry{
 		tracer: t,
 	}
 
@@ -63,10 +63,10 @@ func newPropagator() propagation.TextMapPropagator {
 	)
 }
 
-func (t *Telemetry) StartSpan(ctx context.Context, name string) (context.Context, trace.Span) {
+func (t *telemetry) StartSpan(ctx context.Context, name string) (context.Context, trace.Span) {
 	return t.tracer.Start(ctx, name)
 }
 
-func (t *Telemetry) Shutdown(ctx context.Context) error {
+func (t *telemetry) Shutdown(ctx context.Context) error {
 	return t.tracerProvider.Shutdown(ctx)
 }

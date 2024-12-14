@@ -18,13 +18,15 @@ type accountConfirmationRepository struct {
 	db *database.ShoplistDB
 }
 
-func NewAccountConfirmationRepository(db *database.ShoplistDB) AccountConfirmationRepository {
+func NewAccountConfirmationRepository(
+	db *database.ShoplistDB,
+) AccountConfirmationRepository {
 	return &accountConfirmationRepository{db}
 }
 
 func (r *accountConfirmationRepository) Create(ctx context.Context, m model.AccountConfirmationModel) error {
 	t := telemetry.Get()
-	ctx, span := t.StartSpan(ctx, "account_confirmation_repository.create")
+	ctx, span := t.StartSpan(ctx, "AccountConfirmationRepository.Create")
 	defer span.End()
 	return r.db.WithContext(ctx).Create(&m).Error
 }
@@ -34,7 +36,7 @@ func (r *accountConfirmationRepository) FindByUserID(
 	userID uint64,
 ) (model.AccountConfirmationModel, error) {
 	t := telemetry.Get()
-	ctx, span := t.StartSpan(ctx, "account_confirmation_repository.find_by_user_id")
+	ctx, span := t.StartSpan(ctx, "AccountConfirmationRepository.FindByUserID")
 	defer span.End()
 	var m model.AccountConfirmationModel
 	return m, r.db.WithContext(ctx).Where("user_id = ?", userID).First(&m).Error
@@ -42,7 +44,7 @@ func (r *accountConfirmationRepository) FindByUserID(
 
 func (r *accountConfirmationRepository) Delete(ctx context.Context, m model.AccountConfirmationModel) error {
 	t := telemetry.Get()
-	ctx, span := t.StartSpan(ctx, "account_confirmation_repository.delete")
+	ctx, span := t.StartSpan(ctx, "AccountConfirmationRepository.Delete")
 	defer span.End()
 	return r.db.WithContext(ctx).Where("user_id = ?", m.UserID).Delete(&m).Error
 }
