@@ -9,6 +9,7 @@ import (
 	"github.com/cristiano-pacheco/shoplist/internal/shared/logger"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/mailer"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/parser"
+	"github.com/cristiano-pacheco/shoplist/internal/shared/rabbitmq"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/registry"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/translator"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/validator"
@@ -28,4 +29,5 @@ var Module = fx.Module(
 	parser.Module,
 	mailer.Module,
 	errs.Module,
+	rabbitmq.Module,
 )

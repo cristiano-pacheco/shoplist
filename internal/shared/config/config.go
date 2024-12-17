@@ -17,7 +17,7 @@ type Config struct {
 	Telemetry   Telemetry `envPrefix:"TELEMETRY_"`
 	App         App       `envPrefix:"APP_"`
 	Log         Log       `envPrefix:"LOG_"`
-	Faktory     Faktory   `envPrefix:"FAKTORY_"`
+	RabbitMQ    RabbitMQ  `envPrefix:"RABBITMQ_"`
 }
 
 const EnvProduction = "production"
