@@ -1,15 +1,16 @@
 package rabbitmq
 
 import (
-	"log"
+	"context"
 
 	"github.com/cristiano-pacheco/shoplist/internal/shared/config"
 	"github.com/cristiano-pacheco/shoplist/pkg/rabbitmq"
+	"go.uber.org/fx"
 )
 
 type Facade rabbitmq.Facade
 
-func New(cfg config.Config) Facade {
+func New(lc fx.Lifecycle, cfg config.Config) Facade {
 	rabbitMQConfig := rabbitmq.Config{
 		Host:     cfg.RabbitMQ.Host,
 		Port:     cfg.RabbitMQ.Port,
@@ -17,9 +18,15 @@ func New(cfg config.Config) Facade {
 		Password: cfg.RabbitMQ.Password,
 		VHost:    cfg.RabbitMQ.VHost,
 	}
-	facade, err := rabbitmq.New(rabbitMQConfig)
-	if err != nil {
-		log.Fatalf("Error creating RabbitMQ facade: %v", err)
-	}
+
+	facade := rabbitmq.New(rabbitMQConfig)
+
+	lc.Append(fx.Hook{
+		OnStop: func(context.Context) error {
+			facade.Close()
+			return nil
+		},
+	})
+
 	return Facade(facade)
 }

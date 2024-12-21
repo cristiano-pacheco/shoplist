@@ -3,7 +3,9 @@ package create_user
 import (
 	"context"
 
+	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/dto"
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/model"
+	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/queue/producer"
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/repository"
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/service"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/logger"
@@ -12,11 +14,12 @@ import (
 )
 
 type CreateUserUseCase struct {
-	emailConfirmationService service.EmailConfirmationService
-	hashService              service.HashService
-	userRepo                 repository.UserRepository
-	validate                 validator.Validate
-	logger                   logger.Logger
+	emailConfirmationService      service.EmailConfirmationService
+	hashService                   service.HashService
+	userRepo                      repository.UserRepository
+	validate                      validator.Validate
+	logger                        logger.Logger
+	userConfirmationEmailProducer producer.UserConfirmationEmailProducer
 }
 
 func New(
@@ -25,8 +28,9 @@ func New(
 	userRepo repository.UserRepository,
 	validate validator.Validate,
 	logger logger.Logger,
+	userConfirmationEmailProducer producer.UserConfirmationEmailProducer,
 ) *CreateUserUseCase {
-	return &CreateUserUseCase{emailConfirmationService, hashService, userRepo, validate, logger}
+	return &CreateUserUseCase{emailConfirmationService, hashService, userRepo, validate, logger, userConfirmationEmailProducer}
 }
 
 func (uc *CreateUserUseCase) Execute(ctx context.Context, input Input) (Output, error) {
@@ -58,9 +62,10 @@ func (uc *CreateUserUseCase) Execute(ctx context.Context, input Input) (Output, 
 		return Output{}, err
 	}
 
-	err = uc.emailConfirmationService.Send(ctx, newUserModel.ID)
+	message := dto.SendConfirmationEmailMessage{UserID: newUserModel.ID}
+	err = uc.userConfirmationEmailProducer.Execute(ctx, message)
 	if err != nil {
-		message := "[create_user] error sending account confirmation email"
+		message := "[create_user] error publishing account confirmation email"
 		uc.logger.Error(message, "error", err)
 		return Output{}, err
 	}

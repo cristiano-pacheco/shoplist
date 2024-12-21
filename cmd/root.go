@@ -10,11 +10,10 @@ import (
 	"go.uber.org/fx"
 )
 
-// rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "go-modulith",
-	Short: "Go Modulith is a starter kit project for building modular monolith applications in Go.",
-	Long:  `Go Modulith is a starter kit project for building modular monolith applications in Go.`,
+	Use:   "shoplist",
+	Short: "shoplist API.",
+	Long:  `shoplist API.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		app := fx.New(
 			shared.Module,
@@ -25,8 +24,6 @@ var rootCmd = &cobra.Command{
 	},
 }
 
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
 	err := rootCmd.Execute()
 	if err != nil {
