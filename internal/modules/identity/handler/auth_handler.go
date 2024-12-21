@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/dto"
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/usecase/generate_token"
+	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/usecase"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/errs"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/http/response"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/otel"
@@ -13,18 +13,16 @@ import (
 
 type AuthHandler struct {
 	errorMapper          errs.ErrorMapper
-	generateTokenUseCase *generate_token.GenerateTokenUseCase
+	tokenGenerateUseCase usecase.TokenGenerateUseCase
 }
 
 func NewAuthHandler(
 	errorMapper errs.ErrorMapper,
-	generateTokenUseCase *generate_token.GenerateTokenUseCase,
+	tokenGenerateUseCase usecase.TokenGenerateUseCase,
 ) *AuthHandler {
-	return &AuthHandler{errorMapper, generateTokenUseCase}
+	return &AuthHandler{errorMapper, tokenGenerateUseCase}
 }
 
-// Auth godoc
-//
 // @Summary		Generate authentication token
 // @Description	Authenticates user credentials and returns an access token
 // @Tags		Authentication
@@ -47,12 +45,12 @@ func (h *AuthHandler) GenerateToken(c *fiber.Ctx) error {
 		return response.Error(c, err)
 	}
 
-	input := generate_token.Input{
+	input := usecase.TokenGenerateUseCaseInput{
 		Email:    request.Email,
 		Password: request.Password,
 	}
 
-	output, err := h.generateTokenUseCase.Execute(ctx, input)
+	output, err := h.tokenGenerateUseCase.Execute(ctx, input)
 	if err != nil {
 		rError := h.errorMapper.Map(err)
 		return response.Error(c, rError)

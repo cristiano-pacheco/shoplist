@@ -1,4 +1,4 @@
-package update_user
+package usecase
 
 import (
 	"context"
@@ -9,22 +9,32 @@ import (
 	"github.com/cristiano-pacheco/shoplist/internal/shared/validator"
 )
 
-type UpdateUserUseCase struct {
+type UserUpdateUseCase interface {
+	Execute(ctx context.Context, input UserUpdateUseCaseInput) error
+}
+
+type UserUpdateUseCaseInput struct {
+	UserID   uint64 `validate:"required"`
+	Name     string `validate:"required,min=3,max=255"`
+	Password string `validate:"required,min=8"`
+}
+
+type userUpdateUseCase struct {
 	validate validator.Validate
 	userRepo repository.UserRepository
 	logger   logger.Logger
 }
 
-func New(
+func NewUserUpdateUseCase(
 	validate validator.Validate,
 	userRepo repository.UserRepository,
 	logger logger.Logger,
-) *UpdateUserUseCase {
-	return &UpdateUserUseCase{validate, userRepo, logger}
+) UserUpdateUseCase {
+	return &userUpdateUseCase{validate, userRepo, logger}
 }
 
-func (uc *UpdateUserUseCase) Execute(ctx context.Context, input Input) error {
-	ctx, span := otel.Trace().StartSpan(ctx, "UpdateUserUseCase.Execute")
+func (uc *userUpdateUseCase) Execute(ctx context.Context, input UserUpdateUseCaseInput) error {
+	ctx, span := otel.Trace().StartSpan(ctx, "UserUpdateUseCase.Execute")
 	defer span.End()
 
 	err := uc.validate.Struct(input)
@@ -42,7 +52,7 @@ func (uc *UpdateUserUseCase) Execute(ctx context.Context, input Input) error {
 
 	err = uc.userRepo.Update(ctx, *userModel)
 	if err != nil {
-		message := "[update_user] error updating user with id %d"
+		message := "error updating user with id %d"
 		uc.logger.Error(message, "error", err, "id", input.UserID)
 		return err
 	}

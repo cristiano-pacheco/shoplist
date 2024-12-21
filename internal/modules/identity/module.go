@@ -7,11 +7,7 @@ import (
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/repository"
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/router"
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/service"
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/usecase/activate_user"
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/usecase/create_user"
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/usecase/find_user"
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/usecase/generate_token"
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/usecase/update_user"
+	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/usecase"
 	"go.uber.org/fx"
 )
 
@@ -34,11 +30,11 @@ var Module = fx.Module(
 		service.NewEmailConfirmationService,
 
 		// usecases
-		create_user.New,
-		activate_user.New,
-		update_user.New,
-		find_user.New,
-		generate_token.New,
+		usecase.NewUserCreateUseCase,
+		usecase.NewUserActivateUseCase,
+		usecase.NewUserUpdateUseCase,
+		usecase.NewUserFindUseCase,
+		usecase.NewTokenGenerateUseCase,
 
 		// producers
 		producer.NewUserConfirmationEmailProducer,

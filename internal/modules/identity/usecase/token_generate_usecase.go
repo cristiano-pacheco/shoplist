@@ -1,4 +1,4 @@
-package generate_token
+package usecase
 
 import (
 	"context"
@@ -11,20 +11,33 @@ import (
 	"github.com/cristiano-pacheco/shoplist/internal/shared/validator"
 )
 
-type GenerateTokenUseCase struct {
+type TokenGenerateUseCase interface {
+	Execute(ctx context.Context, input TokenGenerateUseCaseInput) (TokenGenerateUseCaseOutput, error)
+}
+
+type TokenGenerateUseCaseInput struct {
+	Email    string `validate:"required,email"`
+	Password string `validate:"required"`
+}
+
+type TokenGenerateUseCaseOutput struct {
+	Token string
+}
+
+type tokenGenerateUseCase struct {
 	validator    validator.Validate
 	userRepo     repository.UserRepository
 	hashService  service.HashService
 	tokenService service.TokenService
 }
 
-func New(
+func NewTokenGenerateUseCase(
 	validator validator.Validate,
 	userRepo repository.UserRepository,
 	hashService service.HashService,
 	tokenService service.TokenService,
-) *GenerateTokenUseCase {
-	return &GenerateTokenUseCase{
+) TokenGenerateUseCase {
+	return &tokenGenerateUseCase{
 		validator,
 		userRepo,
 		hashService,
@@ -32,38 +45,41 @@ func New(
 	}
 }
 
-func (uc *GenerateTokenUseCase) Execute(ctx context.Context, input Input) (Output, error) {
-	ctx, span := otel.Trace().StartSpan(ctx, "GenerateTokenUseCase.Execute")
+func (uc *tokenGenerateUseCase) Execute(ctx context.Context, input TokenGenerateUseCaseInput) (TokenGenerateUseCaseOutput, error) {
+	ctx, span := otel.Trace().StartSpan(ctx, "TokenGenerateUseCase.Execute")
 	defer span.End()
+
+	output := TokenGenerateUseCaseOutput{}
 
 	err := uc.validator.Struct(input)
 	if err != nil {
-		return Output{}, err
+		return output, err
 	}
 
 	user, err := uc.userRepo.FindByEmail(ctx, input.Email)
 	if err != nil {
 		if errors.Is(err, errs.ErrNotFound) {
-			return Output{}, errs.ErrInvalidCredentials
+			return output, errs.ErrInvalidCredentials
 		}
-		return Output{}, err
+		return output, err
 	}
 
 	if !user.IsActivated {
-		return Output{}, errs.ErrUserIsNotActivated
+		return output, errs.ErrUserIsNotActivated
 	}
 
 	hash := []byte(user.PasswordHash)
 	pass := []byte(input.Password)
 	err = uc.hashService.CompareHashAndPassword(hash, pass)
 	if err != nil {
-		return Output{}, errs.ErrInvalidCredentials
+		return output, errs.ErrInvalidCredentials
 	}
 
 	token, err := uc.tokenService.Generate(ctx, *user)
 	if err != nil {
-		return Output{}, err
+		return output, err
 	}
 
-	return Output{Token: token}, nil
+	output.Token = token
+	return output, nil
 }

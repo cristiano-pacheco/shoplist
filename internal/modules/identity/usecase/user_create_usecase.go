@@ -1,4 +1,4 @@
-package create_user
+package usecase
 
 import (
 	"context"
@@ -13,7 +13,23 @@ import (
 	"github.com/cristiano-pacheco/shoplist/internal/shared/validator"
 )
 
-type CreateUserUseCase struct {
+type UserCreateUseCase interface {
+	Execute(ctx context.Context, input UserCreateUseCaseInput) (UserCreateUseCaseOutput, error)
+}
+
+type UserCreateUseCaseInput struct {
+	Name     string `validate:"required,min=3,max=255"`
+	Email    string `validate:"required,email"`
+	Password string `validate:"required,min=8"`
+}
+
+type UserCreateUseCaseOutput struct {
+	Name   string
+	Email  string
+	UserID uint64
+}
+
+type userCreateUseCase struct {
 	emailConfirmationService      service.EmailConfirmationService
 	hashService                   service.HashService
 	userRepo                      repository.UserRepository
@@ -22,31 +38,40 @@ type CreateUserUseCase struct {
 	userConfirmationEmailProducer producer.UserConfirmationEmailProducer
 }
 
-func New(
+func NewUserCreateUseCase(
 	emailConfirmationService service.EmailConfirmationService,
 	hashService service.HashService,
 	userRepo repository.UserRepository,
 	validate validator.Validate,
 	logger logger.Logger,
 	userConfirmationEmailProducer producer.UserConfirmationEmailProducer,
-) *CreateUserUseCase {
-	return &CreateUserUseCase{emailConfirmationService, hashService, userRepo, validate, logger, userConfirmationEmailProducer}
+) UserCreateUseCase {
+	return &userCreateUseCase{
+		emailConfirmationService,
+		hashService,
+		userRepo,
+		validate,
+		logger,
+		userConfirmationEmailProducer,
+	}
 }
 
-func (uc *CreateUserUseCase) Execute(ctx context.Context, input Input) (Output, error) {
-	ctx, span := otel.Trace().StartSpan(ctx, "CreateUserUseCase.Execute")
+func (uc *userCreateUseCase) Execute(ctx context.Context, input UserCreateUseCaseInput) (UserCreateUseCaseOutput, error) {
+	ctx, span := otel.Trace().StartSpan(ctx, "UserCreateUseCase.Execute")
 	defer span.End()
+
+	output := UserCreateUseCaseOutput{}
 
 	err := uc.validate.Struct(input)
 	if err != nil {
-		return Output{}, err
+		return output, err
 	}
 
 	ph, err := uc.hashService.GenerateFromPassword([]byte(input.Password))
 	if err != nil {
-		message := "[create_user] error generating password hash"
+		message := "error generating password hash"
 		uc.logger.Error(message, "error", err)
-		return Output{}, err
+		return output, err
 	}
 
 	userModel := model.UserModel{
@@ -57,20 +82,20 @@ func (uc *CreateUserUseCase) Execute(ctx context.Context, input Input) (Output, 
 
 	newUserModel, err := uc.userRepo.Create(ctx, userModel)
 	if err != nil {
-		message := "[create_user] error creating user"
+		message := "error creating user"
 		uc.logger.Error(message, "error", err)
-		return Output{}, err
+		return output, err
 	}
 
 	message := dto.SendConfirmationEmailMessage{UserID: newUserModel.ID}
 	err = uc.userConfirmationEmailProducer.Execute(ctx, message)
 	if err != nil {
-		message := "[create_user] error publishing account confirmation email"
+		message := "error publishing account confirmation email"
 		uc.logger.Error(message, "error", err)
-		return Output{}, err
+		return output, err
 	}
 
-	output := Output{
+	output = UserCreateUseCaseOutput{
 		UserID: newUserModel.ID,
 		Name:   newUserModel.Name,
 		Email:  newUserModel.Email,

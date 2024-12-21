@@ -5,10 +5,7 @@ import (
 	"strconv"
 
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/dto"
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/usecase/activate_user"
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/usecase/create_user"
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/usecase/find_user"
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/usecase/update_user"
+	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/usecase"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/errs"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/http/response"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/otel"
@@ -17,25 +14,25 @@ import (
 
 type UserHandler struct {
 	errorMapper         errs.ErrorMapper
-	createUserUseCase   *create_user.CreateUserUseCase
-	updateUserUseCase   *update_user.UpdateUserUseCase
-	findUserUseCase     *find_user.FindUserUseCase
-	activateUserUseCase *activate_user.ActivateUserUseCase
+	userCreateUseCase   usecase.UserCreateUseCase
+	userUpdateUseCase   usecase.UserUpdateUseCase
+	userFindUseCase     usecase.UserFindUseCase
+	userActivateUseCase usecase.UserActivateUseCase
 }
 
 func NewUserHandler(
 	errorMapper errs.ErrorMapper,
-	createUserUseCase *create_user.CreateUserUseCase,
-	updateUserUseCase *update_user.UpdateUserUseCase,
-	findUserUseCase *find_user.FindUserUseCase,
-	activateUserUseCase *activate_user.ActivateUserUseCase,
+	userCreateUseCase usecase.UserCreateUseCase,
+	userUpdateUseCase usecase.UserUpdateUseCase,
+	userFindUseCase usecase.UserFindUseCase,
+	userActivateUseCase usecase.UserActivateUseCase,
 ) *UserHandler {
 	return &UserHandler{
 		errorMapper,
-		createUserUseCase,
-		updateUserUseCase,
-		findUserUseCase,
-		activateUserUseCase,
+		userCreateUseCase,
+		userUpdateUseCase,
+		userFindUseCase,
+		userActivateUseCase,
 	}
 }
 
@@ -60,13 +57,13 @@ func (h *UserHandler) Create(c *fiber.Ctx) error {
 		return response.Error(c, rError)
 	}
 
-	input := create_user.Input{
+	input := usecase.UserCreateUseCaseInput{
 		Name:     request.Name,
 		Email:    request.Email,
 		Password: request.Password,
 	}
 
-	output, err := h.createUserUseCase.Execute(ctx, input)
+	output, err := h.userCreateUseCase.Execute(ctx, input)
 	if err != nil {
 		rError := h.errorMapper.Map(err)
 		return response.Error(c, rError)
@@ -113,12 +110,12 @@ func (h *UserHandler) Update(c *fiber.Ctx) error {
 		return response.Error(c, rError)
 	}
 
-	input := update_user.Input{
+	input := usecase.UserUpdateUseCaseInput{
 		UserID: idUser,
 		Name:   request.Name,
 	}
 
-	err = h.updateUserUseCase.Execute(ctx, input)
+	err = h.userUpdateUseCase.Execute(ctx, input)
 	if err != nil {
 		rError := h.errorMapper.Map(err)
 		return response.Error(c, rError)
@@ -150,8 +147,8 @@ func (h *UserHandler) FindByID(c *fiber.Ctx) error {
 		return response.Error(c, rError)
 	}
 
-	input := find_user.Input{UserID: idUser}
-	output, err := h.findUserUseCase.Execute(ctx, input)
+	input := usecase.UserFindUseCaseInput{UserID: idUser}
+	output, err := h.userFindUseCase.Execute(ctx, input)
 	if err != nil {
 		rError := h.errorMapper.Map(err)
 		return response.Error(c, rError)
@@ -187,8 +184,8 @@ func (h *UserHandler) Activate(c *fiber.Ctx) error {
 		return response.Error(c, rError)
 	}
 
-	input := activate_user.Input{UserID: request.UserID, Token: request.Token}
-	err = h.activateUserUseCase.Execute(ctx, input)
+	input := usecase.UserActivateUseCaseInput{UserID: request.UserID, Token: request.Token}
+	err = h.userActivateUseCase.Execute(ctx, input)
 	if err != nil {
 		rError := h.errorMapper.Map(err)
 		return response.Error(c, rError)
