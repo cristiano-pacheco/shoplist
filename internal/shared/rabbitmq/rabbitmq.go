@@ -8,9 +8,7 @@ import (
 	"go.uber.org/fx"
 )
 
-type Facade rabbitmq.Facade
-
-func New(lc fx.Lifecycle, cfg config.Config) Facade {
+func New(lc fx.Lifecycle, cfg config.Config) rabbitmq.Facade {
 	rabbitMQConfig := rabbitmq.Config{
 		Host:     cfg.RabbitMQ.Host,
 		Port:     cfg.RabbitMQ.Port,
@@ -28,5 +26,5 @@ func New(lc fx.Lifecycle, cfg config.Config) Facade {
 		},
 	})
 
-	return Facade(facade)
+	return facade
 }

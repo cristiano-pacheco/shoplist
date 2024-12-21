@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/dto"
-	"github.com/cristiano-pacheco/shoplist/internal/shared/rabbitmq"
+	"github.com/cristiano-pacheco/shoplist/pkg/rabbitmq"
 )
 
 type UserConfirmationEmailProducer interface {

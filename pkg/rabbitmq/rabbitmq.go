@@ -36,21 +36,12 @@ func New(cfg Config) Facade {
 		log.Fatal("failed to connect to RabbitMQ", "error", err)
 	}
 
-	channel, err := conn.Channel()
-	if err != nil {
-		log.Fatal("failed to open channel", "error", err)
-	}
-
-	return &facade{
-		conn:    conn,
-		channel: channel,
-	}
+	return &facade{conn}
 }
 
 // facade represents the internal implementation of the Facade interface
 type facade struct {
-	conn    *amqp.Connection
-	channel *amqp.Channel
+	conn *amqp.Connection
 }
 
 func (f *facade) Publish(ctx context.Context, queueName string, message []byte) error {
@@ -59,7 +50,10 @@ func (f *facade) Publish(ctx context.Context, queueName string, message []byte) 
 		return fmt.Errorf("failed to declare queue: %w", err)
 	}
 
-	err = f.channel.PublishWithContext(
+	channel := f.createChannel()
+	defer channel.Close()
+
+	err = channel.PublishWithContext(
 		ctx,
 		queueName, // exchange
 		"",        // routing key
@@ -79,7 +73,10 @@ func (f *facade) Publish(ctx context.Context, queueName string, message []byte) 
 }
 
 func (f *facade) Consume(queueName string, handler func([]byte) error) error {
-	msgs, err := f.channel.Consume(
+	channel := f.createChannel()
+	defer channel.Close()
+
+	msgs, err := channel.Consume(
 		queueName, // queue
 		"",        // consumer
 		false,     // auto-ack
@@ -109,17 +106,17 @@ func (f *facade) Consume(queueName string, handler func([]byte) error) error {
 }
 
 func (f *facade) Close() {
-	if err := f.channel.Close(); err != nil {
-		fmt.Println("failed to close channel: %w", err)
-	}
 	if err := f.conn.Close(); err != nil {
 		fmt.Println("failed to close connection: %w", err)
 	}
 }
 
 func (f *facade) declareQueue(queueName string) error {
+	channel := f.createChannel()
+	defer channel.Close()
+
 	// Declare the queue
-	queue, err := f.channel.QueueDeclare(
+	queue, err := channel.QueueDeclare(
 		queueName, // name
 		true,      // durable
 		false,     // delete when unused
@@ -132,7 +129,7 @@ func (f *facade) declareQueue(queueName string) error {
 	}
 
 	// Declare the exchange
-	err = f.channel.ExchangeDeclare(
+	err = channel.ExchangeDeclare(
 		queueName, // name (same as queue)
 		"direct",  // type
 		true,      // durable
@@ -146,7 +143,7 @@ func (f *facade) declareQueue(queueName string) error {
 	}
 
 	// Bind the queue to the exchange
-	err = f.channel.QueueBind(
+	err = channel.QueueBind(
 		queue.Name, // queue name
 		"",         // routing key (empty for direct exchange)
 		queueName,  // exchange
@@ -158,4 +155,12 @@ func (f *facade) declareQueue(queueName string) error {
 	}
 
 	return nil
+}
+
+func (f *facade) createChannel() *amqp.Channel {
+	channel, err := f.conn.Channel()
+	if err != nil {
+		log.Fatal("failed to open channel", "error", err)
+	}
+	return channel
 }

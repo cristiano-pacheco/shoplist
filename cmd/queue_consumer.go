@@ -2,12 +2,15 @@ package cmd
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity"
+	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/dto"
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/queue/consumer"
 	"github.com/cristiano-pacheco/shoplist/internal/shared"
+	"github.com/cristiano-pacheco/shoplist/pkg/rabbitmq"
 	"github.com/spf13/cobra"
 	"go.uber.org/fx"
 )
@@ -19,15 +22,36 @@ var queueConsumerCmd = &cobra.Command{
 	Short: "Start a queue consumer",
 	Long:  `Start a queue consumer for processing messages`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if queueName == "user-confirmation" {
+		if queueName == "user-confirmation-email" {
 			app := fx.New(
 				shared.Module,
 				identity.Module,
-				fx.Invoke(func(consumer consumer.UserConfirmationEmailConsumer) {
-					// Start consuming messages here
+				fx.Invoke(func(
+					consumer consumer.UserConfirmationEmailConsumer,
+					rabbitMQ rabbitmq.Facade,
+				) {
 					log.Printf("Starting consumer for queue: %s\n", queueName)
-					// You would implement the actual message consumption logic here
-					// This is a placeholder that keeps the application running
+
+					err := rabbitMQ.Consume(queueName, func(msg []byte) error {
+						var message dto.SendConfirmationEmailMessage
+						if err := json.Unmarshal(msg, &message); err != nil {
+							log.Printf("Error unmarshaling message: %v", err)
+							return err
+						}
+
+						if err := consumer.Execute(context.Background(), message); err != nil {
+							log.Printf("Error processing message: %v", err)
+							return err
+						}
+
+						return nil
+					})
+
+					if err != nil {
+						log.Fatalf("Failed to start consumer: %v", err)
+					}
+
+					// Keep the application running
 					<-context.Background().Done()
 				}),
 			)
