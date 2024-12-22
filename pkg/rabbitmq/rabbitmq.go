@@ -1,39 +1,14 @@
 package rabbitmq
 
 import (
-	"context"
 	"fmt"
 	"log"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
-type Delivery interface {
-	Body() []byte
-	Ack(multiple bool)
-	Nack(multiple, requeue bool)
-}
-
-type amqpDelivery struct {
-	msg amqp.Delivery
-}
-
-func (d *amqpDelivery) Body() []byte {
-	return d.msg.Body
-}
-
-func (d *amqpDelivery) Ack(multiple bool) {
-	d.msg.Ack(multiple)
-}
-
-func (d *amqpDelivery) Nack(multiple, requeue bool) {
-	d.msg.Nack(multiple, requeue)
-}
-
-type Facade interface {
-	Publish(ctx context.Context, queueName string, message []byte) error
-	Consume(queueName string, handler func([]byte) error) error
-	ConsumeWithChannel(queueName string) (<-chan Delivery, error)
+type RabbitMQ interface {
+	Connection() *amqp.Connection
 	Close()
 }
 
@@ -45,7 +20,7 @@ type Config struct {
 	VHost    string
 }
 
-func New(cfg Config) Facade {
+func New(cfg Config) RabbitMQ {
 	url := fmt.Sprintf("amqp://%s:%s@%s:%s/%s",
 		cfg.Username,
 		cfg.Password,
@@ -59,172 +34,20 @@ func New(cfg Config) Facade {
 		log.Fatal("failed to connect to RabbitMQ", "error", err)
 	}
 
-	return &facade{conn}
+	return &rabbitMQ{conn}
 }
 
 // facade represents the internal implementation of the Facade interface
-type facade struct {
-	conn *amqp.Connection
+type rabbitMQ struct {
+	connection *amqp.Connection
 }
 
-func (f *facade) Publish(ctx context.Context, queueName string, message []byte) error {
-	err := f.declareQueue(queueName)
-	if err != nil {
-		return fmt.Errorf("failed to declare queue: %w", err)
-	}
-
-	channel := f.Channel()
-	defer channel.Close()
-
-	err = channel.PublishWithContext(
-		ctx,
-		queueName, // exchange
-		"",        // routing key
-		false,     // mandatory
-		false,     // immediate
-		amqp.Publishing{
-			ContentType: "application/json",
-			Body:        message,
-		},
-	)
-
-	if err != nil {
-		return fmt.Errorf("failed to publish message: %w", err)
-	}
-
-	return nil
+func (f *rabbitMQ) Connection() *amqp.Connection {
+	return f.connection
 }
 
-func (f *facade) Consume(queueName string, handler func([]byte) error) error {
-	channel := f.Channel()
-	defer channel.Close()
-
-	msgs, err := channel.Consume(
-		queueName, // queue
-		"",        // consumer
-		false,     // auto-ack
-		false,     // exclusive
-		false,     // no-local
-		false,     // no-wait
-		nil,       // args
-	)
-	if err != nil {
-		return fmt.Errorf("failed to register consumer: %w", err)
-	}
-
-	go func() {
-		for msg := range msgs {
-			err := handler(msg.Body)
-			if err != nil {
-				// If handler returns an error, message will be nacked and requeued
-				msg.Nack(false, true)
-				continue
-			}
-			// If handler succeeds, message will be acked
-			msg.Ack(false)
-		}
-	}()
-
-	return nil
-}
-
-func (f *facade) ConsumeWithChannel(queueName string) (<-chan Delivery, error) {
-	channel := f.Channel()
-
-	// First declare the queue to ensure it exists
-	_, err := channel.QueueDeclare(
-		queueName, // name
-		true,      // durable
-		false,     // delete when unused
-		false,     // exclusive
-		false,     // no-wait
-		nil,       // arguments
-	)
-	if err != nil {
-		return nil, fmt.Errorf("failed to declare queue: %w", err)
-	}
-
-	msgs, err := channel.Consume(
-		queueName, // queue
-		"",        // consumer
-		false,     // auto-ack
-		false,     // exclusive
-		false,     // no-local
-		false,     // no-wait
-		nil,       // args
-	)
-	if err != nil {
-		return nil, fmt.Errorf("failed to register consumer: %w", err)
-	}
-
-	deliveries := make(chan Delivery)
-	go func() {
-		for msg := range msgs {
-			deliveries <- &amqpDelivery{msg: msg}
-		}
-		close(deliveries)
-		channel.Close()
-	}()
-
-	return deliveries, nil
-}
-
-func (f *facade) Close() {
-	if err := f.conn.Close(); err != nil {
+func (f *rabbitMQ) Close() {
+	if err := f.connection.Close(); err != nil {
 		fmt.Println("failed to close connection: %w", err)
 	}
-}
-
-func (f *facade) declareQueue(queueName string) error {
-	channel := f.Channel()
-	defer channel.Close()
-
-	// Declare the queue
-	queue, err := channel.QueueDeclare(
-		queueName, // name
-		true,      // durable
-		false,     // delete when unused
-		false,     // exclusive
-		false,     // no-wait
-		nil,       // arguments
-	)
-	if err != nil {
-		return fmt.Errorf("failed to declare queue: %w", err)
-	}
-
-	// Declare the exchange
-	err = channel.ExchangeDeclare(
-		queueName, // name (same as queue)
-		"direct",  // type
-		true,      // durable
-		false,     // auto-deleted
-		false,     // internal
-		false,     // no-wait
-		nil,       // arguments
-	)
-	if err != nil {
-		return fmt.Errorf("failed to declare exchange: %w", err)
-	}
-
-	// Bind the queue to the exchange
-	err = channel.QueueBind(
-		queue.Name, // queue name
-		"",         // routing key (empty for direct exchange)
-		queueName,  // exchange
-		false,      // no-wait
-		nil,        // arguments
-	)
-	if err != nil {
-		return fmt.Errorf("failed to bind queue to exchange: %w", err)
-	}
-
-	return nil
-}
-
-func (f *facade) Channel() *amqp.Channel {
-	channel, err := f.conn.Channel()
-	if err != nil {
-		log.Fatal("failed to open channel", "error", err)
-	}
-	return channel
 }

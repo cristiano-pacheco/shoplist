@@ -8,7 +8,7 @@ import (
 	"go.uber.org/fx"
 )
 
-func New(lc fx.Lifecycle, cfg config.Config) rabbitmq.Facade {
+func New(lc fx.Lifecycle, cfg config.Config) rabbitmq.RabbitMQ {
 	rabbitMQConfig := rabbitmq.Config{
 		Host:     cfg.RabbitMQ.Host,
 		Port:     cfg.RabbitMQ.Port,
@@ -17,14 +17,14 @@ func New(lc fx.Lifecycle, cfg config.Config) rabbitmq.Facade {
 		VHost:    cfg.RabbitMQ.VHost,
 	}
 
-	facade := rabbitmq.New(rabbitMQConfig)
+	rabbitMQ := rabbitmq.New(rabbitMQConfig)
 
 	lc.Append(fx.Hook{
 		OnStop: func(context.Context) error {
-			facade.Close()
+			rabbitMQ.Close()
 			return nil
 		},
 	})
 
-	return facade
+	return rabbitMQ
 }
