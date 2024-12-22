@@ -8,9 +8,32 @@ import (
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
+type Delivery interface {
+	Body() []byte
+	Ack(multiple bool)
+	Nack(multiple, requeue bool)
+}
+
+type amqpDelivery struct {
+	msg amqp.Delivery
+}
+
+func (d *amqpDelivery) Body() []byte {
+	return d.msg.Body
+}
+
+func (d *amqpDelivery) Ack(multiple bool) {
+	d.msg.Ack(multiple)
+}
+
+func (d *amqpDelivery) Nack(multiple, requeue bool) {
+	d.msg.Nack(multiple, requeue)
+}
+
 type Facade interface {
 	Publish(ctx context.Context, queueName string, message []byte) error
 	Consume(queueName string, handler func([]byte) error) error
+	ConsumeWithChannel(queueName string) (<-chan Delivery, error)
 	Close()
 }
 
@@ -50,7 +73,7 @@ func (f *facade) Publish(ctx context.Context, queueName string, message []byte) 
 		return fmt.Errorf("failed to declare queue: %w", err)
 	}
 
-	channel := f.createChannel()
+	channel := f.Channel()
 	defer channel.Close()
 
 	err = channel.PublishWithContext(
@@ -73,7 +96,7 @@ func (f *facade) Publish(ctx context.Context, queueName string, message []byte) 
 }
 
 func (f *facade) Consume(queueName string, handler func([]byte) error) error {
-	channel := f.createChannel()
+	channel := f.Channel()
 	defer channel.Close()
 
 	msgs, err := channel.Consume(
@@ -105,6 +128,47 @@ func (f *facade) Consume(queueName string, handler func([]byte) error) error {
 	return nil
 }
 
+func (f *facade) ConsumeWithChannel(queueName string) (<-chan Delivery, error) {
+	channel := f.Channel()
+
+	// First declare the queue to ensure it exists
+	_, err := channel.QueueDeclare(
+		queueName, // name
+		true,      // durable
+		false,     // delete when unused
+		false,     // exclusive
+		false,     // no-wait
+		nil,       // arguments
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to declare queue: %w", err)
+	}
+
+	msgs, err := channel.Consume(
+		queueName, // queue
+		"",        // consumer
+		false,     // auto-ack
+		false,     // exclusive
+		false,     // no-local
+		false,     // no-wait
+		nil,       // args
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to register consumer: %w", err)
+	}
+
+	deliveries := make(chan Delivery)
+	go func() {
+		for msg := range msgs {
+			deliveries <- &amqpDelivery{msg: msg}
+		}
+		close(deliveries)
+		channel.Close()
+	}()
+
+	return deliveries, nil
+}
+
 func (f *facade) Close() {
 	if err := f.conn.Close(); err != nil {
 		fmt.Println("failed to close connection: %w", err)
@@ -112,7 +176,7 @@ func (f *facade) Close() {
 }
 
 func (f *facade) declareQueue(queueName string) error {
-	channel := f.createChannel()
+	channel := f.Channel()
 	defer channel.Close()
 
 	// Declare the queue
@@ -157,7 +221,7 @@ func (f *facade) declareQueue(queueName string) error {
 	return nil
 }
 
-func (f *facade) createChannel() *amqp.Channel {
+func (f *facade) Channel() *amqp.Channel {
 	channel, err := f.conn.Channel()
 	if err != nil {
 		log.Fatal("failed to open channel", "error", err)
