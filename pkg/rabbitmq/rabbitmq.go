@@ -4,11 +4,13 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/queue"
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
 type RabbitMQ interface {
 	Connection() *amqp.Connection
+	DeclareDirectQueue(queueName string) error
 	Close()
 }
 
@@ -50,4 +52,50 @@ func (f *rabbitMQ) Close() {
 	if err := f.connection.Close(); err != nil {
 		fmt.Println("failed to close connection: %w", err)
 	}
+}
+
+func (p *rabbitMQ) DeclareDirectQueue(queueName string) error {
+	channel, err := p.connection.Channel()
+	defer channel.Close()
+	if err != nil {
+		return err
+	}
+
+	err = channel.ExchangeDeclare(
+		queueName,
+		"direct", // type
+		true,     // durable
+		false,    // auto-deleted
+		false,    // internal
+		false,    // no-wait
+		nil,      // arguments
+	)
+	if err != nil {
+		return err
+	}
+
+	_, err = channel.QueueDeclare(
+		queue.SendUserConfirmationEmailQueue,
+		true,  // durable
+		false, // delete when unused
+		false, // exclusive
+		false, // no-wait
+		nil,   // arguments
+	)
+	if err != nil {
+		return err
+	}
+
+	err = channel.QueueBind(
+		queue.SendUserConfirmationEmailQueue,
+		"",
+		queue.SendUserConfirmationEmailQueue,
+		false,
+		nil,
+	)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
