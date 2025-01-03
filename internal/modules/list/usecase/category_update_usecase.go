@@ -1,4 +1,4 @@
-package category_create
+package usecase
 
 import (
 	"context"
@@ -8,33 +8,40 @@ import (
 	"github.com/cristiano-pacheco/shoplist/internal/shared/validator"
 )
 
-type CategoryCreateUseCase struct {
+type CategoryUpdateUseCase struct {
 	categoryRepository repository.CategoryRepository
 	validate           validator.Validate
 }
 
-func New(
-	categoryRepository repository.CategoryRepository,
-	validate validator.Validate,
-) *CategoryCreateUseCase {
-	return &CategoryCreateUseCase{categoryRepository, validate}
+type CategoryUpdateInput struct {
+	UserID     uint64 `validate:"required"`
+	CategoryID uint64 `validate:"required"`
+	Name       string `validate:"required,min=1,max=255"`
 }
 
-func (uc *CategoryCreateUseCase) Execute(ctx context.Context, input Input) (Output, error) {
+func NewCategoryUpdateUseCase(
+	categoryRepository repository.CategoryRepository,
+	validate validator.Validate,
+) *CategoryUpdateUseCase {
+	return &CategoryUpdateUseCase{categoryRepository, validate}
+}
+
+func (uc *CategoryUpdateUseCase) Execute(ctx context.Context, input CategoryUpdateInput) error {
 	err := uc.validate.Struct(input)
 	if err != nil {
-		return Output{}, err
+		return err
 	}
 
 	categoryModel := model.CategoryModel{
+		ID:     input.CategoryID,
 		UserID: input.UserID,
 		Name:   input.Name,
 	}
 
-	dbCategoryModel, err := uc.categoryRepository.Create(ctx, categoryModel)
+	err = uc.categoryRepository.Update(ctx, categoryModel)
 	if err != nil {
-		return Output{}, err
+		return err
 	}
 
-	return Output{CategoryModel: *dbCategoryModel}, nil
+	return nil
 }

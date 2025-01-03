@@ -1,4 +1,4 @@
-package category_delete
+package usecase
 
 import (
 	"context"
@@ -12,11 +12,19 @@ type CategoryDeleteUseCase struct {
 	validate           validator.Validate
 }
 
-func New(categoryRepository repository.CategoryRepository, validate validator.Validate) *CategoryDeleteUseCase {
+type CategoryDeleteInput struct {
+	UserID     uint64 `validate:"required"`
+	CategoryID uint64 `validate:"required"`
+}
+
+func NewCategoryDeleteUseCase(
+	categoryRepository repository.CategoryRepository,
+	validate validator.Validate,
+) *CategoryDeleteUseCase {
 	return &CategoryDeleteUseCase{categoryRepository, validate}
 }
 
-func (uc *CategoryDeleteUseCase) Execute(ctx context.Context, input Input) error {
+func (uc *CategoryDeleteUseCase) Execute(ctx context.Context, input CategoryDeleteInput) error {
 	err := uc.validate.Struct(input)
 	if err != nil {
 		return err
@@ -26,6 +34,7 @@ func (uc *CategoryDeleteUseCase) Execute(ctx context.Context, input Input) error
 		UserID:     input.UserID,
 		CategoryID: input.CategoryID,
 	}
+
 	err = uc.categoryRepository.Delete(ctx, criteria)
 	if err != nil {
 		return err

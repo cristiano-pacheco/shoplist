@@ -2,20 +2,19 @@ package handler
 
 import (
 	"github.com/cristiano-pacheco/shoplist/internal/modules/list/dto"
-	"github.com/cristiano-pacheco/shoplist/internal/modules/list/usecase/category_create"
-	"github.com/cristiano-pacheco/shoplist/internal/modules/list/usecase/category_find"
+	"github.com/cristiano-pacheco/shoplist/internal/modules/list/usecase"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/sdk/empty"
 	"github.com/gofiber/fiber/v2"
 )
 
 type CategoryHandler struct {
-	createCategoryUseCase *category_create.CategoryCreateUseCase
-	findCategoriesUseCase *category_find.CategoryFindUseCase
+	createCategoryUseCase *usecase.CategoryCreateUseCase
+	findCategoriesUseCase *usecase.CategoryFindUseCase
 }
 
 func NewCategoryHandler(
-	createCategoryUseCase *category_create.CategoryCreateUseCase,
-	findCategoriesUseCase *category_find.CategoryFindUseCase,
+	createCategoryUseCase *usecase.CategoryCreateUseCase,
+	findCategoriesUseCase *usecase.CategoryFindUseCase,
 ) *CategoryHandler {
 	return &CategoryHandler{createCategoryUseCase, findCategoriesUseCase}
 }
@@ -33,7 +32,7 @@ func (h *CategoryHandler) Create(c *fiber.Ctx) error {
 		return c.SendStatus(fiber.StatusUnauthorized)
 	}
 
-	input := category_create.Input{UserID: userID, Name: request.Name}
+	input := usecase.CategoryCreateInput{UserID: userID, Name: request.Name}
 	output, err := h.createCategoryUseCase.Execute(c.UserContext(), input)
 	if err != nil {
 		return c.SendStatus(fiber.StatusInternalServerError)
@@ -61,7 +60,7 @@ func (h *CategoryHandler) Find(c *fiber.Ctx) error {
 		return err
 	}
 
-	input := category_find.Input{UserID: userID}
+	input := usecase.CategoryFindInput{UserID: userID}
 
 	if !empty.IsEmpty(request.CategoryID) {
 		input.CategoryID = &request.CategoryID
@@ -77,10 +76,10 @@ func (h *CategoryHandler) Find(c *fiber.Ctx) error {
 	}
 
 	res := dto.CategoryFindResponse{
-		Categories: make([]dto.Category, len(output.Categories)),
+		Categories: make([]dto.Category, len(output.CategoryList)),
 	}
 
-	for i, category := range output.Categories {
+	for i, category := range output.CategoryList {
 		res.Categories[i] = dto.Category{
 			ID:   category.ID,
 			Name: category.Name,

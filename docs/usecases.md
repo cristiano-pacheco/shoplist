@@ -14,9 +14,10 @@ Como visitante do site, eu quero poder criar uma nova conta informando meus dado
   - E ver uma mensagem de "Registro realizado com sucesso"
 
 Cenário 2: Email já cadastrado
-Dado que tento me registrar
-Quando informo um email já existente no sistema
-Então devo ver uma mensagem "Este email já está cadastrado"
+
+- **Dado** que tento me registrar
+- **Quando** informo um email já existente no sistema
+- **Então** devo ver uma mensagem "Este email já está cadastrado"
 E o formulário não deve ser enviado
 
 Cenário 3: Dados inválidos
