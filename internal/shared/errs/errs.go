@@ -7,6 +7,7 @@ import (
 
 type ErrorMapper interface {
 	Map(err error) error
+	MapCustomError(status int, message string) error
 }
 
 type errorMapper struct {
@@ -20,4 +21,8 @@ func New(validate validator.Validate, translator ut.Translator) ErrorMapper {
 
 func (em *errorMapper) Map(err error) error {
 	return em.mapError(err)
+}
+
+func (em *errorMapper) MapCustomError(status int, message string) error {
+	return em.mapCustomError(status, message)
 }

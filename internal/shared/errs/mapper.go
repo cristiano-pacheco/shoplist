@@ -9,6 +9,17 @@ import (
 	lib_validator "github.com/go-playground/validator/v10"
 )
 
+func (em *errorMapper) mapCustomError(status int, message string) error {
+	return &Error{
+		Status:        status,
+		OriginalError: nil,
+		Err: er{
+			Code:    codeUnknown,
+			Message: message,
+		},
+	}
+}
+
 func (em *errorMapper) mapError(err error) error {
 	validationErrors, ok := err.(lib_validator.ValidationErrors)
 

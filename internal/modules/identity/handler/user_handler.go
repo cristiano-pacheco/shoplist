@@ -1,19 +1,21 @@
 package handler
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
 
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/dto"
+	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/errs"
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/usecase"
-	"github.com/cristiano-pacheco/shoplist/internal/shared/errs"
+	shared_errs "github.com/cristiano-pacheco/shoplist/internal/shared/errs"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/http/response"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/otel"
 	"github.com/gofiber/fiber/v2"
 )
 
 type UserHandler struct {
-	errorMapper         errs.ErrorMapper
+	errorMapper         shared_errs.ErrorMapper
 	userCreateUseCase   usecase.UserCreateUseCase
 	userUpdateUseCase   usecase.UserUpdateUseCase
 	userFindUseCase     usecase.UserFindUseCase
@@ -21,7 +23,7 @@ type UserHandler struct {
 }
 
 func NewUserHandler(
-	errorMapper errs.ErrorMapper,
+	errorMapper shared_errs.ErrorMapper,
 	userCreateUseCase usecase.UserCreateUseCase,
 	userUpdateUseCase usecase.UserUpdateUseCase,
 	userFindUseCase usecase.UserFindUseCase,
@@ -65,6 +67,11 @@ func (h *UserHandler) Create(c *fiber.Ctx) error {
 
 	output, err := h.userCreateUseCase.Execute(ctx, input)
 	if err != nil {
+		if errors.Is(err, errs.ErrEmailAlreadyInUse) {
+			rError := h.errorMapper.MapCustomError(http.StatusBadRequest, err.Error())
+			return response.Error(c, rError)
+		}
+
 		rError := h.errorMapper.Map(err)
 		return response.Error(c, rError)
 	}

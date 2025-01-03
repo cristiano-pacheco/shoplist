@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 
+	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/errs"
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/model"
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/repository"
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/service"
@@ -60,6 +61,16 @@ func (uc *userCreateUseCase) Execute(ctx context.Context, input UserCreateUseCas
 	err := uc.validate.Struct(input)
 	if err != nil {
 		return output, err
+	}
+
+	user, err := uc.userRepo.FindByEmail(ctx, input.Email)
+	if err != nil {
+		uc.logger.Error("error finding user by email", "error", err)
+		return output, err
+	}
+
+	if user.ID != 0 {
+		return output, errs.ErrEmailAlreadyInUse
 	}
 
 	ph, err := uc.hashService.GenerateFromPassword([]byte(input.Password))
