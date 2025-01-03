@@ -83,27 +83,11 @@ services:
     depends_on:
       - prometheus
 
-  # RabbitMQ
-  rabbitmq:
-    image: rabbitmq:3-management-alpine
-    container_name: rabbitmq
-    ports:
-      - "5672:5672"    # porta AMQP
-      - "15672:15672"  # porta da interface de gerenciamento
-    volumes:
-      - rabbitmq-data:/var/lib/rabbitmq
-    environment:
-      - RABBITMQ_DEFAULT_USER=guest
-      - RABBITMQ_DEFAULT_PASS=guest
-    networks:
-      - backend
-
 volumes:
   prometheus-data:
   grafana-data:
   postgres-data:
   redis-data:
-  rabbitmq-data:
 
 networks:
   backend:

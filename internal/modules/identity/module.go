@@ -2,7 +2,6 @@ package identity
 
 import (
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/handler"
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/queue/producer"
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/repository"
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/router"
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/service"
@@ -34,12 +33,6 @@ var Module = fx.Module(
 		usecase.NewUserUpdateUseCase,
 		usecase.NewUserFindUseCase,
 		usecase.NewTokenGenerateUseCase,
-
-		// producers
-		producer.NewUserConfirmationEmailProducer,
-
-		// consumers
-		//consumer.NewUserConfirmationEmailConsumer,
 	),
 	fx.Invoke(
 		router.RegisterUserHandler,

@@ -3,9 +3,7 @@ package usecase
 import (
 	"context"
 
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/dto"
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/model"
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/queue/producer"
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/repository"
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/service"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/logger"
@@ -30,12 +28,11 @@ type UserCreateUseCaseOutput struct {
 }
 
 type userCreateUseCase struct {
-	emailConfirmationService      service.EmailConfirmationService
-	hashService                   service.HashService
-	userRepo                      repository.UserRepository
-	validate                      validator.Validate
-	logger                        logger.Logger
-	userConfirmationEmailProducer producer.UserConfirmationEmailProducer
+	emailConfirmationService service.EmailConfirmationService
+	hashService              service.HashService
+	userRepo                 repository.UserRepository
+	validate                 validator.Validate
+	logger                   logger.Logger
 }
 
 func NewUserCreateUseCase(
@@ -44,7 +41,6 @@ func NewUserCreateUseCase(
 	userRepo repository.UserRepository,
 	validate validator.Validate,
 	logger logger.Logger,
-	userConfirmationEmailProducer producer.UserConfirmationEmailProducer,
 ) UserCreateUseCase {
 	return &userCreateUseCase{
 		emailConfirmationService,
@@ -52,7 +48,6 @@ func NewUserCreateUseCase(
 		userRepo,
 		validate,
 		logger,
-		userConfirmationEmailProducer,
 	}
 }
 
@@ -87,10 +82,9 @@ func (uc *userCreateUseCase) Execute(ctx context.Context, input UserCreateUseCas
 		return output, err
 	}
 
-	message := dto.SendConfirmationEmailMessage{UserID: newUserModel.ID}
-	err = uc.userConfirmationEmailProducer.Execute(ctx, message)
+	err = uc.emailConfirmationService.Send(ctx, newUserModel.ID)
 	if err != nil {
-		message := "error publishing account confirmation email"
+		message := "error sending account confirmation email"
 		uc.logger.Error(message, "error", err)
 		return output, err
 	}

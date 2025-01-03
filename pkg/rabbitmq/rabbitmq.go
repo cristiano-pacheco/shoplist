@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/queue"
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
@@ -75,7 +74,7 @@ func (p *rabbitMQ) DeclareDirectQueue(queueName string) error {
 	}
 
 	_, err = channel.QueueDeclare(
-		queue.SendUserConfirmationEmailQueue,
+		queueName,
 		true,  // durable
 		false, // delete when unused
 		false, // exclusive
@@ -87,9 +86,9 @@ func (p *rabbitMQ) DeclareDirectQueue(queueName string) error {
 	}
 
 	err = channel.QueueBind(
-		queue.SendUserConfirmationEmailQueue,
+		queueName,
 		"",
-		queue.SendUserConfirmationEmailQueue,
+		queueName,
 		false,
 		nil,
 	)
