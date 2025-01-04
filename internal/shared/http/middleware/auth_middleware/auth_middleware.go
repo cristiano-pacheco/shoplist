@@ -5,9 +5,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/cristiano-pacheco/shoplist/internal/shared/dto"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/errs"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/http/response"
+	shared_jwt "github.com/cristiano-pacheco/shoplist/internal/shared/jwt"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/registry"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
@@ -42,7 +42,7 @@ func (m *Middleware) Execute(c *fiber.Ctx) error {
 		return &pk.PublicKey, nil
 	}
 
-	var claims dto.JWTClaims
+	var claims shared_jwt.JWTClaims
 	token, err := m.jwtParser.ParseWithClaims(jwtToken, &claims, tokenKeyFunc)
 	if err != nil {
 		return m.handleError(c, errs.ErrInvalidToken)
