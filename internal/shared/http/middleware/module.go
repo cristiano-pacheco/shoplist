@@ -8,4 +8,5 @@ import (
 var Module = fx.Module(
 	"shared/middleware",
 	auth_middleware.Module,
+	fx.Provide(NewErrorHandlerMiddleware),
 )

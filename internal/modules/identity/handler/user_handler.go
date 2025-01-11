@@ -53,10 +53,8 @@ func (h *UserHandler) Create(c *fiber.Ctx) error {
 	defer span.End()
 
 	var request dto.CreateUserRequest
-	err := c.BodyParser(&request)
-	if err != nil {
-		rError := h.errorMapper.Map(err)
-		return response.Error(c, rError)
+	if err := c.BodyParser(&request); err != nil {
+		return err
 	}
 
 	input := usecase.UserCreateUseCaseInput{
@@ -68,12 +66,9 @@ func (h *UserHandler) Create(c *fiber.Ctx) error {
 	output, err := h.userCreateUseCase.Execute(ctx, input)
 	if err != nil {
 		if errors.Is(err, errs.ErrEmailAlreadyInUse) {
-			rError := h.errorMapper.MapCustomError(http.StatusBadRequest, err.Error())
-			return response.Error(c, rError)
+			return h.errorMapper.MapCustomError(http.StatusBadRequest, err.Error())
 		}
-
-		rError := h.errorMapper.Map(err)
-		return response.Error(c, rError)
+		return err
 	}
 
 	resData := dto.CreateUserResponse{
@@ -104,17 +99,14 @@ func (h *UserHandler) Update(c *fiber.Ctx) error {
 	defer span.End()
 
 	var request dto.UpdateUserRequest
-	err := c.BodyParser(&request)
-	if err != nil {
-		rError := h.errorMapper.Map(err)
-		return response.Error(c, rError)
+	if err := c.BodyParser(&request); err != nil {
+		return err
 	}
 
 	id := c.Params("id")
 	idUser, err := strconv.ParseUint(id, 10, 64)
 	if err != nil {
-		rError := h.errorMapper.Map(err)
-		return response.Error(c, rError)
+		return err
 	}
 
 	input := usecase.UserUpdateUseCaseInput{
@@ -122,10 +114,8 @@ func (h *UserHandler) Update(c *fiber.Ctx) error {
 		Name:   request.Name,
 	}
 
-	err = h.userUpdateUseCase.Execute(ctx, input)
-	if err != nil {
-		rError := h.errorMapper.Map(err)
-		return response.Error(c, rError)
+	if err := h.userUpdateUseCase.Execute(ctx, input); err != nil {
+		return err
 	}
 
 	return c.SendStatus(http.StatusNoContent)
@@ -150,15 +140,13 @@ func (h *UserHandler) FindByID(c *fiber.Ctx) error {
 	id := c.Params("id")
 	idUser, err := strconv.ParseUint(id, 10, 64)
 	if err != nil {
-		rError := h.errorMapper.Map(err)
-		return response.Error(c, rError)
+		return err
 	}
 
 	input := usecase.UserFindUseCaseInput{UserID: idUser}
 	output, err := h.userFindUseCase.Execute(ctx, input)
 	if err != nil {
-		rError := h.errorMapper.Map(err)
-		return response.Error(c, rError)
+		return err
 	}
 
 	resData := dto.FindUserResponse{
@@ -185,17 +173,13 @@ func (h *UserHandler) Activate(c *fiber.Ctx) error {
 	defer span.End()
 
 	var request dto.ActivateUserRequest
-	err := c.BodyParser(&request)
-	if err != nil {
-		rError := h.errorMapper.Map(err)
-		return response.Error(c, rError)
+	if err := c.BodyParser(&request); err != nil {
+		return err
 	}
 
 	input := usecase.UserActivateUseCaseInput{UserID: request.UserID, Token: request.Token}
-	err = h.userActivateUseCase.Execute(ctx, input)
-	if err != nil {
-		rError := h.errorMapper.Map(err)
-		return response.Error(c, rError)
+	if err := h.userActivateUseCase.Execute(ctx, input); err != nil {
+		return err
 	}
 
 	return c.SendStatus(http.StatusNoContent)

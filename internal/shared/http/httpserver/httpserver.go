@@ -7,6 +7,7 @@ import (
 
 	_ "github.com/cristiano-pacheco/shoplist/docs"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/config"
+	"github.com/cristiano-pacheco/shoplist/internal/shared/http/middleware"
 	"github.com/gofiber/contrib/otelfiber/v2"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/healthcheck"
@@ -20,13 +21,17 @@ type Server struct {
 	conf config.Config
 }
 
-func NewHTTPServer(lc fx.Lifecycle, conf config.Config) *Server {
+func NewHTTPServer(
+	lc fx.Lifecycle,
+	conf config.Config,
+	errorHandlerMiddleware *middleware.ErrorHandlerMiddleware,
+) *Server {
 	fiberConfig := fiber.Config{
 		ReadBufferSize: 8192,
 		ProxyHeader:    "X-Real-IP",
 	}
 
-	server := Init(conf, fiberConfig)
+	server := Init(conf, errorHandlerMiddleware, fiberConfig)
 
 	lc.Append(fx.Hook{
 		OnStart: func(context.Context) error {
@@ -39,7 +44,11 @@ func NewHTTPServer(lc fx.Lifecycle, conf config.Config) *Server {
 	return server
 }
 
-func Init(conf config.Config, options ...fiber.Config) *Server {
+func Init(
+	conf config.Config,
+	errorHandlerMiddleware *middleware.ErrorHandlerMiddleware,
+	options ...fiber.Config,
+) *Server {
 	config := fiber.Config{
 		EnablePrintRoutes: !conf.IsProduction(),
 		AppName:           conf.App.Name,
@@ -50,6 +59,7 @@ func Init(conf config.Config, options ...fiber.Config) *Server {
 	app.Use(recover.New(recover.Config{EnableStackTrace: true}))
 	app.Use(healthcheck.New())
 	app.Use(otelfiber.Middleware())
+	app.Use(errorHandlerMiddleware.Middleware())
 
 	app.Get("/swagger/*", swagger.New(swagger.Config{
 		Title: conf.App.Name,

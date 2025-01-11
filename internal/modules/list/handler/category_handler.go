@@ -5,8 +5,6 @@ import (
 
 	"github.com/cristiano-pacheco/shoplist/internal/modules/list/dto"
 	"github.com/cristiano-pacheco/shoplist/internal/modules/list/usecase"
-	shared_errs "github.com/cristiano-pacheco/shoplist/internal/shared/errs"
-	"github.com/cristiano-pacheco/shoplist/internal/shared/http/response"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/sdk/empty"
 	"github.com/gofiber/fiber/v2"
 )
@@ -16,7 +14,6 @@ type CategoryHandler struct {
 	findCategoriesUseCase *usecase.CategoryFindUseCase
 	updateCategoryUseCase *usecase.CategoryUpdateUseCase
 	deleteCategoryUseCase *usecase.CategoryDeleteUseCase
-	errorMapper           shared_errs.ErrorMapper
 }
 
 func NewCategoryHandler(
@@ -24,14 +21,12 @@ func NewCategoryHandler(
 	findCategoriesUseCase *usecase.CategoryFindUseCase,
 	updateCategoryUseCase *usecase.CategoryUpdateUseCase,
 	deleteCategoryUseCase *usecase.CategoryDeleteUseCase,
-	errorMapper shared_errs.ErrorMapper,
 ) *CategoryHandler {
 	return &CategoryHandler{
 		createCategoryUseCase,
 		findCategoriesUseCase,
 		updateCategoryUseCase,
 		deleteCategoryUseCase,
-		errorMapper,
 	}
 }
 
@@ -51,8 +46,7 @@ func (h *CategoryHandler) Create(c *fiber.Ctx) error {
 	input := usecase.CategoryCreateInput{UserID: userID, Name: request.Name}
 	output, err := h.createCategoryUseCase.Execute(c.UserContext(), input)
 	if err != nil {
-		rError := h.errorMapper.Map(err)
-		return response.Error(c, rError)
+		return err
 	}
 
 	res := dto.CategoryCreateResponse{
@@ -89,8 +83,7 @@ func (h *CategoryHandler) Find(c *fiber.Ctx) error {
 
 	output, err := h.findCategoriesUseCase.Execute(c.UserContext(), input)
 	if err != nil {
-		rError := h.errorMapper.Map(err)
-		return response.Error(c, rError)
+		return err
 	}
 
 	res := dto.CategoryFindResponse{
@@ -132,8 +125,7 @@ func (h *CategoryHandler) Update(c *fiber.Ctx) error {
 
 	err = h.updateCategoryUseCase.Execute(c.UserContext(), input)
 	if err != nil {
-		rError := h.errorMapper.Map(err)
-		return response.Error(c, rError)
+		return err
 	}
 
 	res := dto.CategoryUpdateResponse{
@@ -164,8 +156,7 @@ func (h *CategoryHandler) Delete(c *fiber.Ctx) error {
 
 	err = h.deleteCategoryUseCase.Execute(c.UserContext(), input)
 	if err != nil {
-		rError := h.errorMapper.Map(err)
-		return response.Error(c, rError)
+		return err
 	}
 
 	return c.SendStatus(fiber.StatusNoContent)
