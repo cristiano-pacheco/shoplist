@@ -1,8 +1,12 @@
 package handler
 
 import (
+	"strconv"
+
 	"github.com/cristiano-pacheco/shoplist/internal/modules/list/dto"
 	"github.com/cristiano-pacheco/shoplist/internal/modules/list/usecase"
+	shared_errs "github.com/cristiano-pacheco/shoplist/internal/shared/errs"
+	"github.com/cristiano-pacheco/shoplist/internal/shared/http/response"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/sdk/empty"
 	"github.com/gofiber/fiber/v2"
 )
@@ -10,13 +14,25 @@ import (
 type CategoryHandler struct {
 	createCategoryUseCase *usecase.CategoryCreateUseCase
 	findCategoriesUseCase *usecase.CategoryFindUseCase
+	updateCategoryUseCase *usecase.CategoryUpdateUseCase
+	deleteCategoryUseCase *usecase.CategoryDeleteUseCase
+	errorMapper           shared_errs.ErrorMapper
 }
 
 func NewCategoryHandler(
 	createCategoryUseCase *usecase.CategoryCreateUseCase,
 	findCategoriesUseCase *usecase.CategoryFindUseCase,
+	updateCategoryUseCase *usecase.CategoryUpdateUseCase,
+	deleteCategoryUseCase *usecase.CategoryDeleteUseCase,
+	errorMapper shared_errs.ErrorMapper,
 ) *CategoryHandler {
-	return &CategoryHandler{createCategoryUseCase, findCategoriesUseCase}
+	return &CategoryHandler{
+		createCategoryUseCase,
+		findCategoriesUseCase,
+		updateCategoryUseCase,
+		deleteCategoryUseCase,
+		errorMapper,
+	}
 }
 
 func (h *CategoryHandler) Create(c *fiber.Ctx) error {
@@ -35,7 +51,8 @@ func (h *CategoryHandler) Create(c *fiber.Ctx) error {
 	input := usecase.CategoryCreateInput{UserID: userID, Name: request.Name}
 	output, err := h.createCategoryUseCase.Execute(c.UserContext(), input)
 	if err != nil {
-		return c.SendStatus(fiber.StatusInternalServerError)
+		rError := h.errorMapper.Map(err)
+		return response.Error(c, rError)
 	}
 
 	res := dto.CategoryCreateResponse{
@@ -72,7 +89,8 @@ func (h *CategoryHandler) Find(c *fiber.Ctx) error {
 
 	output, err := h.findCategoriesUseCase.Execute(c.UserContext(), input)
 	if err != nil {
-		return c.SendStatus(fiber.StatusInternalServerError)
+		rError := h.errorMapper.Map(err)
+		return response.Error(c, rError)
 	}
 
 	res := dto.CategoryFindResponse{
@@ -90,9 +108,65 @@ func (h *CategoryHandler) Find(c *fiber.Ctx) error {
 }
 
 func (h *CategoryHandler) Update(c *fiber.Ctx) error {
-	return nil
+	categoryID, err := strconv.ParseInt(c.Params("id"), 10, 64)
+	if err != nil {
+		return c.SendStatus(fiber.StatusBadRequest)
+	}
+
+	userID, ok := c.Locals("user_id").(uint64)
+	if !ok {
+		return c.SendStatus(fiber.StatusUnauthorized)
+	}
+
+	var request dto.CategoryUpdateRequest
+	err = c.BodyParser(&request)
+	if err != nil {
+		return err
+	}
+
+	input := usecase.CategoryUpdateInput{
+		CategoryID: uint64(categoryID),
+		UserID:     userID,
+		Name:       request.Name,
+	}
+
+	err = h.updateCategoryUseCase.Execute(c.UserContext(), input)
+	if err != nil {
+		rError := h.errorMapper.Map(err)
+		return response.Error(c, rError)
+	}
+
+	res := dto.CategoryUpdateResponse{
+		Category: dto.Category{
+			ID:   uint64(categoryID),
+			Name: request.Name,
+		},
+	}
+
+	return c.Status(fiber.StatusOK).JSON(res)
 }
 
 func (h *CategoryHandler) Delete(c *fiber.Ctx) error {
-	return nil
+	categoryID, err := strconv.ParseInt(c.Params("id"), 10, 64)
+	if err != nil {
+		return c.SendStatus(fiber.StatusBadRequest)
+	}
+
+	userID, ok := c.Locals("user_id").(uint64)
+	if !ok {
+		return c.SendStatus(fiber.StatusUnauthorized)
+	}
+
+	input := usecase.CategoryDeleteInput{
+		CategoryID: uint64(categoryID),
+		UserID:     userID,
+	}
+
+	err = h.deleteCategoryUseCase.Execute(c.UserContext(), input)
+	if err != nil {
+		rError := h.errorMapper.Map(err)
+		return response.Error(c, rError)
+	}
+
+	return c.SendStatus(fiber.StatusNoContent)
 }

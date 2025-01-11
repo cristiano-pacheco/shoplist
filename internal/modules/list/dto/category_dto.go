@@ -21,3 +21,11 @@ type Category struct {
 	ID   uint64 `json:"id"`
 	Name string `json:"name"`
 }
+
+type CategoryUpdateRequest struct {
+	Name string `json:"name"`
+}
+
+type CategoryUpdateResponse struct {
+	Category
+}
