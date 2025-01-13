@@ -5,7 +5,7 @@ import (
 	"github.com/cristiano-pacheco/shoplist/internal/shared/http/middleware/auth_middleware"
 )
 
-func RegisterCategoryHandler(
+func RegisterCategoryRoutes(
 	r *V1Router,
 	categoryHandler *handler.CategoryHandler,
 	authMiddleware *auth_middleware.Middleware,
