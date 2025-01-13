@@ -55,7 +55,11 @@ func (f *rabbitMQ) Close() {
 
 func (p *rabbitMQ) DeclareDirectQueue(queueName string) error {
 	channel, err := p.connection.Channel()
-	defer channel.Close()
+	defer func() {
+		if err := channel.Close(); err != nil {
+			fmt.Println("failed to close channel: %w", err)
+		}
+	}()
 	if err != nil {
 		return err
 	}

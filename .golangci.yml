@@ -46,3 +46,5 @@ linters-settings:
           - "github.com/gofiber/swagger"
           - "github.com/contribsys/faktory_worker_go"
           - "github.com/contribsys/faktory/client"
+          - "github.com/rabbitmq/amqp091-go"
+          - "github.com/gofiber/contrib/otelfiber/v2"

@@ -32,7 +32,7 @@ func NewTokenService(
 }
 
 func (s *tokenService) Generate(ctx context.Context, user model.UserModel) (string, error) {
-	ctx, span := otel.Trace().StartSpan(ctx, "TokenService.Generate")
+	_, span := otel.Trace().StartSpan(ctx, "TokenService.Generate")
 	defer span.End()
 
 	now := time.Now()
