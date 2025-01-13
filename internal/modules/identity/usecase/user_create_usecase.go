@@ -2,11 +2,13 @@ package usecase
 
 import (
 	"context"
+	"errors"
 
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/errs"
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/model"
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/repository"
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/service"
+	shared_errs "github.com/cristiano-pacheco/shoplist/internal/shared/errs"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/logger"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/otel"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/validator"
@@ -64,12 +66,12 @@ func (uc *userCreateUseCase) Execute(ctx context.Context, input UserCreateUseCas
 	}
 
 	user, err := uc.userRepo.FindByEmail(ctx, input.Email)
-	if err != nil {
+	if err != nil && !errors.Is(err, shared_errs.ErrNotFound) {
 		uc.logger.Error("error finding user by email", "error", err)
 		return output, err
 	}
 
-	if user.ID != 0 {
+	if user != nil && user.ID != 0 {
 		return output, errs.ErrEmailAlreadyInUse
 	}
 
