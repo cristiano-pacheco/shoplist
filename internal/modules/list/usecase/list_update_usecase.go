@@ -32,7 +32,7 @@ func (uc *ListUpdateUseCase) Execute(ctx context.Context, input ListUpdateInput)
 		return err
 	}
 
-	model, err := uc.listRepository.FindByID(ctx, input.ListID)
+	model, err := uc.listRepository.FindByIDAndUserID(ctx, input.ListID, input.UserID)
 	if err != nil {
 		return err
 	}

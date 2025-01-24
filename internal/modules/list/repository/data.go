@@ -1,5 +1,9 @@
 package repository
 
+import (
+	"time"
+)
+
 type FindCategoriesCriteria struct {
 	UserID     uint64
 	CategoryID *uint64
@@ -12,14 +16,14 @@ type DeleteCategoryCriteria struct {
 }
 
 type FindListsCriteria struct {
-	UserID uint64
-	ListID *uint64
-	Name   *string
+	UserID    uint64
+	Name      string
+	CreatedAt time.Time
 }
 
 type DeleteListCriteria struct {
+	ID     uint64
 	UserID uint64
-	ListID uint64
 }
 
 type FindListItemsCriteria struct {

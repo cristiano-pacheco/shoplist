@@ -31,12 +31,7 @@ func (uc *ListDeleteUseCase) Execute(ctx context.Context, input ListDeleteInput)
 		return err
 	}
 
-	criteria := repository.DeleteListCriteria{
-		UserID: input.UserID,
-		ListID: input.ListID,
-	}
-
-	model, err := uc.listRepository.FindByID(ctx, input.ListID)
+	model, err := uc.listRepository.FindByIDAndUserID(ctx, input.ListID, input.UserID)
 	if err != nil {
 		return err
 	}
@@ -45,7 +40,11 @@ func (uc *ListDeleteUseCase) Execute(ctx context.Context, input ListDeleteInput)
 		return errs.ErrResourceDoesNotBelongToUser
 	}
 
-	err = uc.listRepository.Delete(ctx, criteria)
+	err = uc.listRepository.Delete(ctx, repository.DeleteListCriteria{
+		ID:     input.ListID,
+		UserID: input.UserID,
+	})
+
 	if err != nil {
 		return err
 	}

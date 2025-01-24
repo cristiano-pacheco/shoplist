@@ -7,35 +7,27 @@ import (
 	"github.com/cristiano-pacheco/shoplist/internal/modules/list/repository"
 )
 
-type ListFindUseCase struct {
+type ListFindUsecase struct {
 	listRepository repository.ListRepository
 }
 
-type ListFindInput struct {
-	UserID   uint64
-	ListID   *uint64
-	ListName *string
+func NewListFindUsecase(listRepository repository.ListRepository) *ListFindUsecase {
+	return &ListFindUsecase{listRepository}
 }
 
-type ListFindOutput struct {
-	Lists []model.ListModel
-}
-
-func NewListFindUseCase(listRepository repository.ListRepository) *ListFindUseCase {
-	return &ListFindUseCase{listRepository}
-}
-
-func (uc *ListFindUseCase) Execute(ctx context.Context, input ListFindInput) (ListFindOutput, error) {
-	criteria := repository.FindListsCriteria{
-		UserID: input.UserID,
-		ListID: input.ListID,
-		Name:   input.ListName,
-	}
-
-	lists, err := uc.listRepository.Find(ctx, criteria)
+func (uc *ListFindUsecase) ExecuteByIDAndUserID(ctx context.Context, id uint64, userID uint64) (model.ListModel, error) {
+	list, err := uc.listRepository.FindByIDAndUserID(ctx, id, userID)
 	if err != nil {
-		return ListFindOutput{}, err
+		return model.ListModel{}, err
 	}
 
-	return ListFindOutput{Lists: lists}, nil
+	return list, nil
+}
+
+func (uc *ListFindUsecase) ExecuteByUserID(ctx context.Context, userID uint64) ([]model.ListModel, error) {
+	list, err := uc.listRepository.FindByUserID(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+	return list, nil
 }
