@@ -26,10 +26,16 @@ const EnvStaging = "staging"
 
 var _global Config
 
-func Init() {
-	err := godotenv.Load()
+func Init(envFile ...string) {
+	var err error
+	if len(envFile) > 0 {
+		err = godotenv.Load(envFile[0])
+	} else {
+		err = godotenv.Load()
+	}
+
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Printf("Warning: Error loading .env file: %v", err)
 	}
 
 	err = env.Parse(&_global)
