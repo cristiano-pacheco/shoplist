@@ -3,7 +3,6 @@ package httpserver
 import (
 	"context"
 	"fmt"
-	"time"
 
 	_ "github.com/cristiano-pacheco/shoplist/docs"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/config"
@@ -49,23 +48,24 @@ func Init(
 	errorHandlerMiddleware *middleware.ErrorHandlerMiddleware,
 	options ...fiber.Config,
 ) *Server {
-	config := fiber.Config{
-		EnablePrintRoutes: !conf.IsProduction(),
-		AppName:           conf.App.Name,
-		IdleTimeout:       5 * time.Second,
+	var fiberConfig fiber.Config
+	if len(options) > 0 {
+		fiberConfig = options[0]
 	}
 
-	app := fiber.New(config)
-	app.Use(recover.New(recover.Config{EnableStackTrace: true}))
-	app.Use(healthcheck.New())
+	app := fiber.New(fiberConfig)
+
+	app.Use(recover.New())
 	app.Use(otelfiber.Middleware())
+	app.Use(healthcheck.New())
 	app.Use(errorHandlerMiddleware.Middleware())
 
-	app.Get("/swagger/*", swagger.New(swagger.Config{
-		Title: conf.App.Name,
-	}))
+	app.Get("/swagger/*", swagger.New())
 
-	return &Server{app, conf}
+	return &Server{
+		app:  app,
+		conf: conf,
+	}
 }
 
 func (s *Server) Get(path string, handler ...fiber.Handler) {
@@ -107,4 +107,8 @@ func (s *Server) App() *fiber.App {
 
 func (s *Server) Shutdown(context.Context) error {
 	return s.app.Shutdown()
+}
+
+func (s *Server) GetConfig() config.Config {
+	return s.conf
 }

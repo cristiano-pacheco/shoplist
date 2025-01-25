@@ -19,6 +19,7 @@ import (
 
 type TestApp struct {
 	*fxtest.App
+	Config config.Config
 }
 
 var testEnvFile string
@@ -47,8 +48,16 @@ func init() {
 }
 
 func NewTestApp(t *testing.T, opts ...fx.Option) *TestApp {
+	// Initialize config with test environment
 	config.Init(testEnvFile)
 	cfg := config.GetConfig()
+
+	// Setup test database
+	if err := setupTestDB(cfg); err != nil {
+		t.Fatalf("Failed to setup test database: %v", err)
+	}
+
+	// Initialize OpenTelemetry
 	otel.Init(cfg)
 
 	defaultOpts := []fx.Option{
@@ -62,7 +71,10 @@ func NewTestApp(t *testing.T, opts ...fx.Option) *TestApp {
 
 	app := fxtest.New(t, opts...)
 
-	return &TestApp{App: app}
+	return &TestApp{
+		App:    app,
+		Config: cfg,
+	}
 }
 
 func (a *TestApp) Start() {
@@ -76,8 +88,16 @@ func (a *TestApp) Stop() {
 		log.Printf("Error stopping test app: %v", err)
 	}
 
-	if err := otel.Trace().Shutdown(context.Background()); err != nil {
-		log.Printf("Error shutting down tracer provider: %v", err)
+	// Cleanup test database
+	if err := teardownTestDB(a.Config); err != nil {
+		log.Printf("Error cleaning up test database: %v", err)
+	}
+
+	// Only try to shutdown OpenTelemetry if it's enabled
+	if a.Config.Telemetry.Enabled {
+		if err := otel.Trace().Shutdown(context.Background()); err != nil {
+			log.Printf("Error shutting down tracer provider: %v", err)
+		}
 	}
 }
 
