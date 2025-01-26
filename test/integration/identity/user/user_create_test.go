@@ -81,29 +81,177 @@ func (s *UserTestSuite) TestCreateUserSuccess() {
 	s.NotZero(userModel.UpdatedAt)
 }
 
-func (s *UserTestSuite) TestUpdateUser() {
-	// Create user directly in database
-	user := model.UserModel{
-		Name:         "Original Name",
-		Email:        "update-test@email.com",
-		PasswordHash: "some-hash",
-		IsActivated:  true,
+func (s *UserTestSuite) TestCreateUserValidations() {
+	testCases := []struct {
+		name         string
+		payload      map[string]string
+		expectedErrs []map[string]string
+	}{
+		{
+			name: "should return error when name is empty",
+			payload: map[string]string{
+				"email":    "user@email.com",
+				"password": "12345678",
+			},
+			expectedErrs: []map[string]string{
+				{
+					"field":   "name",
+					"message": "Name is a required field",
+				},
+			},
+		},
+		{
+			name: "should return error when name is less than 3 characters",
+			payload: map[string]string{
+				"name":     "ab",
+				"email":    "user@email.com",
+				"password": "12345678",
+			},
+			expectedErrs: []map[string]string{
+				{
+					"field":   "name",
+					"message": "Name must be at least 3 characters in length",
+				},
+			},
+		},
+		{
+			name: "should return error when email is empty",
+			payload: map[string]string{
+				"name":     "User Name",
+				"password": "12345678",
+			},
+			expectedErrs: []map[string]string{
+				{
+					"field":   "email",
+					"message": "Email is a required field",
+				},
+			},
+		},
+		{
+			name: "should return error when email is invalid",
+			payload: map[string]string{
+				"name":     "User Name",
+				"email":    "invalid-email",
+				"password": "12345678",
+			},
+			expectedErrs: []map[string]string{
+				{
+					"field":   "email",
+					"message": "Email must be a valid email address",
+				},
+			},
+		},
+		{
+			name: "should return error when password is empty",
+			payload: map[string]string{
+				"name":  "User Name",
+				"email": "user@email.com",
+			},
+			expectedErrs: []map[string]string{
+				{
+					"field":   "password",
+					"message": "Password is a required field",
+				},
+			},
+		},
+		{
+			name: "should return error when password is less than 8 characters",
+			payload: map[string]string{
+				"name":     "User Name",
+				"email":    "user@email.com",
+				"password": "123",
+			},
+			expectedErrs: []map[string]string{
+				{
+					"field":   "password",
+					"message": "Password must be at least 8 characters in length",
+				},
+			},
+		},
+		{
+			name:    "should return multiple errors when multiple fields are invalid",
+			payload: map[string]string{},
+			expectedErrs: []map[string]string{
+				{
+					"field":   "name",
+					"message": "Name is a required field",
+				},
+				{
+					"field":   "email",
+					"message": "Email is a required field",
+				},
+				{
+					"field":   "password",
+					"message": "Password is a required field",
+				},
+			},
+		},
 	}
 
-	err := s.itest.DB.Create(&user).Error
+	createUserURL := fmt.Sprintf("%s/api/v1/users", s.itest.BaseURL)
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			jsonPayload, err := json.Marshal(tc.payload)
+			s.NoError(err)
+
+			req, err := http.NewRequest(http.MethodPost, createUserURL, bytes.NewBuffer(jsonPayload))
+			s.NoError(err)
+
+			req.Header.Set("Content-Type", "application/json")
+
+			client := &http.Client{}
+			resp, err := client.Do(req)
+			s.NoError(err)
+			defer resp.Body.Close()
+
+			s.Equal(http.StatusUnprocessableEntity, resp.StatusCode)
+
+			responseBody, err := io.ReadAll(resp.Body)
+			s.NoError(err)
+
+			var response struct {
+				Error struct {
+					Code    string              `json:"code"`
+					Message string              `json:"message"`
+					Details []map[string]string `json:"details"`
+				} `json:"error"`
+			}
+
+			err = json.Unmarshal(responseBody, &response)
+			s.NoError(err)
+
+			s.Equal("INVALID_ARGUMENT", response.Error.Code)
+			s.Equal("Invalid input provided", response.Error.Message)
+			s.Equal(tc.expectedErrs, response.Error.Details)
+		})
+	}
+}
+
+func (s *UserTestSuite) TestEmailIsAlreadyInUse() {
+	// Create user directly in database
+	existingUser := model.UserModel{
+		Name:         "Existing User",
+		Email:        "existing@email.com",
+		PasswordHash: "some-hash",
+	}
+
+	err := s.itest.DB.Create(&existingUser).Error
 	s.NoError(err)
 
-	// Prepare update request
-	updateUserURL := fmt.Sprintf("%s/api/v1/users/%d", s.itest.BaseURL, user.ID)
+	// Try to create user with same email via API
+	createUserURL := fmt.Sprintf("%s/api/v1/users", s.itest.BaseURL)
 
 	payload := map[string]string{
-		"name": "Updated Name",
+		"name":     "Another User",
+		"email":    "existing@email.com", // Same email as existing user
+		"password": "12345678",
 	}
 
 	jsonPayload, err := json.Marshal(payload)
 	s.NoError(err)
 
-	req, err := http.NewRequest(http.MethodPut, updateUserURL, bytes.NewBuffer(jsonPayload))
+	req, err := http.NewRequest(http.MethodPost, createUserURL, bytes.NewBuffer(jsonPayload))
 	s.NoError(err)
 
 	req.Header.Set("Content-Type", "application/json")
@@ -113,16 +261,25 @@ func (s *UserTestSuite) TestUpdateUser() {
 	s.NoError(err)
 	defer resp.Body.Close()
 
-	// Verify response
-	s.Equal(http.StatusNoContent, resp.StatusCode)
+	s.Equal(http.StatusBadRequest, resp.StatusCode)
 
-	// Verify user was updated in database
-	var updatedUser model.UserModel
-	err = s.itest.DB.First(&updatedUser, user.ID).Error
+	responseBody, err := io.ReadAll(resp.Body)
 	s.NoError(err)
 
-	s.Equal(payload["name"], updatedUser.Name)
-	s.Equal(user.Email, updatedUser.Email)
-	s.Equal(user.IsActivated, updatedUser.IsActivated)
-	s.Equal(user.PasswordHash, updatedUser.PasswordHash)
+	var response struct {
+		Error struct {
+			Code    string `json:"code"`
+			Message string `json:"message"`
+		} `json:"error"`
+	}
+
+	err = json.Unmarshal(responseBody, &response)
+	s.NoError(err)
+
+	s.Equal("UNKNOWN", response.Error.Code)
+	s.Equal("email already in use", response.Error.Message)
+
+	// Clean up
+	err = s.itest.DB.Unscoped().Delete(&existingUser).Error
+	s.NoError(err)
 }
