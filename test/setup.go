@@ -3,6 +3,8 @@ package test
 import (
 	"context"
 	"log"
+	"path/filepath"
+	"runtime"
 
 	"github.com/cristiano-pacheco/shoplist/internal/modules/identity"
 	"github.com/cristiano-pacheco/shoplist/internal/modules/list"
@@ -26,7 +28,9 @@ type IntegrationTest struct {
 }
 
 func Setup() *IntegrationTest {
-	envFile := "../../.env"
+	_, currentFile, _, _ := runtime.Caller(0)
+	projectRoot := filepath.Join(filepath.Dir(currentFile), "../")
+	envFile := filepath.Join(projectRoot, ".env")
 	config.Init(envFile)
 
 	cfg := config.GetConfig()
