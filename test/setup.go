@@ -128,7 +128,10 @@ func (t *IntegrationTest) SetupDB() {
 
 	dsn := database_pkg.GeneratePostgresDatabaseDSN(dbConfig)
 
-	m, err := migrate.New("file://../../migrations", dsn)
+	_, currentFile, _, _ := runtime.Caller(0)
+	projectRoot := filepath.Join(filepath.Dir(currentFile), "../")
+	migrationsPath := filepath.Join(projectRoot, "migrations")
+	m, err := migrate.New("file://"+migrationsPath, dsn)
 	if err != nil {
 		log.Fatal(err)
 	}
