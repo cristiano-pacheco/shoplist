@@ -8,7 +8,7 @@ import (
 )
 
 type Config struct {
-	Environment string    `mapstructure:"ENVIROMENT"`
+	Environment string    `mapstructure:"ENVIRONMENT"`
 	Cors        string    `mapstructure:"CORS"`
 	JWT         JWT       `mapstructure:",squash"`
 	DB          DB        `mapstructure:",squash"`
