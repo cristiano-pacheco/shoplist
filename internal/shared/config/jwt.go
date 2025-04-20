@@ -1,7 +1,7 @@
 package config
 
 type JWT struct {
-	PrivateKey          string `env:"PRIVATE_KEY"`
-	Issuer              string `env:"ISSUER"`
-	ExpirationInSeconds int64  `env:"EXPIRATION_IN_SECONDS"`
+	PrivateKey          string `mapstructure:"JWT_PRIVATE_KEY"`
+	Issuer              string `mapstructure:"JWT_ISSUER"`
+	ExpirationInSeconds int64  `mapstructure:"JWT_EXPIRATION_IN_SECONDS"`
 }

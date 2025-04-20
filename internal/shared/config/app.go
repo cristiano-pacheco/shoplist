@@ -1,7 +1,7 @@
 package config
 
 type App struct {
-	Name    string `env:"NAME"`
-	BaseURL string `env:"BASE_URL"`
-	Version string `env:"VERSION"`
+	Name    string `mapstructure:"APP_NAME"`
+	BaseURL string `mapstructure:"APP_BASE_URL"`
+	Version string `mapstructure:"APP_VERSION"`
 }

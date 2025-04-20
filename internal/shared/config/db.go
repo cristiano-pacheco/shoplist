@@ -1,14 +1,14 @@
 package config
 
 type DB struct {
-	Host               string `env:"HOST" envDefault:"localhost"`
-	Name               string `env:"NAME" envDefault:"shoplist"`
-	User               string `env:"USER" envDefault:"postgres"`
-	Password           string `env:"PASSWORD" envDefault:"postgres"`
-	Port               uint   `env:"PORT" envDefault:"5432"`
-	MaxOpenConnections int    `env:"MAX_OPEN_CONNECTIONS" envDefault:"10"`
-	MaxIdleConnections int    `env:"MAX_IDLE_CONNECTIONS" envDefault:"10"`
-	SSLMode            bool   `env:"SSL_MODE" envDefault:"false"`
-	PrepareSTMT        bool   `env:"PREPARE_STMT" envDefault:"false"`
-	EnableLogs         bool   `env:"ENABLE_LOGS" envDefault:"false"`
+	Host               string `mapstructure:"DB_HOST"`
+	Name               string `mapstructure:"DB_NAME"`
+	User               string `mapstructure:"DB_USER"`
+	Password           string `mapstructure:"DB_PASSWORD"`
+	Port               uint   `mapstructure:"DB_PORT"`
+	MaxOpenConnections int    `mapstructure:"DB_MAX_OPEN_CONNECTIONS"`
+	MaxIdleConnections int    `mapstructure:"DB_MAX_IDLE_CONNECTIONS"`
+	SSLMode            bool   `mapstructure:"DB_SSL_MODE"`
+	PrepareSTMT        bool   `mapstructure:"DB_PREPARE_STMT"`
+	EnableLogs         bool   `mapstructure:"DB_ENABLE_LOGS"`
 }

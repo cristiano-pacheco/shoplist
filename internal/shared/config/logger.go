@@ -1,6 +1,6 @@
 package config
 
 type Log struct {
-	IsEnabled bool   `env:"ENABLED"`
-	LogLevel  string `env:"LEVEL"`
+	IsEnabled bool   `mapstructure:"LOG_ENABLED"`
+	LogLevel  string `mapstructure:"LOG_LEVEL"`
 }
