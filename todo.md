@@ -1,0 +1,5 @@
+- [ ] change router from fiber to chi
+- [ ] change config to use viper
+- [ ] change architecture to use application/domain/infra
+- [ ] add OTP in login
+- [ ] add request/response helpers
