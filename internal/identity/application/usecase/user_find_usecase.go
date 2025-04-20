@@ -9,14 +9,14 @@ import (
 )
 
 type UserFindUseCase interface {
-	Execute(ctx context.Context, input UserFindUseCaseInput) (UserFindUseCaseOutput, error)
+	Execute(ctx context.Context, input UserFindInput) (UserFindOutput, error)
 }
 
-type UserFindUseCaseInput struct {
+type UserFindInput struct {
 	UserID uint64 `validate:"required,number"`
 }
 
-type UserFindUseCaseOutput struct {
+type UserFindOutput struct {
 	UserID   uint64
 	Name     string
 	Email    string
@@ -35,7 +35,7 @@ func NewUserFindUseCase(
 	return &userFindUseCase{userRepo, logger}
 }
 
-func (uc *userFindUseCase) Execute(ctx context.Context, input UserFindUseCaseInput) (UserFindUseCaseOutput, error) {
+func (uc *userFindUseCase) Execute(ctx context.Context, input UserFindInput) (UserFindOutput, error) {
 	ctx, span := otel.Trace().StartSpan(ctx, "UserFindUseCase.Execute")
 	defer span.End()
 
@@ -43,10 +43,10 @@ func (uc *userFindUseCase) Execute(ctx context.Context, input UserFindUseCaseInp
 	if err != nil {
 		message := "error finding user by id %d"
 		uc.logger.Error(message, "error", err, "id", input.UserID)
-		return UserFindUseCaseOutput{}, err
+		return UserFindOutput{}, err
 	}
 
-	output := UserFindUseCaseOutput{
+	output := UserFindOutput{
 		UserID:   userModel.ID,
 		Name:     userModel.Name,
 		Email:    userModel.Email,

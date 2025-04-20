@@ -15,16 +15,16 @@ import (
 )
 
 type UserCreateUseCase interface {
-	Execute(ctx context.Context, input UserCreateUseCaseInput) (UserCreateUseCaseOutput, error)
+	Execute(ctx context.Context, input UserCreateInput) (UserCreateOutput, error)
 }
 
-type UserCreateUseCaseInput struct {
+type UserCreateInput struct {
 	Name     string `validate:"required,min=3,max=255"`
 	Email    string `validate:"required,email"`
 	Password string `validate:"required,min=8"`
 }
 
-type UserCreateUseCaseOutput struct {
+type UserCreateOutput struct {
 	Name   string
 	Email  string
 	UserID uint64
@@ -54,11 +54,11 @@ func NewUserCreateUseCase(
 	}
 }
 
-func (uc *userCreateUseCase) Execute(ctx context.Context, input UserCreateUseCaseInput) (UserCreateUseCaseOutput, error) {
+func (uc *userCreateUseCase) Execute(ctx context.Context, input UserCreateInput) (UserCreateOutput, error) {
 	ctx, span := otel.Trace().StartSpan(ctx, "UserCreateUseCase.Execute")
 	defer span.End()
 
-	output := UserCreateUseCaseOutput{}
+	output := UserCreateOutput{}
 
 	err := uc.validate.Struct(input)
 	if err != nil {
@@ -102,7 +102,7 @@ func (uc *userCreateUseCase) Execute(ctx context.Context, input UserCreateUseCas
 		return output, err
 	}
 
-	output = UserCreateUseCaseOutput{
+	output = UserCreateOutput{
 		UserID: newUserModel.ID,
 		Name:   newUserModel.Name,
 		Email:  newUserModel.Email,

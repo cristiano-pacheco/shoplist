@@ -4,23 +4,23 @@ import (
 	"context"
 	"errors"
 
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/repository"
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/service"
+	"github.com/cristiano-pacheco/shoplist/internal/identity/domain/repository"
+	"github.com/cristiano-pacheco/shoplist/internal/identity/domain/service"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/errs"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/otel"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/validator"
 )
 
 type TokenGenerateUseCase interface {
-	Execute(ctx context.Context, input TokenGenerateUseCaseInput) (TokenGenerateUseCaseOutput, error)
+	Execute(ctx context.Context, input TokenGenerateInput) (TokenGenerateOutput, error)
 }
 
-type TokenGenerateUseCaseInput struct {
+type TokenGenerateInput struct {
 	Email    string `validate:"required,email"`
 	Password string `validate:"required"`
 }
 
-type TokenGenerateUseCaseOutput struct {
+type TokenGenerateOutput struct {
 	Token string
 }
 
@@ -45,11 +45,11 @@ func NewTokenGenerateUseCase(
 	}
 }
 
-func (uc *tokenGenerateUseCase) Execute(ctx context.Context, input TokenGenerateUseCaseInput) (TokenGenerateUseCaseOutput, error) {
+func (uc *tokenGenerateUseCase) Execute(ctx context.Context, input TokenGenerateInput) (TokenGenerateOutput, error) {
 	ctx, span := otel.Trace().StartSpan(ctx, "TokenGenerateUseCase.Execute")
 	defer span.End()
 
-	output := TokenGenerateUseCaseOutput{}
+	output := TokenGenerateOutput{}
 
 	err := uc.validator.Struct(input)
 	if err != nil {

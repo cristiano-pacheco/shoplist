@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/domain/model"
+	"github.com/cristiano-pacheco/shoplist/internal/identity/domain/model"
 )
 
 type UserRepository interface {

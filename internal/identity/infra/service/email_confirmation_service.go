@@ -4,9 +4,10 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
+	"time"
 
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/model"
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/repository"
+	"github.com/cristiano-pacheco/shoplist/internal/identity/domain/model"
+	"github.com/cristiano-pacheco/shoplist/internal/identity/domain/repository"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/config"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/logger"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/mailer"
@@ -54,7 +55,7 @@ func (s *emailConfirmationService) Send(ctx context.Context, userID uint64) erro
 	ctx, span := otel.Trace().StartSpan(ctx, "EmailConfirmationService.Send")
 	defer span.End()
 
-	user, err := s.userRepository.FindByID(ctx, userID)
+	user, err := s.userRepository.FindByID(ctx, uint(userID))
 	if err != nil {
 		message := "error finding user"
 		s.logger.Error(message, "error", err)
@@ -84,7 +85,7 @@ func (s *emailConfirmationService) Send(ctx context.Context, userID uint64) erro
 		Name                    string
 		AccountConfirmationLink string
 	}{
-		Name:                    user.Name,
+		Name:                    user.Name(),
 		AccountConfirmationLink: accountConfLink,
 	}
 
@@ -95,14 +96,15 @@ func (s *emailConfirmationService) Send(ctx context.Context, userID uint64) erro
 		return err
 	}
 
-	// create the account confirmation model
-	acModel := model.AccountConfirmationModel{
-		UserID: user.ID,
-		Token:  accountConfToken,
+	acModel, err := model.CreateAccountConfirmationModel(user.ID(), accountConfToken, time.Now().Add(time.Hour*24))
+	if err != nil {
+		message := "error creating account confirmation model"
+		s.logger.Error(message, "error", err)
+		return err
 	}
 
 	// persist the account confirmation in the database
-	err = s.accountConfirmationRepository.Create(ctx, acModel)
+	acModel, err = s.accountConfirmationRepository.Create(ctx, acModel)
 	if err != nil {
 		message := "error creating account confirmation"
 		s.logger.Error(message, "error", err)
@@ -111,8 +113,8 @@ func (s *emailConfirmationService) Send(ctx context.Context, userID uint64) erro
 
 	md := mailer.MailData{
 		Sender:  s.cfg.MAIL.Sender,
-		ToName:  user.Name,
-		ToEmail: user.Email,
+		ToName:  user.Name(),
+		ToEmail: user.Email(),
 		Subject: sendAccountConfirmationEmailSubject,
 		Content: content,
 	}

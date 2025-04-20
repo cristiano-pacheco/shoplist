@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/model"
+	"github.com/cristiano-pacheco/shoplist/internal/identity/domain/model"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/config"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/logger"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/otel"
@@ -43,7 +43,7 @@ func (s *tokenService) Generate(ctx context.Context, user model.UserModel) (stri
 		IssuedAt:  jwt.NewNumericDate(now),
 		NotBefore: jwt.NewNumericDate(now),
 		Issuer:    s.conf.JWT.Issuer,
-		Subject:   strconv.FormatUint(user.ID, 10),
+		Subject:   strconv.FormatUint(uint64(user.ID()), 10),
 	}
 
 	method := jwt.GetSigningMethod(jwt.SigningMethodRS256.Name)

@@ -10,10 +10,10 @@ import (
 )
 
 type UserUpdateUseCase interface {
-	Execute(ctx context.Context, input UserUpdateUseCaseInput) error
+	Execute(ctx context.Context, input UserUpdateInput) error
 }
 
-type UserUpdateUseCaseInput struct {
+type UserUpdateInput struct {
 	UserID   uint64 `validate:"required"`
 	Name     string `validate:"required,min=3,max=255"`
 	Password string `validate:"required,min=8"`
@@ -33,7 +33,7 @@ func NewUserUpdateUseCase(
 	return &userUpdateUseCase{validate, userRepo, logger}
 }
 
-func (uc *userUpdateUseCase) Execute(ctx context.Context, input UserUpdateUseCaseInput) error {
+func (uc *userUpdateUseCase) Execute(ctx context.Context, input UserUpdateInput) error {
 	ctx, span := otel.Trace().StartSpan(ctx, "UserUpdateUseCase.Execute")
 	defer span.End()
 

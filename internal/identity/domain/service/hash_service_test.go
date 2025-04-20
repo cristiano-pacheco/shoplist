@@ -3,7 +3,7 @@ package service_test
 import (
 	"testing"
 
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/domain/service"
+	"github.com/cristiano-pacheco/shoplist/internal/identity/domain/service"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )
