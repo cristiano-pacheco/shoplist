@@ -1,11 +1,11 @@
 package identity
 
 import (
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/handler"
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/repository"
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/router"
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/service"
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/usecase"
+	"github.com/cristiano-pacheco/shoplist/internal/identity/application/usecase"
+	"github.com/cristiano-pacheco/shoplist/internal/identity/infra/http/chi/handler"
+	"github.com/cristiano-pacheco/shoplist/internal/identity/infra/http/chi/router"
+	"github.com/cristiano-pacheco/shoplist/internal/identity/infra/persistence/gorm/repository"
+	"github.com/cristiano-pacheco/shoplist/internal/identity/infra/service"
 	"go.uber.org/fx"
 )
 

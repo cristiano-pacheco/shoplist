@@ -3,8 +3,8 @@ package handler
 import (
 	"net/http"
 
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/dto"
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/usecase"
+	"github.com/cristiano-pacheco/shoplist/internal/identity/application/usecase"
+	"github.com/cristiano-pacheco/shoplist/internal/identity/infra/http/dto"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/errs"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/http/response"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/otel"
@@ -45,7 +45,7 @@ func (h *AuthHandler) GenerateToken(c *fiber.Ctx) error {
 		return response.Error(c, err)
 	}
 
-	input := usecase.TokenGenerateUseCaseInput{
+	input := usecase.TokenGenerateInput{
 		Email:    request.Email,
 		Password: request.Password,
 	}

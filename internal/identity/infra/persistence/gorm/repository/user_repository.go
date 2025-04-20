@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/model"
+	"github.com/cristiano-pacheco/shoplist/internal/identity/domain/model"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/database"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/errs"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/otel"
@@ -50,7 +50,7 @@ func (r *userRepository) FindByID(ctx context.Context, id uint64) (*model.UserMo
 	defer span.End()
 	var userModel model.UserModel
 	r.db.WithContext(ctx).First(&userModel, id)
-	if userModel.ID == 0 {
+	if userModel.ID() == 0 {
 		return nil, errs.ErrNotFound
 	}
 	return &userModel, nil
@@ -61,7 +61,7 @@ func (r *userRepository) FindByEmail(ctx context.Context, email string) (*model.
 	defer span.End()
 	var userModel model.UserModel
 	r.db.WithContext(ctx).Where("email = ?", email).First(&userModel)
-	if userModel.ID == 0 {
+	if userModel.ID() == 0 {
 		return nil, errs.ErrNotFound
 	}
 	return &userModel, nil
@@ -72,8 +72,8 @@ func (r *userRepository) IsActivated(ctx context.Context, userID uint64) bool {
 	defer span.End()
 	var userModel model.UserModel
 	r.db.WithContext(ctx).Where("id = ?", userID).First(&userModel)
-	if userModel.ID == 0 {
+	if userModel.ID() == 0 {
 		return false
 	}
-	return userModel.IsActivated
+	return userModel.IsActivated()
 }

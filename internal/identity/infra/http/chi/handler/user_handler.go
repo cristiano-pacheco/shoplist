@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/dto"
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/errs"
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/usecase"
+	"github.com/cristiano-pacheco/shoplist/internal/identity/application/usecase"
+	"github.com/cristiano-pacheco/shoplist/internal/identity/domain/errs"
+	"github.com/cristiano-pacheco/shoplist/internal/identity/infra/http/dto"
 	shared_errs "github.com/cristiano-pacheco/shoplist/internal/shared/errs"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/http/response"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/otel"
@@ -57,7 +57,7 @@ func (h *UserHandler) Create(c *fiber.Ctx) error {
 		return err
 	}
 
-	input := usecase.UserCreateUseCaseInput{
+	input := usecase.UserCreateInput{
 		Name:     request.Name,
 		Email:    request.Email,
 		Password: request.Password,
@@ -109,7 +109,7 @@ func (h *UserHandler) Update(c *fiber.Ctx) error {
 		return err
 	}
 
-	input := usecase.UserUpdateUseCaseInput{
+	input := usecase.UserUpdateInput{
 		UserID: idUser,
 		Name:   request.Name,
 	}
@@ -143,7 +143,7 @@ func (h *UserHandler) FindByID(c *fiber.Ctx) error {
 		return err
 	}
 
-	input := usecase.UserFindUseCaseInput{UserID: idUser}
+	input := usecase.UserFindInput{UserID: idUser}
 	output, err := h.userFindUseCase.Execute(ctx, input)
 	if err != nil {
 		return err
