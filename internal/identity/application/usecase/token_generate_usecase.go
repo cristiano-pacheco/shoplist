@@ -64,18 +64,18 @@ func (uc *tokenGenerateUseCase) Execute(ctx context.Context, input TokenGenerate
 		return output, err
 	}
 
-	if !user.IsActivated {
+	if !user.IsActivated() {
 		return output, errs.ErrUserIsNotActivated
 	}
 
-	hash := []byte(user.PasswordHash)
+	hash := []byte(user.PasswordHash())
 	pass := []byte(input.Password)
 	err = uc.hashService.CompareHashAndPassword(hash, pass)
 	if err != nil {
 		return output, errs.ErrInvalidCredentials
 	}
 
-	token, err := uc.tokenService.Generate(ctx, *user)
+	token, err := uc.tokenService.Generate(ctx, user)
 	if err != nil {
 		return output, err
 	}

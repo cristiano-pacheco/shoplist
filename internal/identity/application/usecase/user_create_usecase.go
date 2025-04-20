@@ -4,10 +4,10 @@ import (
 	"context"
 	"errors"
 
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/errs"
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/model"
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/repository"
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/service"
+	"github.com/cristiano-pacheco/shoplist/internal/identity/domain/errs"
+	"github.com/cristiano-pacheco/shoplist/internal/identity/domain/model"
+	"github.com/cristiano-pacheco/shoplist/internal/identity/domain/repository"
+	"github.com/cristiano-pacheco/shoplist/internal/identity/domain/service"
 	shared_errs "github.com/cristiano-pacheco/shoplist/internal/shared/errs"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/logger"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/otel"
@@ -31,22 +31,22 @@ type UserCreateOutput struct {
 }
 
 type userCreateUseCase struct {
-	emailConfirmationService service.EmailConfirmationService
-	hashService              service.HashService
-	userRepo                 repository.UserRepository
-	validate                 validator.Validate
-	logger                   logger.Logger
+	sendEmailConfirmationService service.SendEmailConfirmationService
+	hashService                  service.HashService
+	userRepo                     repository.UserRepository
+	validate                     validator.Validate
+	logger                       logger.Logger
 }
 
 func NewUserCreateUseCase(
-	emailConfirmationService service.EmailConfirmationService,
+	sendEmailConfirmationService service.SendEmailConfirmationService,
 	hashService service.HashService,
 	userRepo repository.UserRepository,
 	validate validator.Validate,
 	logger logger.Logger,
 ) UserCreateUseCase {
 	return &userCreateUseCase{
-		emailConfirmationService,
+		sendEmailConfirmationService,
 		hashService,
 		userRepo,
 		validate,
@@ -71,7 +71,7 @@ func (uc *userCreateUseCase) Execute(ctx context.Context, input UserCreateInput)
 		return output, err
 	}
 
-	if user != nil && user.ID != 0 {
+	if user.ID() != 0 {
 		return output, errs.ErrEmailAlreadyInUse
 	}
 
@@ -82,10 +82,11 @@ func (uc *userCreateUseCase) Execute(ctx context.Context, input UserCreateInput)
 		return output, err
 	}
 
-	userModel := model.UserModel{
-		Name:         input.Name,
-		Email:        input.Email,
-		PasswordHash: string(ph),
+	userModel, err := model.CreateUserModel(input.Name, input.Email, string(ph))
+	if err != nil {
+		message := "error creating user model"
+		uc.logger.Error(message, "error", err)
+		return output, err
 	}
 
 	newUserModel, err := uc.userRepo.Create(ctx, userModel)
@@ -95,7 +96,7 @@ func (uc *userCreateUseCase) Execute(ctx context.Context, input UserCreateInput)
 		return output, err
 	}
 
-	err = uc.emailConfirmationService.Send(ctx, newUserModel.ID)
+	err = uc.sendEmailConfirmationService.Execute(ctx, uint64(newUserModel.ID()))
 	if err != nil {
 		message := "error sending account confirmation email"
 		uc.logger.Error(message, "error", err)
@@ -103,9 +104,9 @@ func (uc *userCreateUseCase) Execute(ctx context.Context, input UserCreateInput)
 	}
 
 	output = UserCreateOutput{
-		UserID: newUserModel.ID,
-		Name:   newUserModel.Name,
-		Email:  newUserModel.Email,
+		UserID: uint64(newUserModel.ID()),
+		Name:   newUserModel.Name(),
+		Email:  newUserModel.Email(),
 	}
 
 	return output, nil

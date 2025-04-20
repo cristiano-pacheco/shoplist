@@ -116,3 +116,8 @@ func (u *UserModel) CreatedAt() time.Time {
 func (u *UserModel) UpdatedAt() time.Time {
 	return u.updatedAt
 }
+
+func (u *UserModel) Activate() {
+	u.isActivated = true
+	u.updatedAt = time.Now()
+}

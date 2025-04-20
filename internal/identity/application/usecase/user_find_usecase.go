@@ -3,7 +3,7 @@ package usecase
 import (
 	"context"
 
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/repository"
+	"github.com/cristiano-pacheco/shoplist/internal/identity/domain/repository"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/logger"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/otel"
 )
@@ -39,7 +39,7 @@ func (uc *userFindUseCase) Execute(ctx context.Context, input UserFindInput) (Us
 	ctx, span := otel.Trace().StartSpan(ctx, "UserFindUseCase.Execute")
 	defer span.End()
 
-	userModel, err := uc.userRepo.FindByID(ctx, input.UserID)
+	userModel, err := uc.userRepo.FindByID(ctx, uint(input.UserID))
 	if err != nil {
 		message := "error finding user by id %d"
 		uc.logger.Error(message, "error", err, "id", input.UserID)
@@ -47,10 +47,10 @@ func (uc *userFindUseCase) Execute(ctx context.Context, input UserFindInput) (Us
 	}
 
 	output := UserFindOutput{
-		UserID:   userModel.ID,
-		Name:     userModel.Name,
-		Email:    userModel.Email,
-		Password: userModel.PasswordHash,
+		UserID:   uint64(userModel.ID()),
+		Name:     userModel.Name(),
+		Email:    userModel.Email(),
+		Password: userModel.PasswordHash(),
 	}
 
 	return output, nil

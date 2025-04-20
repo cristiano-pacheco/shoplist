@@ -2,9 +2,8 @@ package usecase
 
 import (
 	"context"
-	"time"
 
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/repository"
+	"github.com/cristiano-pacheco/shoplist/internal/identity/domain/repository"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/errs"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/logger"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/otel"
@@ -44,7 +43,7 @@ func (uc *userActivateUseCase) Execute(ctx context.Context, input UserActivateUs
 		return err
 	}
 
-	accountConfirmationModel, err := uc.accountConfirmationRepo.FindByUserID(ctx, input.UserID)
+	accountConfirmationModel, err := uc.accountConfirmationRepo.FindByUserID(ctx, uint(input.UserID))
 	if err != nil {
 		uc.logger.ErrorContext(
 			ctx,
@@ -55,24 +54,23 @@ func (uc *userActivateUseCase) Execute(ctx context.Context, input UserActivateUs
 		return err
 	}
 
-	if accountConfirmationModel.Token != input.Token {
+	if accountConfirmationModel.Token() != input.Token {
 		return errs.ErrInvalidAccountConfirmationToken
 	}
 
-	userModel, err := uc.userRepo.FindByID(ctx, input.UserID)
+	userModel, err := uc.userRepo.FindByID(ctx, uint(input.UserID))
 	if err != nil {
 		return err
 	}
 
-	userModel.IsActivated = true
-	userModel.UpdatedAt = time.Now().UTC()
-	err = uc.userRepo.Update(ctx, *userModel)
+	userModel.Activate()
+	err = uc.userRepo.Update(ctx, userModel)
 	if err != nil {
 		uc.logger.ErrorContext(ctx, "error updating user", "error", err)
 		return err
 	}
 
-	err = uc.accountConfirmationRepo.Delete(ctx, accountConfirmationModel)
+	err = uc.accountConfirmationRepo.DeleteById(ctx, uint(accountConfirmationModel.ID()))
 	if err != nil {
 		uc.logger.ErrorContext(ctx, "error deleting account confirmation", "error", err)
 		return err
