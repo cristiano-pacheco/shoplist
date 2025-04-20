@@ -1,0 +1,13 @@
+package repository
+
+import (
+	"context"
+
+	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/domain/model"
+)
+
+type AccountConfirmationRepository interface {
+	Create(ctx context.Context, confirmation model.AccountConfirmationModel) (model.AccountConfirmationModel, error)
+	FindByToken(ctx context.Context, token string) (model.AccountConfirmationModel, error)
+	DeleteById(ctx context.Context, id uint) error
+}
