@@ -35,7 +35,7 @@ var Module = fx.Module(
 		usecase.NewTokenGenerateUseCase,
 	),
 	fx.Invoke(
-		router.RegisterUserHandler,
-		router.RegisterAuthHandler,
+		router.SetupUserRoutes,
+		router.SetupAuthRoutes,
 	),
 )
