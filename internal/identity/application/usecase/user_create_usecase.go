@@ -96,7 +96,7 @@ func (uc *userCreateUseCase) Execute(ctx context.Context, input UserCreateInput)
 		return output, err
 	}
 
-	err = uc.sendEmailConfirmationService.Execute(ctx, uint64(newUserModel.ID()))
+	err = uc.sendEmailConfirmationService.Execute(ctx, newUserModel.ID())
 	if err != nil {
 		message := "error sending account confirmation email"
 		uc.logger.Error(message, "error", err)
@@ -104,7 +104,7 @@ func (uc *userCreateUseCase) Execute(ctx context.Context, input UserCreateInput)
 	}
 
 	output = UserCreateOutput{
-		UserID: uint64(newUserModel.ID()),
+		UserID: newUserModel.ID(),
 		Name:   newUserModel.Name(),
 		Email:  newUserModel.Email(),
 	}

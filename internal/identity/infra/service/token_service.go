@@ -43,7 +43,7 @@ func (s *tokenService) Generate(ctx context.Context, user model.UserModel) (stri
 		IssuedAt:  jwt.NewNumericDate(now),
 		NotBefore: jwt.NewNumericDate(now),
 		Issuer:    s.conf.JWT.Issuer,
-		Subject:   strconv.FormatUint(uint64(user.ID()), 10),
+		Subject:   strconv.FormatUint(user.ID(), 10),
 	}
 
 	method := jwt.GetSigningMethod(jwt.SigningMethodRS256.Name)
