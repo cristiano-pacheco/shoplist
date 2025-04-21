@@ -6,12 +6,12 @@ import (
 )
 
 func RegisterUserHandler(
-	r *V1FiberRouter,
+	r *V1ChiRouter,
 	userHandler *handler.UserHandler,
 	authMiddleware *auth_middleware.Middleware,
 ) {
-	r.Post("/users", userHandler.Create)
-	r.Post("/users/activate", userHandler.Activate)
-	r.Get("/users/:id", authMiddleware.Execute, userHandler.FindByID)
-	r.Put("/users/:id", authMiddleware.Execute, userHandler.Update)
+	r.Router.Post("/users", userHandler.Create)
+	r.Router.Post("/users/activate", userHandler.Activate)
+	r.Router.Get("/users/:id", authMiddleware.Execute, userHandler.FindByID)
+	r.Router.Put("/users/:id", authMiddleware.Execute, userHandler.Update)
 }

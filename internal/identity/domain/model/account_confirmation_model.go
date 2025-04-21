@@ -7,15 +7,15 @@ import (
 )
 
 type AccountConfirmationModel struct {
-	id        uint
-	userID    uint
+	id        uint64
+	userID    uint64
 	token     string
 	expiresAt time.Time
 	createdAt time.Time
 }
 
 func CreateAccountConfirmationModel(
-	userID uint,
+	userID uint64,
 	token string,
 	expiresAt time.Time,
 ) (AccountConfirmationModel, error) {
@@ -36,8 +36,8 @@ func CreateAccountConfirmationModel(
 }
 
 func RestoreAccountConfirmationModel(
-	id uint,
-	userID uint,
+	id uint64,
+	userID uint64,
 	token string,
 	expiresAt time.Time,
 	createdAt time.Time,
@@ -63,11 +63,11 @@ func RestoreAccountConfirmationModel(
 	}, nil
 }
 
-func (c *AccountConfirmationModel) ID() uint {
+func (c *AccountConfirmationModel) ID() uint64 {
 	return c.id
 }
 
-func (c *AccountConfirmationModel) UserID() uint {
+func (c *AccountConfirmationModel) UserID() uint64 {
 	return c.userID
 }
 

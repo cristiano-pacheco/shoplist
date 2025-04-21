@@ -6,7 +6,7 @@ import (
 )
 
 type UserModel struct {
-	id           uint
+	id           uint64
 	name         NameModel
 	email        EmailModel
 	passwordHash string
@@ -46,7 +46,7 @@ func CreateUserModel(name string, email string, passwordHash string) (UserModel,
 }
 
 func RestoreUserModel(
-	id uint,
+	id uint64,
 	name string,
 	email string,
 	passwordHash string,
@@ -85,7 +85,7 @@ func RestoreUserModel(
 	}, nil
 }
 
-func (u *UserModel) ID() uint {
+func (u *UserModel) ID() uint64 {
 	return u.id
 }
 

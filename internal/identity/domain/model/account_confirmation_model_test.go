@@ -11,7 +11,7 @@ import (
 func TestCreateAccountConfirmationModel(t *testing.T) {
 	tests := []struct {
 		name          string
-		userID        uint
+		userID        uint64
 		token         string
 		expiresAt     time.Time
 		expectError   bool
@@ -63,17 +63,17 @@ func TestCreateAccountConfirmationModel(t *testing.T) {
 			} else {
 				assert.NoError(t, err)
 				require.NotNil(t, confirmation)
-				
+
 				// Verify fields
 				assert.Equal(t, tt.userID, confirmation.UserID())
 				assert.Equal(t, tt.token, confirmation.Token())
 				assert.Equal(t, tt.expiresAt.Unix(), confirmation.ExpiresAt().Unix())
-				
+
 				// Verify createdAt is set
 				assert.False(t, confirmation.CreatedAt().IsZero())
-				
+
 				// ID should be 0 (unset) for a newly created confirmation
-				assert.Equal(t, uint(0), confirmation.ID())
+				assert.Equal(t, uint64(0), confirmation.ID())
 			}
 		})
 	}
@@ -82,11 +82,11 @@ func TestCreateAccountConfirmationModel(t *testing.T) {
 func TestRestoreAccountConfirmationModel(t *testing.T) {
 	now := time.Now()
 	expiry := now.Add(24 * time.Hour)
-	
+
 	tests := []struct {
 		name          string
-		id            uint
-		userID        uint
+		id            uint64
+		userID        uint64
 		token         string
 		expiresAt     time.Time
 		createdAt     time.Time
@@ -163,7 +163,7 @@ func TestRestoreAccountConfirmationModel(t *testing.T) {
 			} else {
 				assert.NoError(t, err)
 				require.NotNil(t, confirmation)
-				
+
 				// Verify fields
 				assert.Equal(t, tt.id, confirmation.ID())
 				assert.Equal(t, tt.userID, confirmation.UserID())
@@ -177,7 +177,7 @@ func TestRestoreAccountConfirmationModel(t *testing.T) {
 
 func TestAccountConfirmationModel_IsExpired(t *testing.T) {
 	now := time.Now()
-	
+
 	tests := []struct {
 		name      string
 		expiresAt time.Time
@@ -204,7 +204,7 @@ func TestAccountConfirmationModel_IsExpired(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			confirmation, err := CreateAccountConfirmationModel(1, "token", tt.expiresAt)
 			require.NoError(t, err)
-			
+
 			// Test the IsExpired method
 			assert.Equal(t, tt.expected, confirmation.IsExpired())
 		})

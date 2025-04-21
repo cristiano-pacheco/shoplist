@@ -87,26 +87,26 @@ func TestCreateUserModel(t *testing.T) {
 			} else {
 				assert.NoError(t, err)
 				require.NotNil(t, user)
-				
+
 				// Verify name
 				nameModel, err := CreateNameModel(tt.userName)
 				require.NoError(t, err)
 				assert.Equal(t, nameModel.String(), user.Name())
-				
+
 				// Verify email
 				emailModel, err := CreateEmailModel(tt.email)
 				require.NoError(t, err)
 				assert.Equal(t, emailModel.String(), user.Email())
-				
+
 				// Verify other fields
 				assert.Equal(t, tt.passwordHash, user.PasswordHash())
 				assert.False(t, user.IsActivated())
 				assert.Empty(t, user.RpToken())
-				
+
 				// Verify timestamps are set
 				assert.False(t, user.CreatedAt().IsZero())
 				assert.False(t, user.UpdatedAt().IsZero())
-				
+
 				// CreatedAt and UpdatedAt should be very close to each other
 				timeDiff := user.UpdatedAt().Sub(user.CreatedAt())
 				assert.LessOrEqual(t, timeDiff.Milliseconds(), int64(100))
@@ -122,7 +122,7 @@ func TestUserModel_Fields(t *testing.T) {
 	require.NoError(t, err)
 	emailModel, err := CreateEmailModel("john@example.com")
 	require.NoError(t, err)
-	
+
 	// Create a user model manually for field testing
 	user := UserModel{
 		id:           123,
@@ -134,9 +134,9 @@ func TestUserModel_Fields(t *testing.T) {
 		createdAt:    now,
 		updatedAt:    now,
 	}
-	
+
 	// Test field values
-	assert.Equal(t, uint(123), user.ID())
+	assert.Equal(t, uint64(123), user.ID())
 	assert.Equal(t, "John Doe", user.Name())
 	assert.Equal(t, "john@example.com", user.Email())
 	assert.Equal(t, "hashed_password", user.PasswordHash())
@@ -149,7 +149,7 @@ func TestUserModel_Fields(t *testing.T) {
 func TestRestoreUserModel(t *testing.T) {
 	tests := []struct {
 		name        string
-		id          uint
+		id          uint64
 		userName    string
 		email       string
 		password    string
