@@ -4,7 +4,6 @@ import (
 	"os"
 
 	"github.com/cristiano-pacheco/shoplist/internal/identity"
-	"github.com/cristiano-pacheco/shoplist/internal/list"
 	"github.com/cristiano-pacheco/shoplist/internal/shared"
 	"github.com/spf13/cobra"
 	"go.uber.org/fx"
@@ -18,7 +17,6 @@ var rootCmd = &cobra.Command{
 		app := fx.New(
 			shared.Module,
 			identity.Module,
-			list.Module,
 		)
 		app.Run()
 	},
