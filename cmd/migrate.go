@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/cristiano-pacheco/shoplist/internal/shared/config"
+	"github.com/cristiano-pacheco/shoplist/internal/kernel/config"
 	"github.com/cristiano-pacheco/shoplist/pkg/database"
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"

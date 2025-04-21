@@ -4,7 +4,7 @@ import (
 	"os"
 
 	"github.com/cristiano-pacheco/shoplist/internal/identity"
-	"github.com/cristiano-pacheco/shoplist/internal/shared"
+	"github.com/cristiano-pacheco/shoplist/internal/kernel"
 	"github.com/spf13/cobra"
 	"go.uber.org/fx"
 )
@@ -15,7 +15,7 @@ var rootCmd = &cobra.Command{
 	Long:  `shoplist API.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		app := fx.New(
-			shared.Module,
+			kernel.Module,
 			identity.Module,
 		)
 		app.Run()

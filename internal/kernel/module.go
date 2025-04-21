@@ -1,4 +1,4 @@
-package shared
+package kernel
 
 import (
 	"github.com/cristiano-pacheco/shoplist/internal/kernel/config"
