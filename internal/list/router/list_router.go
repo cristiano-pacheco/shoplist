@@ -1,7 +1,7 @@
 package router
 
 import (
-	"github.com/cristiano-pacheco/shoplist/internal/modules/list/handler"
+	"github.com/cristiano-pacheco/shoplist/internal/list/handler"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/http/middleware/auth_middleware"
 )
 

@@ -3,8 +3,8 @@ package usecase
 import (
 	"context"
 
-	"github.com/cristiano-pacheco/shoplist/internal/modules/list/model"
-	"github.com/cristiano-pacheco/shoplist/internal/modules/list/repository"
+	"github.com/cristiano-pacheco/shoplist/internal/list/model"
+	"github.com/cristiano-pacheco/shoplist/internal/list/repository"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/validator"
 )
 

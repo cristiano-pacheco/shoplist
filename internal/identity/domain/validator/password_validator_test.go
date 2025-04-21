@@ -4,8 +4,8 @@ import (
 	"errors"
 	"testing"
 
-	customerr "github.com/cristiano-pacheco/shoplist/internal/modules/identity/domain/err"
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/domain/validator"
+	customerr "github.com/cristiano-pacheco/shoplist/internal/identity/domain/errs"
+	"github.com/cristiano-pacheco/shoplist/internal/identity/domain/validator"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )

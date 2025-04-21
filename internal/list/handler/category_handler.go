@@ -3,8 +3,8 @@ package handler
 import (
 	"strconv"
 
-	"github.com/cristiano-pacheco/shoplist/internal/modules/list/dto"
-	"github.com/cristiano-pacheco/shoplist/internal/modules/list/usecase"
+	"github.com/cristiano-pacheco/shoplist/internal/list/dto"
+	"github.com/cristiano-pacheco/shoplist/internal/list/usecase"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/sdk/empty"
 	"github.com/gofiber/fiber/v2"
 )

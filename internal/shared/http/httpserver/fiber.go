@@ -15,12 +15,12 @@ import (
 	"go.uber.org/fx"
 )
 
-type Server struct {
+type FiberServer struct {
 	app  *fiber.App
 	conf config.Config
 }
 
-func NewHTTPServer(
+func NewFiberHTTPServer(
 	lc fx.Lifecycle,
 	conf config.Config,
 	errorHandlerMiddleware *middleware.ErrorHandlerMiddleware,
@@ -43,11 +43,11 @@ func NewHTTPServer(
 	return server
 }
 
-func Init(
+func InitFiber(
 	conf config.Config,
 	errorHandlerMiddleware *middleware.ErrorHandlerMiddleware,
 	options ...fiber.Config,
-) *Server {
+) *FiberServer {
 	var fiberConfig fiber.Config
 	if len(options) > 0 {
 		fiberConfig = options[0]
@@ -62,37 +62,37 @@ func Init(
 
 	app.Get("/swagger/*", swagger.New())
 
-	return &Server{
+	return &FiberServer{
 		app:  app,
 		conf: conf,
 	}
 }
 
-func (s *Server) Get(path string, handler ...fiber.Handler) {
+func (s *FiberServer) Get(path string, handler ...fiber.Handler) {
 	s.app.Get(path, handler...)
 }
 
-func (s *Server) Post(path string, handler ...fiber.Handler) {
+func (s *FiberServer) Post(path string, handler ...fiber.Handler) {
 	s.app.Post(path, handler...)
 }
 
-func (s *Server) Put(path string, handler ...fiber.Handler) {
+func (s *FiberServer) Put(path string, handler ...fiber.Handler) {
 	s.app.Put(path, handler...)
 }
 
-func (s *Server) Patch(path string, handler ...fiber.Handler) {
+func (s *FiberServer) Patch(path string, handler ...fiber.Handler) {
 	s.app.Patch(path, handler...)
 }
 
-func (s *Server) Delete(path string, handler ...fiber.Handler) {
+func (s *FiberServer) Delete(path string, handler ...fiber.Handler) {
 	s.app.Delete(path, handler...)
 }
 
-func (s *Server) Group(path string, middleware ...fiber.Handler) fiber.Router {
+func (s *FiberServer) Group(path string, middleware ...fiber.Handler) fiber.Router {
 	return s.app.Group(path, middleware...)
 }
 
-func (s *Server) Run() {
+func (s *FiberServer) Run() {
 	go func() {
 		err := s.app.Listen(fmt.Sprintf(":%d", s.conf.HTTPPort))
 		if err != nil {
@@ -101,14 +101,14 @@ func (s *Server) Run() {
 	}()
 }
 
-func (s *Server) App() *fiber.App {
+func (s *FiberServer) App() *fiber.App {
 	return s.app
 }
 
-func (s *Server) Shutdown(context.Context) error {
+func (s *FiberServer) Shutdown(context.Context) error {
 	return s.app.Shutdown()
 }
 
-func (s *Server) GetConfig() config.Config {
+func (s *FiberServer) GetConfig() config.Config {
 	return s.conf
 }

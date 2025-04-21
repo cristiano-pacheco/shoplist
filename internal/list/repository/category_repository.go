@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 
-	"github.com/cristiano-pacheco/shoplist/internal/modules/list/model"
+	"github.com/cristiano-pacheco/shoplist/internal/list/model"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/database"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/errs"
 )

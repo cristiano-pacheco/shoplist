@@ -4,7 +4,7 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/cristiano-pacheco/shoplist/internal/modules/identity/domain/err"
+	"github.com/cristiano-pacheco/shoplist/internal/identity/domain/errs"
 )
 
 type PasswordValidator interface {
@@ -29,7 +29,7 @@ func (s *passwordValidator) Validate(password string) error {
 
 	// Check minimum length (8 characters)
 	if utf8.RuneCountInString(password) < 8 {
-		return err.ErrPasswordTooShort
+		return errs.ErrPasswordTooShort
 	}
 
 	// Iterate through each rune (character) with UTF-8 support
@@ -48,16 +48,16 @@ func (s *passwordValidator) Validate(password string) error {
 
 	// Verify all requirements are met
 	if !hasUpper {
-		return err.ErrPasswordNoUppercase
+		return errs.ErrPasswordNoUppercase
 	}
 	if !hasLower {
-		return err.ErrPasswordNoLowercase
+		return errs.ErrPasswordNoLowercase
 	}
 	if !hasNumber {
-		return err.ErrPasswordNoNumber
+		return errs.ErrPasswordNoNumber
 	}
 	if !hasSpecial {
-		return err.ErrPasswordNoSpecialChar
+		return errs.ErrPasswordNoSpecialChar
 	}
 
 	// Password meets all requirements
