@@ -10,7 +10,7 @@ type V1ChiRouter struct {
 	Server *httpserver.ChiHTTPServer
 }
 
-func NewV1Router(server *httpserver.ChiHTTPServer) *V1ChiRouter {
+func NewChiV1Router(server *httpserver.ChiHTTPServer) *V1ChiRouter {
 	router := server.Group("/api/v1")
 	return &V1ChiRouter{Router: router, Server: server}
 }

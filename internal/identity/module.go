@@ -12,7 +12,7 @@ import (
 var Module = fx.Module(
 	"identity",
 	fx.Provide(
-		router.NewV1FiberRouter,
+		router.NewChiV1Router,
 
 		// handlers
 		handler.NewAuthHandler,

@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/cristiano-pacheco/shoplist/internal/identity/domain/repository"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/errs"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/http/response"
 	shared_jwt "github.com/cristiano-pacheco/shoplist/internal/shared/jwt"
@@ -17,14 +18,16 @@ type AuthMiddleware struct {
 	jwtParser          *jwt.Parser
 	errorMapper        errs.ErrorMapper
 	privateKeyRegistry registry.PrivateKeyRegistry
+	userRepository     repository.UserRepository
 }
 
 func NewAuthMiddleware(
 	jwtParser *jwt.Parser,
 	errorMapper errs.ErrorMapper,
 	privateKeyRegistry registry.PrivateKeyRegistry,
+	userRepository repository.UserRepository,
 ) *AuthMiddleware {
-	return &AuthMiddleware{jwtParser, errorMapper, privateKeyRegistry}
+	return &AuthMiddleware{jwtParser, errorMapper, privateKeyRegistry, userRepository}
 }
 
 // UserIDKey is the key used to store the user ID in the request context
@@ -75,13 +78,13 @@ func (m *AuthMiddleware) Middleware() func(next http.Handler) http.Handler {
 			}
 
 			ctx := r.Context()
-			isUserEnabled, err := m.isUserEnabledQuery.Execute(ctx, userID)
+			isActivated, err := m.userRepository.IsActivated(ctx, userID)
 			if err != nil {
 				m.handleError(w, err)
 				return
 			}
 
-			if !isUserEnabled {
+			if !isActivated {
 				m.handleError(w, errs.ErrUserIsNotActivated)
 				return
 			}

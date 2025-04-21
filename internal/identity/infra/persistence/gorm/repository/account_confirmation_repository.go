@@ -42,7 +42,7 @@ func (r *accountConfirmationRepository) Create(ctx context.Context, m model.Acco
 
 func (r *accountConfirmationRepository) FindByUserID(
 	ctx context.Context,
-	userID uint,
+	userID uint64,
 ) (model.AccountConfirmationModel, error) {
 	ctx, span := otel.Trace().StartSpan(ctx, "AccountConfirmationRepository.FindByUserID")
 	defer span.End()
@@ -63,7 +63,7 @@ func (r *accountConfirmationRepository) Delete(ctx context.Context, m model.Acco
 	return r.db.WithContext(ctx).Where("user_id = ?", m.UserID).Delete(&m).Error
 }
 
-func (r *accountConfirmationRepository) DeleteById(ctx context.Context, id uint) error {
+func (r *accountConfirmationRepository) DeleteById(ctx context.Context, id uint64) error {
 	ctx, span := otel.Trace().StartSpan(ctx, "AccountConfirmationRepository.DeleteById")
 	defer span.End()
 
