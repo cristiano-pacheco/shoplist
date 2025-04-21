@@ -5,7 +5,7 @@ import (
 )
 
 var Module = fx.Module(
-	"shared/registry",
+	"kernel/registry",
 	fx.Provide(
 		NewPrivateKeyRegistry,
 	),

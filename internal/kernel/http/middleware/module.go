@@ -5,6 +5,6 @@ import (
 )
 
 var Module = fx.Module(
-	"shared/middleware",
+	"kernel/middleware",
 	fx.Provide(NewErrorHandlerMiddleware),
 )

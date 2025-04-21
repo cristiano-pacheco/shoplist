@@ -9,14 +9,14 @@ import (
 	"github.com/cristiano-pacheco/shoplist/internal/identity/application/usecase"
 	"github.com/cristiano-pacheco/shoplist/internal/identity/domain/errs"
 	"github.com/cristiano-pacheco/shoplist/internal/identity/infra/http/dto"
-	shared_errs "github.com/cristiano-pacheco/shoplist/internal/kernel/errs"
+	kernel_errs "github.com/cristiano-pacheco/shoplist/internal/kernel/errs"
 	"github.com/cristiano-pacheco/shoplist/internal/kernel/http/response"
 	"github.com/cristiano-pacheco/shoplist/internal/kernel/otel"
 	"github.com/go-chi/chi/v5"
 )
 
 type UserHandler struct {
-	errorMapper         shared_errs.ErrorMapper
+	errorMapper         kernel_errs.ErrorMapper
 	userCreateUseCase   usecase.UserCreateUseCase
 	userUpdateUseCase   usecase.UserUpdateUseCase
 	userFindUseCase     usecase.UserFindUseCase
@@ -24,7 +24,7 @@ type UserHandler struct {
 }
 
 func NewUserHandler(
-	errorMapper shared_errs.ErrorMapper,
+	errorMapper kernel_errs.ErrorMapper,
 	userCreateUseCase usecase.UserCreateUseCase,
 	userUpdateUseCase usecase.UserUpdateUseCase,
 	userFindUseCase usecase.UserFindUseCase,

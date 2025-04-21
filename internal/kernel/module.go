@@ -17,7 +17,7 @@ import (
 )
 
 var Module = fx.Module(
-	"shared",
+	"kernel",
 	config.Module,
 	database.Module,
 	validator.Module,

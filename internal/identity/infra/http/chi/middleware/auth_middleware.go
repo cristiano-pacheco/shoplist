@@ -9,7 +9,7 @@ import (
 	"github.com/cristiano-pacheco/shoplist/internal/identity/domain/repository"
 	"github.com/cristiano-pacheco/shoplist/internal/kernel/errs"
 	"github.com/cristiano-pacheco/shoplist/internal/kernel/http/response"
-	shared_jwt "github.com/cristiano-pacheco/shoplist/internal/kernel/jwt"
+	kernel_jwt "github.com/cristiano-pacheco/shoplist/internal/kernel/jwt"
 	"github.com/cristiano-pacheco/shoplist/internal/kernel/registry"
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -59,7 +59,7 @@ func (m *AuthMiddleware) Middleware() func(next http.Handler) http.Handler {
 				return &pk.PublicKey, nil
 			}
 
-			var claims shared_jwt.JWTClaims
+			var claims kernel_jwt.JWTClaims
 			token, err := m.jwtParser.ParseWithClaims(jwtToken, &claims, tokenKeyFunc)
 			if err != nil {
 				m.handleError(w, errs.ErrInvalidToken)

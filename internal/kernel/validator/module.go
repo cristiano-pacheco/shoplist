@@ -2,4 +2,4 @@ package validator
 
 import "go.uber.org/fx"
 
-var Module = fx.Module("shared/validator", fx.Provide(New))
+var Module = fx.Module("kernel/validator", fx.Provide(New))

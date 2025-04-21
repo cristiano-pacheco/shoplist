@@ -8,7 +8,7 @@ import (
 	"github.com/cristiano-pacheco/shoplist/internal/identity/domain/model"
 	"github.com/cristiano-pacheco/shoplist/internal/identity/domain/repository"
 	"github.com/cristiano-pacheco/shoplist/internal/identity/domain/service"
-	shared_errs "github.com/cristiano-pacheco/shoplist/internal/kernel/errs"
+	kernel_errs "github.com/cristiano-pacheco/shoplist/internal/kernel/errs"
 	"github.com/cristiano-pacheco/shoplist/internal/kernel/logger"
 	"github.com/cristiano-pacheco/shoplist/internal/kernel/otel"
 	"github.com/cristiano-pacheco/shoplist/internal/kernel/validator"
@@ -66,7 +66,7 @@ func (uc *userCreateUseCase) Execute(ctx context.Context, input UserCreateInput)
 	}
 
 	user, err := uc.userRepo.FindByEmail(ctx, input.Email)
-	if err != nil && !errors.Is(err, shared_errs.ErrNotFound) {
+	if err != nil && !errors.Is(err, kernel_errs.ErrNotFound) {
 		uc.logger.Error("error finding user by email", "error", err)
 		return output, err
 	}
