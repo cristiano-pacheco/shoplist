@@ -5,8 +5,8 @@ import (
 	"log"
 
 	"github.com/cristiano-pacheco/shoplist/cmd"
-	"github.com/cristiano-pacheco/shoplist/internal/shared/config"
-	"github.com/cristiano-pacheco/shoplist/internal/shared/otel"
+	"github.com/cristiano-pacheco/shoplist/internal/kernel/config"
+	"github.com/cristiano-pacheco/shoplist/internal/kernel/otel"
 )
 
 // @title           Go modulith API
