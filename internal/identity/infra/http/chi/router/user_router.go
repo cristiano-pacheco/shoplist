@@ -5,7 +5,7 @@ import (
 	"github.com/cristiano-pacheco/shoplist/internal/identity/infra/http/chi/middleware"
 )
 
-func RegisterUserHandler(
+func SetupUserRoutes(
 	r *V1ChiRouter,
 	userHandler *handler.UserHandler,
 	authMiddleware *middleware.AuthMiddleware,
