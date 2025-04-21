@@ -55,7 +55,7 @@ func (s *emailConfirmationService) Send(ctx context.Context, userID uint64) erro
 	ctx, span := otel.Trace().StartSpan(ctx, "EmailConfirmationService.Send")
 	defer span.End()
 
-	user, err := s.userRepository.FindByID(ctx, uint(userID))
+	user, err := s.userRepository.FindByID(ctx, userID)
 	if err != nil {
 		message := "error finding user"
 		s.logger.Error(message, "error", err)
@@ -76,7 +76,7 @@ func (s *emailConfirmationService) Send(ctx context.Context, userID uint64) erro
 	accountConfLink := fmt.Sprintf(
 		"%s/user/confirmation?id=%d&token=%s",
 		s.cfg.App.BaseURL,
-		user.ID,
+		user.ID(),
 		accountConfToken,
 	)
 
@@ -104,7 +104,7 @@ func (s *emailConfirmationService) Send(ctx context.Context, userID uint64) erro
 	}
 
 	// persist the account confirmation in the database
-	acModel, err = s.accountConfirmationRepository.Create(ctx, acModel)
+	_, err = s.accountConfirmationRepository.Create(ctx, acModel)
 	if err != nil {
 		message := "error creating account confirmation"
 		s.logger.Error(message, "error", err)
