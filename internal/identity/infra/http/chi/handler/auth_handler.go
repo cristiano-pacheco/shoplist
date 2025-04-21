@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"github.com/cristiano-pacheco/shoplist/internal/identity/application/usecase"
@@ -8,7 +9,6 @@ import (
 	"github.com/cristiano-pacheco/shoplist/internal/shared/errs"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/http/response"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/otel"
-	"github.com/gofiber/fiber/v2"
 )
 
 type AuthHandler struct {
@@ -29,20 +29,21 @@ func NewAuthHandler(
 // @Accept		json
 // @Produce		json
 // @Param		request	body	dto.GenerateTokenRequest	true	"Login credentials (email and password)"
-// @Success		200	{object}	response.Data[dto.GenerateTokenResponse]	"Successfully generated token"
+// @Success		200	{object}	response.Envelope[dto.GenerateTokenResponse]	"Successfully generated token"
 // @Failure		400	{object}	errs.Error	"Invalid request format or validation error"
 // @Failure		401	{object}	errs.Error	"Invalid credentials"
 // @Failure		404	{object}	errs.Error	"User not found"
 // @Failure		500	{object}	errs.Error	"Internal server error"
 // @Router		/api/v1/auth/token [post]
-func (h *AuthHandler) GenerateToken(c *fiber.Ctx) error {
-	ctx, span := otel.Trace().StartSpan(c.UserContext(), "AuthHandler.GenerateToken")
+func (h *AuthHandler) GenerateToken(w http.ResponseWriter, r *http.Request) {
+	ctx, span := otel.Trace().StartSpan(r.Context(), "AuthHandler.GenerateToken")
 	defer span.End()
 
 	var request dto.GenerateTokenRequest
-	err := c.BodyParser(&request)
+	err := json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
-		return response.Error(c, err)
+		response.Error(w, err)
+		return
 	}
 
 	input := usecase.TokenGenerateInput{
@@ -53,9 +54,11 @@ func (h *AuthHandler) GenerateToken(c *fiber.Ctx) error {
 	output, err := h.tokenGenerateUseCase.Execute(ctx, input)
 	if err != nil {
 		rError := h.errorMapper.Map(err)
-		return response.Error(c, rError)
+		response.Error(w, rError)
+		return
 	}
 
-	res := response.NewData(dto.GenerateTokenResponse{Token: output.Token})
-	return c.Status(http.StatusOK).JSON(res)
+	generateTokenResponse := dto.GenerateTokenResponse{Token: output.Token}
+	envelope := response.NewEnvelope(generateTokenResponse)
+	response.JSON(w, http.StatusOK, envelope, nil)
 }

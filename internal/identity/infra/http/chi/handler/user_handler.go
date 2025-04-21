@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"encoding/json"
 	"errors"
 	"net/http"
 	"strconv"
@@ -11,7 +12,7 @@ import (
 	shared_errs "github.com/cristiano-pacheco/shoplist/internal/shared/errs"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/http/response"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/otel"
-	"github.com/gofiber/fiber/v2"
+	"github.com/go-chi/chi/v5"
 )
 
 type UserHandler struct {
@@ -44,17 +45,18 @@ func NewUserHandler(
 // @Accept		json
 // @Produce		json
 // @Param		request	body	dto.CreateUserRequest	true	"User data"
-// @Success		201	{object}	response.Data[dto.CreateUserResponse]	"Successfully created user"
+// @Success		201	{object}	response.Envelope[dto.CreateUserResponse]	"Successfully created user"
 // @Failure		422	{object}	errs.Error	"Invalid request format or validation error"
 // @Failure		500	{object}	errs.Error	"Internal server error"
 // @Router		/api/v1/users [post]
-func (h *UserHandler) Create(c *fiber.Ctx) error {
-	ctx, span := otel.Trace().StartSpan(c.UserContext(), "UserHandler.Create")
+func (h *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
+	ctx, span := otel.Trace().StartSpan(r.Context(), "UserHandler.Create")
 	defer span.End()
 
 	var request dto.CreateUserRequest
-	if err := c.BodyParser(&request); err != nil {
-		return err
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		response.Error(w, err)
+		return
 	}
 
 	input := usecase.UserCreateInput{
@@ -66,9 +68,12 @@ func (h *UserHandler) Create(c *fiber.Ctx) error {
 	output, err := h.userCreateUseCase.Execute(ctx, input)
 	if err != nil {
 		if errors.Is(err, errs.ErrEmailAlreadyInUse) {
-			return h.errorMapper.MapCustomError(http.StatusBadRequest, err.Error())
+			rError := h.errorMapper.MapCustomError(http.StatusBadRequest, err.Error())
+			response.Error(w, rError)
+			return
 		}
-		return err
+		response.Error(w, err)
+		return
 	}
 
 	resData := dto.CreateUserResponse{
@@ -77,8 +82,8 @@ func (h *UserHandler) Create(c *fiber.Ctx) error {
 		Email:  output.Email,
 	}
 
-	res := response.NewData(resData)
-	return c.Status(http.StatusCreated).JSON(res)
+	envelope := response.NewEnvelope(resData)
+	response.JSON(w, http.StatusCreated, envelope, nil)
 }
 
 // @Summary		Update user
@@ -94,19 +99,21 @@ func (h *UserHandler) Create(c *fiber.Ctx) error {
 // @Failure		404	{object}	errs.Error	"User not found"
 // @Failure		500	{object}	errs.Error	"Internal server error"
 // @Router		/api/v1/users/{id} [put]
-func (h *UserHandler) Update(c *fiber.Ctx) error {
-	ctx, span := otel.Trace().StartSpan(c.UserContext(), "UserHandler.Update")
+func (h *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
+	ctx, span := otel.Trace().StartSpan(r.Context(), "UserHandler.Update")
 	defer span.End()
 
 	var request dto.UpdateUserRequest
-	if err := c.BodyParser(&request); err != nil {
-		return err
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		response.Error(w, err)
+		return
 	}
 
-	id := c.Params("id")
+	id := chi.URLParam(r, "id")
 	idUser, err := strconv.ParseUint(id, 10, 64)
 	if err != nil {
-		return err
+		response.Error(w, err)
+		return
 	}
 
 	input := usecase.UserUpdateInput{
@@ -115,10 +122,11 @@ func (h *UserHandler) Update(c *fiber.Ctx) error {
 	}
 
 	if err := h.userUpdateUseCase.Execute(ctx, input); err != nil {
-		return err
+		response.Error(w, err)
+		return
 	}
 
-	return c.SendStatus(http.StatusNoContent)
+	w.WriteHeader(http.StatusNoContent)
 }
 
 // @Summary		Find user
@@ -128,25 +136,27 @@ func (h *UserHandler) Update(c *fiber.Ctx) error {
 // @Produce		json
 // @Security 	BearerAuth
 // @Param		id		path	integer		true	"User ID"
-// @Success		200	{object}	response.Data[dto.FindUserResponse]	"Successfully found user"
+// @Success		200	{object}	response.Envelope[dto.FindUserResponse]	"Successfully found user"
 // @Failure		401	{object}	errs.Error	"Invalid credentials"
 // @Failure		404	{object}	errs.Error	"User not found"
 // @Failure		500	{object}	errs.Error	"Internal server error"
 // @Router		/api/v1/users/{id} [get]
-func (h *UserHandler) FindByID(c *fiber.Ctx) error {
-	ctx, span := otel.Trace().StartSpan(c.UserContext(), "UserHandler.FindByID")
+func (h *UserHandler) FindByID(w http.ResponseWriter, r *http.Request) {
+	ctx, span := otel.Trace().StartSpan(r.Context(), "UserHandler.FindByID")
 	defer span.End()
 
-	id := c.Params("id")
+	id := chi.URLParam(r, "id")
 	idUser, err := strconv.ParseUint(id, 10, 64)
 	if err != nil {
-		return err
+		response.Error(w, err)
+		return
 	}
 
 	input := usecase.UserFindInput{UserID: idUser}
 	output, err := h.userFindUseCase.Execute(ctx, input)
 	if err != nil {
-		return err
+		response.Error(w, err)
+		return
 	}
 
 	resData := dto.FindUserResponse{
@@ -154,8 +164,8 @@ func (h *UserHandler) FindByID(c *fiber.Ctx) error {
 		Email: output.Email,
 	}
 
-	res := response.NewData(resData)
-	return c.Status(http.StatusOK).JSON(res)
+	envelope := response.NewEnvelope(resData)
+	response.JSON(w, http.StatusOK, envelope, nil)
 }
 
 // @Summary		Activate user
@@ -168,19 +178,21 @@ func (h *UserHandler) FindByID(c *fiber.Ctx) error {
 // @Failure		400	{object}	errs.Error	"Invalid request format or validation error"
 // @Failure		500	{object}	errs.Error	"Internal server error"
 // @Router		/api/v1/users/activate [post]
-func (h *UserHandler) Activate(c *fiber.Ctx) error {
-	ctx, span := otel.Trace().StartSpan(c.UserContext(), "UserHandler.Activate")
+func (h *UserHandler) Activate(w http.ResponseWriter, r *http.Request) {
+	ctx, span := otel.Trace().StartSpan(r.Context(), "UserHandler.Activate")
 	defer span.End()
 
 	var request dto.ActivateUserRequest
-	if err := c.BodyParser(&request); err != nil {
-		return err
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		response.Error(w, err)
+		return
 	}
 
 	input := usecase.UserActivateUseCaseInput{UserID: request.UserID, Token: request.Token}
 	if err := h.userActivateUseCase.Execute(ctx, input); err != nil {
-		return err
+		response.Error(w, err)
+		return
 	}
 
-	return c.SendStatus(http.StatusNoContent)
+	w.WriteHeader(http.StatusNoContent)
 }

@@ -2,6 +2,7 @@ package response
 
 import (
 	"encoding/json"
+	"maps"
 	"net/http"
 
 	"github.com/cristiano-pacheco/shoplist/internal/shared/errs"
@@ -14,10 +15,10 @@ func Error(w http.ResponseWriter, err error) {
 		httpStatus := http.StatusInternalServerError
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(httpStatus)
-		json.NewEncoder(w).Encode(map[string]interface{}{
+		json.NewEncoder(w).Encode(Envelope{
 			"error": map[string]string{
 				"code":    "internal_server_error",
-				"message": err.Error(),
+				"message": "Internal server error",
 			},
 		})
 		return
@@ -30,4 +31,21 @@ func Error(w http.ResponseWriter, err error) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(rError.Status)
 	json.NewEncoder(w).Encode(rError)
+}
+
+func JSON(w http.ResponseWriter, status int, envelope Envelope, headers http.Header) error {
+	js, err := json.MarshalIndent(envelope, "", "\t")
+	if err != nil {
+		return err
+	}
+
+	js = append(js, '\n')
+
+	maps.Copy(w.Header(), headers)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	w.Write(js)
+
+	return nil
 }

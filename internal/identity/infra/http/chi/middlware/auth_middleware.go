@@ -1,4 +1,4 @@
-package auth_middleware
+package middleware
 
 import (
 	"context"
@@ -13,20 +13,18 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-type Middleware struct {
+type AuthMiddleware struct {
 	jwtParser          *jwt.Parser
 	errorMapper        errs.ErrorMapper
 	privateKeyRegistry registry.PrivateKeyRegistry
-	isUserEnabledQuery *isUserEnabledQuery
 }
 
-func New(
+func NewAuthMiddleware(
 	jwtParser *jwt.Parser,
 	errorMapper errs.ErrorMapper,
 	privateKeyRegistry registry.PrivateKeyRegistry,
-	isUserEnabledQuery *isUserEnabledQuery,
-) *Middleware {
-	return &Middleware{jwtParser, errorMapper, privateKeyRegistry, isUserEnabledQuery}
+) *AuthMiddleware {
+	return &AuthMiddleware{jwtParser, errorMapper, privateKeyRegistry}
 }
 
 // UserIDKey is the key used to store the user ID in the request context
@@ -41,7 +39,7 @@ func GetUserID(r *http.Request) (uint64, bool) {
 }
 
 // Middleware returns a Chi middleware function for authentication
-func (m *Middleware) Middleware() func(next http.Handler) http.Handler {
+func (m *AuthMiddleware) Middleware() func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			// Extract and validate token
@@ -97,7 +95,7 @@ func (m *Middleware) Middleware() func(next http.Handler) http.Handler {
 	}
 }
 
-func (m *Middleware) handleError(w http.ResponseWriter, err error) {
+func (m *AuthMiddleware) handleError(w http.ResponseWriter, err error) {
 	rError := m.errorMapper.Map(err)
 	response.Error(w, rError)
 }
