@@ -8,6 +8,7 @@ import (
 
 	"github.com/cristiano-pacheco/shoplist/internal/identity/domain/model"
 	"github.com/cristiano-pacheco/shoplist/internal/identity/domain/repository"
+	domain_service "github.com/cristiano-pacheco/shoplist/internal/identity/domain/service"
 	"github.com/cristiano-pacheco/shoplist/internal/kernel/config"
 	"github.com/cristiano-pacheco/shoplist/internal/kernel/logger"
 	"github.com/cristiano-pacheco/shoplist/internal/kernel/mailer"
@@ -26,7 +27,7 @@ type emailConfirmationService struct {
 	mailer                        mailer.SmtpMailer
 	accountConfirmationRepository repository.AccountConfirmationRepository
 	userRepository                repository.UserRepository
-	hashService                   HashService
+	hashService                   domain_service.HashService
 	logger                        logger.Logger
 	cfg                           config.Config
 }
@@ -36,7 +37,7 @@ func NewEmailConfirmationService(
 	smtpMailer mailer.SmtpMailer,
 	accountConfirmationRepository repository.AccountConfirmationRepository,
 	userRepository repository.UserRepository,
-	hashService HashService,
+	hashService domain_service.HashService,
 	logger logger.Logger,
 	cfg config.Config,
 ) EmailConfirmationService {

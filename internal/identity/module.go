@@ -2,8 +2,12 @@ package identity
 
 import (
 	"github.com/cristiano-pacheco/shoplist/internal/identity/application/usecase"
+	domain_service "github.com/cristiano-pacheco/shoplist/internal/identity/domain/service"
+	"github.com/cristiano-pacheco/shoplist/internal/identity/domain/validator"
 	"github.com/cristiano-pacheco/shoplist/internal/identity/infra/http/chi/handler"
+	"github.com/cristiano-pacheco/shoplist/internal/identity/infra/http/chi/middleware"
 	"github.com/cristiano-pacheco/shoplist/internal/identity/infra/http/chi/router"
+	"github.com/cristiano-pacheco/shoplist/internal/identity/infra/persistence/gorm/mapper"
 	"github.com/cristiano-pacheco/shoplist/internal/identity/infra/persistence/gorm/repository"
 	"github.com/cristiano-pacheco/shoplist/internal/identity/infra/service"
 	"go.uber.org/fx"
@@ -12,11 +16,31 @@ import (
 var Module = fx.Module(
 	"identity",
 	fx.Provide(
+		// #################### APPLICATION ####################################
+		// usecases
+		usecase.NewUserCreateUseCase,
+		usecase.NewUserActivateUseCase,
+		usecase.NewUserUpdateUseCase,
+		usecase.NewUserFindUseCase,
+		usecase.NewTokenGenerateUseCase,
+
+		// #################### DOMAIN #########################################
+		domain_service.NewHashService,
+		validator.NewPasswordValidator,
+
+		// #################### INFRA ##########################################
 		router.NewChiV1Router,
 
 		// handlers
 		handler.NewAuthHandler,
 		handler.NewUserHandler,
+
+		// middlewares
+		middleware.NewAuthMiddleware,
+
+		// mappers
+		mapper.NewUserMapper,
+		mapper.NewAccountConfirmationMapper,
 
 		// repositories
 		repository.NewUserRepository,
@@ -24,15 +48,7 @@ var Module = fx.Module(
 
 		// services
 		service.NewTokenService,
-		service.NewHashService,
 		service.NewEmailConfirmationService,
-
-		// usecases
-		usecase.NewUserCreateUseCase,
-		usecase.NewUserActivateUseCase,
-		usecase.NewUserUpdateUseCase,
-		usecase.NewUserFindUseCase,
-		usecase.NewTokenGenerateUseCase,
 	),
 	fx.Invoke(
 		router.SetupUserRoutes,
