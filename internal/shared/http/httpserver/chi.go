@@ -10,7 +10,7 @@ import (
 	"github.com/cristiano-pacheco/shoplist/internal/shared/config"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/http/middleware"
 	"github.com/go-chi/chi/v5"
-	chimiddleware "github.com/go-chi/chi/v5/middleware"
+	chi_middleware "github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	httpSwagger "github.com/swaggo/http-swagger"
@@ -18,18 +18,18 @@ import (
 	"go.uber.org/fx"
 )
 
-type Server struct {
+type ChiHTTPServer struct {
 	router chi.Router
 	conf   config.Config
 	server *http.Server
 }
 
-func NewHTTPServer(
+func NewChiHTTPServer(
 	lc fx.Lifecycle,
 	conf config.Config,
 	errorHandlerMiddleware *middleware.ErrorHandlerMiddleware,
-) *Server {
-	server := Init(conf, errorHandlerMiddleware)
+) *ChiHTTPServer {
+	server := InitChiHTTPServer(conf, errorHandlerMiddleware)
 
 	lc.Append(fx.Hook{
 		OnStart: func(context.Context) error {
@@ -42,18 +42,18 @@ func NewHTTPServer(
 	return server
 }
 
-func Init(
+func InitChiHTTPServer(
 	conf config.Config,
 	errorHandlerMiddleware *middleware.ErrorHandlerMiddleware,
-) *Server {
+) *ChiHTTPServer {
 	r := chi.NewRouter()
 
 	// Basic middleware
-	r.Use(chimiddleware.Logger)
-	r.Use(chimiddleware.Recoverer)
-	r.Use(chimiddleware.RequestID)
-	r.Use(chimiddleware.RealIP)
-	r.Use(chimiddleware.Timeout(30 * time.Second))
+	r.Use(chi_middleware.Logger)
+	r.Use(chi_middleware.Recoverer)
+	r.Use(chi_middleware.RequestID)
+	r.Use(chi_middleware.RealIP)
+	r.Use(chi_middleware.Timeout(30 * time.Second))
 
 	// CORS configuration
 	r.Use(cors.Handler(cors.Options{
@@ -67,11 +67,11 @@ func Init(
 
 	// OpenTelemetry middleware
 	r.Use(func(next http.Handler) http.Handler {
-		return otelhttp.NewHandler(next, "http-server")
+		return otelhttp.NewHandler(next, "chi-http-server")
 	})
 
-	// Error handler middleware will be implemented as needed
-	// We'll need to adapt it from Fiber to Chi
+	// Error handler middleware
+	r.Use(errorHandlerMiddleware.ChiMiddleware())
 
 	// Health check
 	r.Get("/healthcheck", func(w http.ResponseWriter, r *http.Request) {
@@ -85,7 +85,7 @@ func Init(
 	// Swagger
 	r.Get("/swagger/*", httpSwagger.WrapHandler)
 
-	server := &Server{
+	server := &ChiHTTPServer{
 		router: r,
 		conf:   conf,
 		server: &http.Server{
@@ -97,31 +97,31 @@ func Init(
 	return server
 }
 
-func (s *Server) Get(path string, handler http.HandlerFunc) {
+func (s *ChiHTTPServer) Get(path string, handler http.HandlerFunc) {
 	s.router.Get(path, handler)
 }
 
-func (s *Server) Post(path string, handler http.HandlerFunc) {
+func (s *ChiHTTPServer) Post(path string, handler http.HandlerFunc) {
 	s.router.Post(path, handler)
 }
 
-func (s *Server) Put(path string, handler http.HandlerFunc) {
+func (s *ChiHTTPServer) Put(path string, handler http.HandlerFunc) {
 	s.router.Put(path, handler)
 }
 
-func (s *Server) Patch(path string, handler http.HandlerFunc) {
+func (s *ChiHTTPServer) Patch(path string, handler http.HandlerFunc) {
 	s.router.Patch(path, handler)
 }
 
-func (s *Server) Delete(path string, handler http.HandlerFunc) {
+func (s *ChiHTTPServer) Delete(path string, handler http.HandlerFunc) {
 	s.router.Delete(path, handler)
 }
 
-func (s *Server) Group(path string) chi.Router {
+func (s *ChiHTTPServer) Group(path string) chi.Router {
 	return s.router.Route(path, nil)
 }
 
-func (s *Server) Run() {
+func (s *ChiHTTPServer) Run() {
 	go func() {
 		if err := s.server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			panic(err)
@@ -129,14 +129,10 @@ func (s *Server) Run() {
 	}()
 }
 
-func (s *Server) Router() chi.Router {
+func (s *ChiHTTPServer) Router() chi.Router {
 	return s.router
 }
 
-func (s *Server) Shutdown(ctx context.Context) error {
+func (s *ChiHTTPServer) Shutdown(ctx context.Context) error {
 	return s.server.Shutdown(ctx)
-}
-
-func (s *Server) GetConfig() config.Config {
-	return s.conf
 }

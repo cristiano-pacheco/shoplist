@@ -2,6 +2,7 @@ package auth_middleware
 
 import (
 	"context"
+	"net/http"
 	"strconv"
 	"strings"
 
@@ -9,7 +10,6 @@ import (
 	"github.com/cristiano-pacheco/shoplist/internal/shared/http/response"
 	shared_jwt "github.com/cristiano-pacheco/shoplist/internal/shared/jwt"
 	"github.com/cristiano-pacheco/shoplist/internal/shared/registry"
-	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -29,50 +29,75 @@ func New(
 	return &Middleware{jwtParser, errorMapper, privateKeyRegistry, isUserEnabledQuery}
 }
 
-func (m *Middleware) Execute(c *fiber.Ctx) error {
-	bearerToken := c.Get("Authorization")
-	if !strings.HasPrefix(bearerToken, "Bearer ") {
-		return m.handleError(c, errs.ErrInvalidToken)
-	}
+// UserIDKey is the key used to store the user ID in the request context
+type contextKey string
 
-	jwtToken := strings.TrimSpace(bearerToken[7:])
-	pk := m.privateKeyRegistry.Get()
+const UserIDKey contextKey = "user_id"
 
-	tokenKeyFunc := func(token *jwt.Token) (interface{}, error) {
-		return &pk.PublicKey, nil
-	}
-
-	var claims shared_jwt.JWTClaims
-	token, err := m.jwtParser.ParseWithClaims(jwtToken, &claims, tokenKeyFunc)
-	if err != nil {
-		return m.handleError(c, errs.ErrInvalidToken)
-	}
-
-	if !token.Valid {
-		return m.handleError(c, errs.ErrInvalidToken)
-	}
-
-	userID, err := strconv.ParseUint(claims.Subject, 10, 64)
-	if err != nil {
-		return m.handleError(c, errs.ErrInvalidToken)
-	}
-
-	ctx := context.Background()
-	isUserEnabled, err := m.isUserEnabledQuery.Execute(ctx, userID)
-	if err != nil {
-		return m.handleError(c, err)
-	}
-
-	if !isUserEnabled {
-		return m.handleError(c, errs.ErrInvalidToken)
-	}
-
-	c.Locals("user_id", userID)
-
-	return c.Next()
+// GetUserID extracts the user ID from the request context
+func GetUserID(r *http.Request) (uint64, bool) {
+	userID, ok := r.Context().Value(UserIDKey).(uint64)
+	return userID, ok
 }
 
-func (m *Middleware) handleError(c *fiber.Ctx, err error) error {
+// Middleware returns a Chi middleware function for authentication
+func (m *Middleware) Middleware() func(next http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			// Extract and validate token
+			bearerToken := r.Header.Get("Authorization")
+			if !strings.HasPrefix(bearerToken, "Bearer ") {
+				m.handleError(w, errs.ErrInvalidToken)
+				return
+			}
+
+			jwtToken := strings.TrimSpace(bearerToken[7:])
+			pk := m.privateKeyRegistry.Get()
+
+			tokenKeyFunc := func(token *jwt.Token) (interface{}, error) {
+				return &pk.PublicKey, nil
+			}
+
+			var claims shared_jwt.JWTClaims
+			token, err := m.jwtParser.ParseWithClaims(jwtToken, &claims, tokenKeyFunc)
+			if err != nil {
+				m.handleError(w, errs.ErrInvalidToken)
+				return
+			}
+
+			if !token.Valid {
+				m.handleError(w, errs.ErrInvalidToken)
+				return
+			}
+
+			userID, err := strconv.ParseUint(claims.Subject, 10, 64)
+			if err != nil {
+				m.handleError(w, errs.ErrInvalidToken)
+				return
+			}
+
+			ctx := r.Context()
+			isUserEnabled, err := m.isUserEnabledQuery.Execute(ctx, userID)
+			if err != nil {
+				m.handleError(w, err)
+				return
+			}
+
+			if !isUserEnabled {
+				m.handleError(w, errs.ErrUserIsNotActivated)
+				return
+			}
+
+			// Store user ID in context
+			ctx = context.WithValue(ctx, UserIDKey, userID)
+
+			// Call next handler with updated context
+			next.ServeHTTP(w, r.WithContext(ctx))
+		})
+	}
+}
+
+func (m *Middleware) handleError(w http.ResponseWriter, err error) {
 	rError := m.errorMapper.Map(err)
-	return response.Error(c, rError)
+	response.Error(w, rError)
 }

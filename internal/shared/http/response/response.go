@@ -1,21 +1,33 @@
 package response
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"github.com/cristiano-pacheco/shoplist/internal/shared/errs"
-	"github.com/gofiber/fiber/v2"
 )
 
-func Error(c *fiber.Ctx, err error) error {
+func Error(w http.ResponseWriter, err error) {
 	rError, ok := err.(*errs.Error)
 	if !ok {
-		return err
+		// If it's not our custom error type, convert it to a generic error
+		httpStatus := http.StatusInternalServerError
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(httpStatus)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"error": map[string]string{
+				"code":    "internal_server_error",
+				"message": err.Error(),
+			},
+		})
+		return
 	}
 
 	if rError.Status == 0 {
 		rError.Status = http.StatusInternalServerError
 	}
 
-	return c.Status(rError.Status).JSON(rError)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(rError.Status)
+	json.NewEncoder(w).Encode(rError)
 }
