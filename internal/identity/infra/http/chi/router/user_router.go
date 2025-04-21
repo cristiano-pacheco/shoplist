@@ -6,7 +6,7 @@ import (
 )
 
 func RegisterUserHandler(
-	r *V1Router,
+	r *V1FiberRouter,
 	userHandler *handler.UserHandler,
 	authMiddleware *auth_middleware.Middleware,
 ) {

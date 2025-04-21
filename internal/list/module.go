@@ -6,7 +6,7 @@ import (
 	"github.com/cristiano-pacheco/shoplist/internal/list/router"
 	"github.com/cristiano-pacheco/shoplist/internal/list/usecase"
 	"go.uber.org/fx"
-)``
+)
 
 var Module = fx.Module(
 	"list",

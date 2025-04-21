@@ -5,12 +5,12 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-type V1Router struct {
+type V1FiberRouter struct {
 	fiber.Router
-	Server *httpserver.Server
+	Server *httpserver.FiberServer
 }
 
-func NewRouter(server *httpserver.Server) *V1Router {
+func NewV1FiberRouter(server *httpserver.FiberServer) *V1FiberRouter {
 	router := server.Group("/api/v1")
-	return &V1Router{Router: router, Server: server}
+	return &V1FiberRouter{Router: router, Server: server}
 }

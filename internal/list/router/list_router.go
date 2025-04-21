@@ -6,7 +6,7 @@ import (
 )
 
 func RegisterListRoutes(
-	r *V1Router,
+	r *V1FiberRouter,
 	listHandler *handler.ListHandler,
 	authMiddleware *auth_middleware.Middleware,
 ) {

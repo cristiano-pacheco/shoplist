@@ -24,13 +24,13 @@ func NewFiberHTTPServer(
 	lc fx.Lifecycle,
 	conf config.Config,
 	errorHandlerMiddleware *middleware.ErrorHandlerMiddleware,
-) *Server {
+) *FiberServer {
 	fiberConfig := fiber.Config{
 		ReadBufferSize: 8192,
 		ProxyHeader:    "X-Real-IP",
 	}
 
-	server := Init(conf, errorHandlerMiddleware, fiberConfig)
+	server := InitFiber(conf, errorHandlerMiddleware, fiberConfig)
 
 	lc.Append(fx.Hook{
 		OnStart: func(context.Context) error {
