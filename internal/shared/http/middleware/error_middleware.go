@@ -23,8 +23,8 @@ type contextKey string
 // ErrorCtxKey is the key used to store errors in the request context
 const ErrorCtxKey contextKey = "request-error"
 
-// ChiMiddleware returns a middleware that handles errors for Chi router
-func (h *ErrorHandlerMiddleware) ChiMiddleware() func(next http.Handler) http.Handler {
+// Middleware returns a middleware that handles errors for Chi router
+func (h *ErrorHandlerMiddleware) Middleware() func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			// Create a custom response writer that can capture the status code

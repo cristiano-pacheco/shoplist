@@ -9,11 +9,11 @@ import (
 
 type Config struct {
 	Environment string    `mapstructure:"ENVIRONMENT"`
-	Cors        string    `mapstructure:"CORS"`
+	HTTPPort    uint      `mapstructure:"HTTP_PORT"`
+	CORS        CORS      `mapstructure:",squash"`
 	JWT         JWT       `mapstructure:",squash"`
 	DB          DB        `mapstructure:",squash"`
 	MAIL        MAIL      `mapstructure:",squash"`
-	HTTPPort    uint      `mapstructure:"HTTP_PORT"`
 	Telemetry   Telemetry `mapstructure:",squash"`
 	App         App       `mapstructure:",squash"`
 	Log         Log       `mapstructure:",squash"`
