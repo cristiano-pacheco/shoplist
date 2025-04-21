@@ -46,7 +46,7 @@ func (uc *userUpdateUseCase) Execute(ctx context.Context, input UserUpdateInput)
 		return err
 	}
 
-	userModel, err := uc.userRepo.FindByID(ctx, uint(input.UserID))
+	userModel, err := uc.userRepo.FindByID(ctx, input.UserID)
 	if err != nil {
 		return err
 	}

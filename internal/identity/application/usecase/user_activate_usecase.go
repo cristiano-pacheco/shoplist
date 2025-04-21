@@ -43,7 +43,7 @@ func (uc *userActivateUseCase) Execute(ctx context.Context, input UserActivateUs
 		return err
 	}
 
-	accountConfirmationModel, err := uc.accountConfirmationRepo.FindByUserID(ctx, uint(input.UserID))
+	accountConfirmationModel, err := uc.accountConfirmationRepo.FindByUserID(ctx, input.UserID)
 	if err != nil {
 		uc.logger.ErrorContext(
 			ctx,
@@ -58,7 +58,7 @@ func (uc *userActivateUseCase) Execute(ctx context.Context, input UserActivateUs
 		return errs.ErrInvalidAccountConfirmationToken
 	}
 
-	userModel, err := uc.userRepo.FindByID(ctx, uint(input.UserID))
+	userModel, err := uc.userRepo.FindByID(ctx, input.UserID)
 	if err != nil {
 		return err
 	}
@@ -70,7 +70,7 @@ func (uc *userActivateUseCase) Execute(ctx context.Context, input UserActivateUs
 		return err
 	}
 
-	err = uc.accountConfirmationRepo.DeleteById(ctx, uint(accountConfirmationModel.ID()))
+	err = uc.accountConfirmationRepo.DeleteById(ctx, accountConfirmationModel.ID())
 	if err != nil {
 		uc.logger.ErrorContext(ctx, "error deleting account confirmation", "error", err)
 		return err
