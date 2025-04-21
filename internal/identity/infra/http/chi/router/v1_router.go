@@ -1,7 +1,7 @@
 package router
 
 import (
-	"github.com/cristiano-pacheco/shoplist/internal/shared/http/httpserver"
+	"github.com/cristiano-pacheco/shoplist/internal/kernel/http/httpserver"
 	"github.com/go-chi/chi/v5"
 )
 

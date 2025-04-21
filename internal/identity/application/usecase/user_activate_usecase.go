@@ -4,10 +4,10 @@ import (
 	"context"
 
 	"github.com/cristiano-pacheco/shoplist/internal/identity/domain/repository"
-	"github.com/cristiano-pacheco/shoplist/internal/shared/errs"
-	"github.com/cristiano-pacheco/shoplist/internal/shared/logger"
-	"github.com/cristiano-pacheco/shoplist/internal/shared/otel"
-	"github.com/cristiano-pacheco/shoplist/internal/shared/sdk/empty"
+	"github.com/cristiano-pacheco/shoplist/internal/kernel/errs"
+	"github.com/cristiano-pacheco/shoplist/internal/kernel/logger"
+	"github.com/cristiano-pacheco/shoplist/internal/kernel/otel"
+	"github.com/cristiano-pacheco/shoplist/internal/kernel/sdk/empty"
 )
 
 type UserActivateUseCase interface {

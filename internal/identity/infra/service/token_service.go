@@ -6,10 +6,10 @@ import (
 	"time"
 
 	"github.com/cristiano-pacheco/shoplist/internal/identity/domain/model"
-	"github.com/cristiano-pacheco/shoplist/internal/shared/config"
-	"github.com/cristiano-pacheco/shoplist/internal/shared/logger"
-	"github.com/cristiano-pacheco/shoplist/internal/shared/otel"
-	"github.com/cristiano-pacheco/shoplist/internal/shared/registry"
+	"github.com/cristiano-pacheco/shoplist/internal/kernel/config"
+	"github.com/cristiano-pacheco/shoplist/internal/kernel/logger"
+	"github.com/cristiano-pacheco/shoplist/internal/kernel/otel"
+	"github.com/cristiano-pacheco/shoplist/internal/kernel/registry"
 	"github.com/golang-jwt/jwt/v5"
 )
 

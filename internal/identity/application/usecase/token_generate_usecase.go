@@ -6,9 +6,9 @@ import (
 
 	"github.com/cristiano-pacheco/shoplist/internal/identity/domain/repository"
 	"github.com/cristiano-pacheco/shoplist/internal/identity/domain/service"
-	"github.com/cristiano-pacheco/shoplist/internal/shared/errs"
-	"github.com/cristiano-pacheco/shoplist/internal/shared/otel"
-	"github.com/cristiano-pacheco/shoplist/internal/shared/validator"
+	"github.com/cristiano-pacheco/shoplist/internal/kernel/errs"
+	"github.com/cristiano-pacheco/shoplist/internal/kernel/otel"
+	"github.com/cristiano-pacheco/shoplist/internal/kernel/validator"
 )
 
 type TokenGenerateUseCase interface {

@@ -3,7 +3,7 @@ package rabbitmq
 import (
 	"context"
 
-	"github.com/cristiano-pacheco/shoplist/internal/shared/config"
+	"github.com/cristiano-pacheco/shoplist/internal/kernel/config"
 	"github.com/cristiano-pacheco/shoplist/pkg/rabbitmq"
 	"go.uber.org/fx"
 )

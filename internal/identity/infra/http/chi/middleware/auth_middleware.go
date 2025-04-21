@@ -7,10 +7,10 @@ import (
 	"strings"
 
 	"github.com/cristiano-pacheco/shoplist/internal/identity/domain/repository"
-	"github.com/cristiano-pacheco/shoplist/internal/shared/errs"
-	"github.com/cristiano-pacheco/shoplist/internal/shared/http/response"
-	shared_jwt "github.com/cristiano-pacheco/shoplist/internal/shared/jwt"
-	"github.com/cristiano-pacheco/shoplist/internal/shared/registry"
+	"github.com/cristiano-pacheco/shoplist/internal/kernel/errs"
+	"github.com/cristiano-pacheco/shoplist/internal/kernel/http/response"
+	shared_jwt "github.com/cristiano-pacheco/shoplist/internal/kernel/jwt"
+	"github.com/cristiano-pacheco/shoplist/internal/kernel/registry"
 	"github.com/golang-jwt/jwt/v5"
 )
 

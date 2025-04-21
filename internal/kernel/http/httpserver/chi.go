@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	_ "github.com/cristiano-pacheco/shoplist/docs"
-	"github.com/cristiano-pacheco/shoplist/internal/shared/config"
-	"github.com/cristiano-pacheco/shoplist/internal/shared/http/middleware"
+	"github.com/cristiano-pacheco/shoplist/internal/kernel/config"
+	"github.com/cristiano-pacheco/shoplist/internal/kernel/http/middleware"
 	"github.com/cristiano-pacheco/shoplist/pkg/httpserver"
 	"github.com/go-chi/chi/v5"
 	"go.uber.org/fx"

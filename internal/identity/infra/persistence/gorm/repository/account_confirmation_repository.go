@@ -7,8 +7,8 @@ import (
 	"github.com/cristiano-pacheco/shoplist/internal/identity/domain/repository"
 	"github.com/cristiano-pacheco/shoplist/internal/identity/infra/persistence/gorm/entity"
 	"github.com/cristiano-pacheco/shoplist/internal/identity/infra/persistence/gorm/mapper"
-	"github.com/cristiano-pacheco/shoplist/internal/shared/database"
-	"github.com/cristiano-pacheco/shoplist/internal/shared/otel"
+	"github.com/cristiano-pacheco/shoplist/internal/kernel/database"
+	"github.com/cristiano-pacheco/shoplist/internal/kernel/otel"
 )
 
 type AccountConfirmationRepository interface {

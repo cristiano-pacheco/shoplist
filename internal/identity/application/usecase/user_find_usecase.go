@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/cristiano-pacheco/shoplist/internal/identity/domain/repository"
-	"github.com/cristiano-pacheco/shoplist/internal/shared/logger"
-	"github.com/cristiano-pacheco/shoplist/internal/shared/otel"
+	"github.com/cristiano-pacheco/shoplist/internal/kernel/logger"
+	"github.com/cristiano-pacheco/shoplist/internal/kernel/otel"
 )
 
 type UserFindUseCase interface {

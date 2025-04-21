@@ -3,7 +3,7 @@ package otel
 import (
 	"log"
 
-	"github.com/cristiano-pacheco/shoplist/internal/shared/config"
+	"github.com/cristiano-pacheco/shoplist/internal/kernel/config"
 	"github.com/cristiano-pacheco/shoplist/pkg/otel/trace"
 )
 

@@ -5,7 +5,7 @@ import (
 	"maps"
 	"net/http"
 
-	"github.com/cristiano-pacheco/shoplist/internal/shared/errs"
+	"github.com/cristiano-pacheco/shoplist/internal/kernel/errs"
 )
 
 func Error(w http.ResponseWriter, err error) {

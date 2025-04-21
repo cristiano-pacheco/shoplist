@@ -6,9 +6,9 @@ import (
 
 	"github.com/cristiano-pacheco/shoplist/internal/identity/application/usecase"
 	"github.com/cristiano-pacheco/shoplist/internal/identity/infra/http/dto"
-	"github.com/cristiano-pacheco/shoplist/internal/shared/errs"
-	"github.com/cristiano-pacheco/shoplist/internal/shared/http/response"
-	"github.com/cristiano-pacheco/shoplist/internal/shared/otel"
+	"github.com/cristiano-pacheco/shoplist/internal/kernel/errs"
+	"github.com/cristiano-pacheco/shoplist/internal/kernel/http/response"
+	"github.com/cristiano-pacheco/shoplist/internal/kernel/otel"
 )
 
 type AuthHandler struct {

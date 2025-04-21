@@ -6,8 +6,8 @@ import (
 	"encoding/base64"
 	"encoding/pem"
 
-	"github.com/cristiano-pacheco/shoplist/internal/shared/config"
-	"github.com/cristiano-pacheco/shoplist/internal/shared/errs"
+	"github.com/cristiano-pacheco/shoplist/internal/kernel/config"
+	"github.com/cristiano-pacheco/shoplist/internal/kernel/errs"
 )
 
 type PrivateKeyRegistry interface {

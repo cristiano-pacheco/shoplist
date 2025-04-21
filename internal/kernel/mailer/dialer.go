@@ -1,7 +1,7 @@
 package mailer
 
 import (
-	"github.com/cristiano-pacheco/shoplist/internal/shared/config"
+	"github.com/cristiano-pacheco/shoplist/internal/kernel/config"
 	"github.com/go-mail/mail/v2"
 )
 

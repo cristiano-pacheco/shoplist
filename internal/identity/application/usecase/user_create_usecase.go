@@ -8,10 +8,10 @@ import (
 	"github.com/cristiano-pacheco/shoplist/internal/identity/domain/model"
 	"github.com/cristiano-pacheco/shoplist/internal/identity/domain/repository"
 	"github.com/cristiano-pacheco/shoplist/internal/identity/domain/service"
-	shared_errs "github.com/cristiano-pacheco/shoplist/internal/shared/errs"
-	"github.com/cristiano-pacheco/shoplist/internal/shared/logger"
-	"github.com/cristiano-pacheco/shoplist/internal/shared/otel"
-	"github.com/cristiano-pacheco/shoplist/internal/shared/validator"
+	shared_errs "github.com/cristiano-pacheco/shoplist/internal/kernel/errs"
+	"github.com/cristiano-pacheco/shoplist/internal/kernel/logger"
+	"github.com/cristiano-pacheco/shoplist/internal/kernel/otel"
+	"github.com/cristiano-pacheco/shoplist/internal/kernel/validator"
 )
 
 type UserCreateUseCase interface {
