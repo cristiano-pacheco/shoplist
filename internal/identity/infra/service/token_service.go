@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/cristiano-pacheco/shoplist/internal/identity/domain/model"
+	"github.com/cristiano-pacheco/shoplist/internal/identity/domain/service"
 	"github.com/cristiano-pacheco/shoplist/internal/kernel/config"
 	"github.com/cristiano-pacheco/shoplist/internal/kernel/logger"
 	"github.com/cristiano-pacheco/shoplist/internal/kernel/otel"
@@ -14,7 +15,7 @@ import (
 )
 
 type TokenService interface {
-	Generate(ctx context.Context, user model.UserModel) (string, error)
+	service.TokenService
 }
 
 type tokenService struct {

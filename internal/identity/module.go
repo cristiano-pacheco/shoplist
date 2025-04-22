@@ -2,6 +2,7 @@ package identity
 
 import (
 	"github.com/cristiano-pacheco/shoplist/internal/identity/application/usecase"
+	domain_repository "github.com/cristiano-pacheco/shoplist/internal/identity/domain/repository"
 	domain_service "github.com/cristiano-pacheco/shoplist/internal/identity/domain/service"
 	"github.com/cristiano-pacheco/shoplist/internal/identity/domain/validator"
 	"github.com/cristiano-pacheco/shoplist/internal/identity/infra/http/handler"
@@ -43,12 +44,26 @@ var Module = fx.Module(
 		mapper.NewAccountConfirmationMapper,
 
 		// repositories
-		repository.NewUserRepository,
-		repository.NewAccountConfirmationRepository,
+		fx.Annotate(
+			repository.NewUserRepository,
+			fx.As(new(domain_repository.UserRepository)),
+		),
+
+		fx.Annotate(
+			repository.NewAccountConfirmationRepository,
+			fx.As(new(domain_repository.AccountConfirmationRepository)),
+		),
 
 		// services
-		service.NewTokenService,
-		service.NewEmailConfirmationService,
+		fx.Annotate(
+			service.NewSendEmailConfirmationService,
+			fx.As(new(domain_service.SendEmailConfirmationService)),
+		),
+
+		fx.Annotate(
+			service.NewTokenService,
+			fx.As(new(domain_service.TokenService)),
+		),
 	),
 	fx.Invoke(
 		router.SetupUserRoutes,

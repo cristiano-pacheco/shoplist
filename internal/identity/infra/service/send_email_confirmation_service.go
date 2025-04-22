@@ -8,6 +8,7 @@ import (
 
 	"github.com/cristiano-pacheco/shoplist/internal/identity/domain/model"
 	"github.com/cristiano-pacheco/shoplist/internal/identity/domain/repository"
+	"github.com/cristiano-pacheco/shoplist/internal/identity/domain/service"
 	domain_service "github.com/cristiano-pacheco/shoplist/internal/identity/domain/service"
 	"github.com/cristiano-pacheco/shoplist/internal/kernel/config"
 	"github.com/cristiano-pacheco/shoplist/internal/kernel/logger"
@@ -18,11 +19,11 @@ import (
 const sendAccountConfirmationEmailTemplate = "account_confirmation.gohtml"
 const sendAccountConfirmationEmailSubject = "Account Confirmation"
 
-type EmailConfirmationService interface {
-	Send(ctx context.Context, userID uint64) error
+type SendEmailConfirmationService interface {
+	service.SendEmailConfirmationService
 }
 
-type emailConfirmationService struct {
+type sendEmailConfirmationService struct {
 	mailerTemplate                mailer.MailerTemplate
 	mailer                        mailer.SmtpMailer
 	accountConfirmationRepository repository.AccountConfirmationRepository
@@ -32,7 +33,7 @@ type emailConfirmationService struct {
 	cfg                           config.Config
 }
 
-func NewEmailConfirmationService(
+func NewSendEmailConfirmationService(
 	mailerTemplate mailer.MailerTemplate,
 	smtpMailer mailer.SmtpMailer,
 	accountConfirmationRepository repository.AccountConfirmationRepository,
@@ -40,8 +41,8 @@ func NewEmailConfirmationService(
 	hashService domain_service.HashService,
 	logger logger.Logger,
 	cfg config.Config,
-) EmailConfirmationService {
-	return &emailConfirmationService{
+) SendEmailConfirmationService {
+	return &sendEmailConfirmationService{
 		mailerTemplate,
 		smtpMailer,
 		accountConfirmationRepository,
@@ -52,8 +53,8 @@ func NewEmailConfirmationService(
 	}
 }
 
-func (s *emailConfirmationService) Send(ctx context.Context, userID uint64) error {
-	ctx, span := otel.Trace().StartSpan(ctx, "EmailConfirmationService.Send")
+func (s *sendEmailConfirmationService) Execute(ctx context.Context, userID uint64) error {
+	ctx, span := otel.Trace().StartSpan(ctx, "sendEmailConfirmationService.Execute")
 	defer span.End()
 
 	user, err := s.userRepository.FindByID(ctx, userID)
