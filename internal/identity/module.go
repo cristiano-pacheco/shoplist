@@ -4,9 +4,9 @@ import (
 	"github.com/cristiano-pacheco/shoplist/internal/identity/application/usecase"
 	domain_service "github.com/cristiano-pacheco/shoplist/internal/identity/domain/service"
 	"github.com/cristiano-pacheco/shoplist/internal/identity/domain/validator"
-	"github.com/cristiano-pacheco/shoplist/internal/identity/infra/http/chi/handler"
-	"github.com/cristiano-pacheco/shoplist/internal/identity/infra/http/chi/middleware"
-	"github.com/cristiano-pacheco/shoplist/internal/identity/infra/http/chi/router"
+	"github.com/cristiano-pacheco/shoplist/internal/identity/infra/http/handler"
+	"github.com/cristiano-pacheco/shoplist/internal/identity/infra/http/middleware"
+	"github.com/cristiano-pacheco/shoplist/internal/identity/infra/http/router"
 	"github.com/cristiano-pacheco/shoplist/internal/identity/infra/persistence/gorm/mapper"
 	"github.com/cristiano-pacheco/shoplist/internal/identity/infra/persistence/gorm/repository"
 	"github.com/cristiano-pacheco/shoplist/internal/identity/infra/service"
@@ -29,7 +29,7 @@ var Module = fx.Module(
 		validator.NewPasswordValidator,
 
 		// #################### INFRA ##########################################
-		router.NewChiV1Router,
+		router.NewV1Router,
 
 		// handlers
 		handler.NewAuthHandler,

@@ -7,6 +7,8 @@ import (
 	"io"
 	"net/http"
 	"strings"
+
+	"github.com/julienschmidt/httprouter"
 )
 
 func ReadJSON(w http.ResponseWriter, r *http.Request, dst any) error {
@@ -59,4 +61,9 @@ func ReadJSON(w http.ResponseWriter, r *http.Request, dst any) error {
 	}
 
 	return nil
+}
+
+func Param(r *http.Request, name string) string {
+	params := httprouter.ParamsFromContext(r.Context())
+	return params.ByName(name)
 }
