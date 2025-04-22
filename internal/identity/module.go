@@ -30,7 +30,7 @@ var Module = fx.Module(
 		validator.NewPasswordValidator,
 
 		// #################### INFRA ##########################################
-		router.NewV1Router,
+		router.NewRouter,
 
 		// handlers
 		handler.NewAuthHandler,

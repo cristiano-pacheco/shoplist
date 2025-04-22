@@ -12,17 +12,17 @@ import (
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
-type HTTPRouterServer struct {
+type HTTPServer struct {
 	router *httprouter.Router
 	server *http.Server
 }
 
-func NewHTTPRouterServer(
+func NewHTTPServer(
 	corsConfig CorsConfig,
 	otelHandlerName string,
 	isOtelEnabled bool,
 	httpPort uint,
-) *HTTPRouterServer {
+) *HTTPServer {
 	r := httprouter.New()
 
 	// CORS configuration
@@ -59,7 +59,7 @@ func NewHTTPRouterServer(
 	// Swagger
 	r.Handler(http.MethodGet, "/swagger/*filepath", httpSwagger.WrapHandler)
 
-	server := &HTTPRouterServer{
+	server := &HTTPServer{
 		router: r,
 		server: &http.Server{
 			Addr:    fmt.Sprintf(":%d", httpPort),
@@ -75,31 +75,11 @@ func NewHTTPRouterServer(
 	return server
 }
 
-func (s *HTTPRouterServer) Get(path string, handler http.HandlerFunc) {
-	s.router.GET(path, wrapHandler(handler))
-}
-
-func (s *HTTPRouterServer) Post(path string, handler http.HandlerFunc) {
-	s.router.POST(path, wrapHandler(handler))
-}
-
-func (s *HTTPRouterServer) Put(path string, handler http.HandlerFunc) {
-	s.router.PUT(path, wrapHandler(handler))
-}
-
-func (s *HTTPRouterServer) Patch(path string, handler http.HandlerFunc) {
-	s.router.PATCH(path, wrapHandler(handler))
-}
-
-func (s *HTTPRouterServer) Delete(path string, handler http.HandlerFunc) {
-	s.router.DELETE(path, wrapHandler(handler))
-}
-
-func (s *HTTPRouterServer) Router() *httprouter.Router {
+func (s *HTTPServer) Router() *httprouter.Router {
 	return s.router
 }
 
-func (s *HTTPRouterServer) Run() {
+func (s *HTTPServer) Run() {
 	go func() {
 		if err := s.server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			panic(err)
@@ -107,16 +87,8 @@ func (s *HTTPRouterServer) Run() {
 	}()
 }
 
-func (s *HTTPRouterServer) Shutdown(ctx context.Context) error {
+func (s *HTTPServer) Shutdown(ctx context.Context) error {
 	return s.server.Shutdown(ctx)
-}
-
-// Helper functions
-func wrapHandler(h http.HandlerFunc) httprouter.Handle {
-	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-		ctx := context.WithValue(r.Context(), httprouter.ParamsKey, ps)
-		h(w, r.WithContext(ctx))
-	}
 }
 
 func join(s []string, sep string) string {

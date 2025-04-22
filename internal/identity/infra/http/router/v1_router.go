@@ -5,14 +5,14 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-type V1Router struct {
+type Router struct {
 	server *httpserver.HTTPServer
 }
 
-func NewV1Router(server *httpserver.HTTPServer) *V1Router {
-	return &V1Router{server: server}
+func NewRouter(server *httpserver.HTTPServer) *Router {
+	return &Router{server: server}
 }
 
-func (r *V1Router) Router() *httprouter.Router {
+func (r *Router) Router() *httprouter.Router {
 	return r.server.Router()
 }

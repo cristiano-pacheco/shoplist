@@ -12,7 +12,7 @@ import (
 )
 
 type HTTPServer struct {
-	server *httpserver.HTTPRouterServer
+	server *httpserver.HTTPServer
 }
 
 func NewHTTPServer(
@@ -30,9 +30,9 @@ func NewHTTPServer(
 	}
 
 	isOtelEnabled := true
-	server := httpserver.NewHTTPRouterServer(corsConfig, conf.App.Name, isOtelEnabled, conf.HTTPPort)
+	server := httpserver.NewHTTPServer(corsConfig, conf.App.Name, isOtelEnabled, conf.HTTPPort)
 
-	httpRouterServer := &HTTPServer{
+	httpServer := &HTTPServer{
 		server: server,
 	}
 
@@ -44,7 +44,7 @@ func NewHTTPServer(
 		OnStop: server.Shutdown,
 	})
 
-	return httpRouterServer
+	return httpServer
 }
 
 func (s *HTTPServer) Router() *httprouter.Router {
