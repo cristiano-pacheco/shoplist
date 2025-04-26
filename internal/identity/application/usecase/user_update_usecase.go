@@ -64,7 +64,11 @@ func (uc *userUpdateUseCase) Execute(ctx context.Context, input UserUpdateInput)
 		userModel.Email(),
 		string(ph),
 		userModel.IsActivated(),
-		userModel.RpToken(),
+		userModel.ResetPasswordToken(),
+		userModel.ResetPasswordExpiresAt(),
+		userModel.ConfirmedAt(),
+		userModel.ConfirmationToken(),
+		userModel.ConfirmationExpiresAt(),
 		userModel.CreatedAt(),
 		userModel.UpdatedAt(),
 	)

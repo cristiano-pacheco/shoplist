@@ -6,6 +6,7 @@ import (
 
 	"github.com/cristiano-pacheco/shoplist/internal/identity/domain/model"
 	"github.com/cristiano-pacheco/shoplist/internal/identity/infra/persistence/gorm/entity"
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -69,10 +70,6 @@ func TestUserMapper_ToModel(t *testing.T) {
 }
 
 func TestUserMapper_ToEntity(t *testing.T) {
-	// Helper functions for pointer creation
-	ptrString := func(s string) *string { return &s }
-	ptrTime := func(t time.Time) *time.Time { return &t }
-
 	// Create test data
 	now := time.Now().UTC()
 	confirmToken := "confirm_token"
@@ -88,11 +85,11 @@ func TestUserMapper_ToEntity(t *testing.T) {
 		"john@example.com",
 		"hashed_password",
 		true,
-		ptrString(confirmToken),
-		ptrTime(confirmExpiry),
-		ptrTime(confirmedAt),
-		ptrString(resetToken),
-		ptrTime(resetExpiry),
+		lo.ToPtr(confirmToken),
+		lo.ToPtr(confirmExpiry),
+		lo.ToPtr(confirmedAt),
+		lo.ToPtr(resetToken),
+		lo.ToPtr(resetExpiry),
 		now,
 		now,
 	)

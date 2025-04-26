@@ -6,6 +6,7 @@ import (
 
 	"github.com/cristiano-pacheco/shoplist/internal/identity/domain/model"
 	"github.com/cristiano-pacheco/shoplist/internal/identity/infra/persistence/gorm/entity"
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -91,9 +92,6 @@ func TestLoginTokenMapper_ToModel_WithNilConsumedAt(t *testing.T) {
 }
 
 func TestLoginTokenMapper_ToEntity(t *testing.T) {
-	// Helper function for pointer creation
-	ptrTime := func(t time.Time) *time.Time { return &t }
-
 	// Create test data
 	now := time.Now().UTC()
 	consumedAt := now.Add(-1 * time.Hour)
@@ -105,7 +103,7 @@ func TestLoginTokenMapper_ToEntity(t *testing.T) {
 		456,
 		"token123",
 		expiresAt,
-		ptrTime(consumedAt),
+		lo.ToPtr(consumedAt),
 		now,
 		now,
 	)

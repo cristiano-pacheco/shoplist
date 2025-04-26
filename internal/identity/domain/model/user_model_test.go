@@ -4,6 +4,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -196,7 +197,7 @@ func TestRestoreUserModel(t *testing.T) {
 			isActivated:            true,
 			confirmationToken:      nil,
 			confirmationExpiresAt:  nil,
-			confirmedAt:            ptrTime(time.Now().Add(-24 * time.Hour)),
+			confirmedAt:            lo.ToPtr(time.Now().Add(-24 * time.Hour)),
 			resetPasswordToken:     nil,
 			resetPasswordExpiresAt: nil,
 			createdAt:              time.Now().Add(-48 * time.Hour),
@@ -210,8 +211,8 @@ func TestRestoreUserModel(t *testing.T) {
 			email:                  "jane@example.com",
 			password:               "hashedpassword",
 			isActivated:            false,
-			confirmationToken:      ptrString("token123"),
-			confirmationExpiresAt:  ptrTime(time.Now().Add(24 * time.Hour)),
+			confirmationToken:      lo.ToPtr("token123"),
+			confirmationExpiresAt:  lo.ToPtr(time.Now().Add(24 * time.Hour)),
 			confirmedAt:            nil,
 			resetPasswordToken:     nil,
 			resetPasswordExpiresAt: nil,
@@ -228,9 +229,9 @@ func TestRestoreUserModel(t *testing.T) {
 			isActivated:            true,
 			confirmationToken:      nil,
 			confirmationExpiresAt:  nil,
-			confirmedAt:            ptrTime(time.Now().Add(-48 * time.Hour)),
-			resetPasswordToken:     ptrString("reset123"),
-			resetPasswordExpiresAt: ptrTime(time.Now().Add(12 * time.Hour)),
+			confirmedAt:            lo.ToPtr(time.Now().Add(-48 * time.Hour)),
+			resetPasswordToken:     lo.ToPtr("reset123"),
+			resetPasswordExpiresAt: lo.ToPtr(time.Now().Add(12 * time.Hour)),
 			createdAt:              time.Now().Add(-72 * time.Hour),
 			updatedAt:              time.Now(),
 			expectError:            false,
@@ -373,7 +374,7 @@ func TestConfirmationMethods(t *testing.T) {
 	assert.Nil(t, user.ConfirmedAt())
 
 	// Confirm the user
-	user.Confirm()
+	user.ConfirmAccount()
 
 	// Verify user is confirmed
 	assert.True(t, user.IsActivated())
@@ -418,11 +419,84 @@ func TestResetPasswordMethods(t *testing.T) {
 	assert.True(t, user.UpdatedAt().After(user.CreatedAt()))
 }
 
-// Helper functions
-func ptrString(s string) *string {
-	return &s
-}
+func TestIsConfirmationTokenValid(t *testing.T) {
+	// Create test cases for token validation
+	tests := []struct {
+		name           string
+		token          string
+		setupUser      func() UserModel
+		expectedResult bool
+	}{
+		{
+			name:  "Valid token",
+			token: "valid_token",
+			setupUser: func() UserModel {
+				token := "valid_token"
+				expiresAt := time.Now().UTC().Add(24 * time.Hour)
+				user, _ := CreateUserModel("Test User", "test@example.com", "password_hash", token, expiresAt)
+				return user
+			},
+			expectedResult: true,
+		},
+		{
+			name:  "Invalid token",
+			token: "invalid_token",
+			setupUser: func() UserModel {
+				token := "valid_token"
+				expiresAt := time.Now().UTC().Add(24 * time.Hour)
+				user, _ := CreateUserModel("Test User", "test@example.com", "password_hash", token, expiresAt)
+				return user
+			},
+			expectedResult: false,
+		},
+		{
+			name:  "Expired token",
+			token: "valid_token",
+			setupUser: func() UserModel {
+				token := "valid_token"
+				expiresAt := time.Now().UTC().Add(-24 * time.Hour) // Expired
+				user, _ := CreateUserModel("Test User", "test@example.com", "password_hash", token, expiresAt)
+				return user
+			},
+			expectedResult: false,
+		},
+		{
+			name:  "Nil token",
+			token: "valid_token",
+			setupUser: func() UserModel {
+				user, _ := CreateUserModel("Test User", "test@example.com", "password_hash", "token", time.Now().UTC().Add(24*time.Hour))
+				user.confirmationToken = nil
+				return user
+			},
+			expectedResult: false,
+		},
+		{
+			name:  "Nil expiration",
+			token: "valid_token",
+			setupUser: func() UserModel {
+				user, _ := CreateUserModel("Test User", "test@example.com", "password_hash", "valid_token", time.Now().UTC().Add(24*time.Hour))
+				user.confirmationExpiresAt = nil
+				return user
+			},
+			expectedResult: false,
+		},
+		{
+			name:  "Already confirmed",
+			token: "valid_token",
+			setupUser: func() UserModel {
+				user, _ := CreateUserModel("Test User", "test@example.com", "password_hash", "valid_token", time.Now().UTC().Add(24*time.Hour))
+				user.ConfirmAccount() // This marks the account as confirmed
+				return user
+			},
+			expectedResult: false,
+		},
+	}
 
-func ptrTime(t time.Time) *time.Time {
-	return &t
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			user := tt.setupUser()
+			result := user.IsConfirmationTokenValid(tt.token)
+			assert.Equal(t, tt.expectedResult, result)
+		})
+	}
 }
