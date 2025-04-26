@@ -7,85 +7,53 @@ import (
 	"github.com/cristiano-pacheco/shoplist/internal/kernel/errs"
 	"github.com/cristiano-pacheco/shoplist/internal/kernel/logger"
 	"github.com/cristiano-pacheco/shoplist/internal/kernel/otel"
-	"github.com/cristiano-pacheco/shoplist/internal/kernel/sdk/empty"
+	"github.com/cristiano-pacheco/shoplist/internal/kernel/validator"
 )
 
 type UserActivateUseCase interface {
-	Execute(ctx context.Context, input UserActivateUseCaseInput) error
+	Execute(ctx context.Context, input UserActivateInput) error
 }
 
-type UserActivateUseCaseInput struct {
-	UserID uint64 `validate:"required,number"`
-	Token  string `validate:"required"`
+type UserActivateInput struct {
+	Token string `validate:"required"`
 }
 
 type userActivateUseCase struct {
-	userRepo                repository.UserRepository
-	accountConfirmationRepo repository.AccountConfirmationRepository
-	logger                  logger.Logger
+	userRepository repository.UserRepository
+	validate       validator.Validate
+	logger         logger.Logger
 }
 
 func NewUserActivateUseCase(
-	userRepo repository.UserRepository,
-	accountConfirmationRepo repository.AccountConfirmationRepository,
+	userRepository repository.UserRepository,
+	validate validator.Validate,
 	logger logger.Logger,
 ) UserActivateUseCase {
-	return &userActivateUseCase{userRepo, accountConfirmationRepo, logger}
+	return &userActivateUseCase{userRepository, validate, logger}
 }
 
-func (uc *userActivateUseCase) Execute(ctx context.Context, input UserActivateUseCaseInput) error {
+func (uc *userActivateUseCase) Execute(ctx context.Context, input UserActivateInput) error {
 	ctx, span := otel.Trace().StartSpan(ctx, "UserActivateUseCase.Execute")
 	defer span.End()
 
-	err := uc.validateInput(input)
+	err := uc.validate.Struct(input)
 	if err != nil {
-		uc.logger.InfoContext(ctx, "invalid input", "error", err)
 		return err
 	}
 
-	accountConfirmationModel, err := uc.accountConfirmationRepo.FindByUserID(ctx, input.UserID)
+	user, err := uc.userRepository.FindByConfirmationToken(ctx, input.Token)
 	if err != nil {
-		uc.logger.ErrorContext(
-			ctx,
-			"error finding account confirmation with user_id",
-			"error", err,
-			"user_id", input.UserID,
-		)
 		return err
 	}
 
-	if accountConfirmationModel.Token() != input.Token {
+	if !user.IsConfirmationTokenValid(input.Token) {
 		return errs.ErrInvalidAccountConfirmationToken
 	}
 
-	userModel, err := uc.userRepo.FindByID(ctx, input.UserID)
+	user.ConfirmAccount()
+	err = uc.userRepository.Update(ctx, user)
 	if err != nil {
 		return err
-	}
-
-	userModel.Activate()
-	err = uc.userRepo.Update(ctx, userModel)
-	if err != nil {
-		uc.logger.ErrorContext(ctx, "error updating user", "error", err)
-		return err
-	}
-
-	err = uc.accountConfirmationRepo.DeleteById(ctx, accountConfirmationModel.ID())
-	if err != nil {
-		uc.logger.ErrorContext(ctx, "error deleting account confirmation", "error", err)
-		return err
-	}
-
-	return nil
-}
-
-func (uc *userActivateUseCase) validateInput(input UserActivateUseCaseInput) error {
-	if empty.IsEmpty(input.UserID) {
-		return errs.NewBadRequestError("user_id is required")
-	}
-
-	if empty.IsEmpty(input.Token) {
-		return errs.NewBadRequestError("token is required")
 	}
 
 	return nil

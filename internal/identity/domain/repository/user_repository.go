@@ -12,6 +12,7 @@ type UserRepository interface {
 
 	FindByEmail(ctx context.Context, email string) (model.UserModel, error)
 	FindByID(ctx context.Context, id uint64) (model.UserModel, error)
-	FindByRPToken(ctx context.Context, token string) (model.UserModel, error)
+	FindByConfirmationToken(ctx context.Context, token string) (model.UserModel, error)
+	FindByResetPasswordToken(ctx context.Context, token string) (model.UserModel, error)
 	IsActivated(ctx context.Context, id uint64) (bool, error)
 }

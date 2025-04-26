@@ -158,13 +158,21 @@ func (u *UserModel) Activate() {
 	u.updatedAt = time.Now().UTC()
 }
 
-func (u *UserModel) Confirm() {
+func (u *UserModel) ConfirmAccount() {
 	now := time.Now().UTC()
 	u.isActivated = true
 	u.confirmedAt = &now
 	u.confirmationToken = nil
 	u.confirmationExpiresAt = nil
 	u.updatedAt = now
+}
+
+func (u *UserModel) IsConfirmationTokenValid(token string) bool {
+	return u.confirmationToken != nil &&
+		u.confirmationExpiresAt != nil &&
+		u.confirmedAt == nil &&
+		(*u.confirmationExpiresAt).After(time.Now().UTC()) &&
+		*u.confirmationToken == token
 }
 
 func (u *UserModel) SetResetPasswordDetails(token string, expiresAt time.Time) {

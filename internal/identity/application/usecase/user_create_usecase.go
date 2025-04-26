@@ -35,7 +35,7 @@ type UserCreateOutput struct {
 type userCreateUseCase struct {
 	sendEmailConfirmationService service.SendEmailConfirmationService
 	hashService                  service.HashService
-	userRepo                     repository.UserRepository
+	userRepository               repository.UserRepository
 	validate                     validator.Validate
 	logger                       logger.Logger
 }
@@ -67,7 +67,7 @@ func (uc *userCreateUseCase) Execute(ctx context.Context, input UserCreateInput)
 		return output, err
 	}
 
-	user, err := uc.userRepo.FindByEmail(ctx, input.Email)
+	user, err := uc.userRepository.FindByEmail(ctx, input.Email)
 	if err != nil && !errors.Is(err, kernel_errs.ErrNotFound) {
 		uc.logger.Error("error finding user by email", "error", err)
 		return output, err
@@ -108,7 +108,7 @@ func (uc *userCreateUseCase) Execute(ctx context.Context, input UserCreateInput)
 		return output, err
 	}
 
-	newUserModel, err := uc.userRepo.Create(ctx, userModel)
+	newUserModel, err := uc.userRepository.Create(ctx, userModel)
 	if err != nil {
 		message := "error creating user"
 		uc.logger.Error(message, "error", err)
