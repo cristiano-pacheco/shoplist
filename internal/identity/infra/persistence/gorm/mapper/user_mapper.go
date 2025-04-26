@@ -24,7 +24,11 @@ func (u *userMapper) ToModel(entity entity.UserEntity) (model.UserModel, error) 
 		entity.Email,
 		entity.PasswordHash,
 		entity.IsActivated,
-		entity.RpToken,
+		entity.ConfirmationToken,
+		entity.ConfirmationExpiresAt,
+		entity.ConfirmedAt,
+		entity.ResetPasswordToken,
+		entity.ResetPasswordExpiresAt,
 		entity.CreatedAt,
 		entity.UpdatedAt,
 	)
@@ -36,13 +40,17 @@ func (u *userMapper) ToModel(entity entity.UserEntity) (model.UserModel, error) 
 
 func (u *userMapper) ToEntity(model model.UserModel) entity.UserEntity {
 	return entity.UserEntity{
-		ID:           model.ID(),
-		Name:         model.Name(),
-		Email:        model.Email(),
-		PasswordHash: model.PasswordHash(),
-		IsActivated:  model.IsActivated(),
-		RpToken:      model.RpToken(),
-		CreatedAt:    model.CreatedAt(),
-		UpdatedAt:    model.UpdatedAt(),
+		ID:                     model.ID(),
+		Name:                   model.Name(),
+		Email:                  model.Email(),
+		PasswordHash:           model.PasswordHash(),
+		IsActivated:            model.IsActivated(),
+		ConfirmationToken:      model.ConfirmationToken(),
+		ConfirmationExpiresAt:  model.ConfirmationExpiresAt(),
+		ConfirmedAt:            model.ConfirmedAt(),
+		ResetPasswordToken:     model.ResetPasswordToken(),
+		ResetPasswordExpiresAt: model.ResetPasswordExpiresAt(),
+		CreatedAt:              model.CreatedAt(),
+		UpdatedAt:              model.UpdatedAt(),
 	}
 }

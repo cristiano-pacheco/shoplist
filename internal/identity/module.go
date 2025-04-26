@@ -41,7 +41,7 @@ var Module = fx.Module(
 
 		// mappers
 		mapper.NewUserMapper,
-		mapper.NewAccountConfirmationMapper,
+		mapper.NewLoginTokenMapper,
 
 		// repositories
 		fx.Annotate(
@@ -50,8 +50,8 @@ var Module = fx.Module(
 		),
 
 		fx.Annotate(
-			repository.NewAccountConfirmationRepository,
-			fx.As(new(domain_repository.AccountConfirmationRepository)),
+			repository.NewLoginTokenRepository,
+			fx.As(new(domain_repository.LoginTokenRepository)),
 		),
 
 		// services

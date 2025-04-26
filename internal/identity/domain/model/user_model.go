@@ -6,17 +6,27 @@ import (
 )
 
 type UserModel struct {
-	id           uint64
-	name         NameModel
-	email        EmailModel
-	passwordHash string
-	isActivated  bool
-	rpToken      string // Reset password token
-	createdAt    time.Time
-	updatedAt    time.Time
+	id                     uint64
+	name                   NameModel
+	email                  EmailModel
+	passwordHash           string
+	isActivated            bool
+	confirmationToken      *string
+	confirmationExpiresAt  *time.Time
+	confirmedAt            *time.Time
+	resetPasswordToken     *string
+	resetPasswordExpiresAt *time.Time
+	createdAt              time.Time
+	updatedAt              time.Time
 }
 
-func CreateUserModel(name string, email string, passwordHash string) (UserModel, error) {
+func CreateUserModel(
+	name string,
+	email string,
+	passwordHash string,
+	confirmationToken string,
+	confirmationExpiresAt time.Time,
+) (UserModel, error) {
 	// Validate and create name model
 	nameModel, err := CreateNameModel(name)
 	if err != nil {
@@ -36,12 +46,14 @@ func CreateUserModel(name string, email string, passwordHash string) (UserModel,
 
 	// Create user model
 	return UserModel{
-		name:         *nameModel,
-		email:        *emailModel,
-		passwordHash: passwordHash,
-		isActivated:  false,
-		createdAt:    time.Now(),
-		updatedAt:    time.Now(),
+		name:                  *nameModel,
+		email:                 *emailModel,
+		passwordHash:          passwordHash,
+		isActivated:           false,
+		confirmationToken:     &confirmationToken,
+		confirmationExpiresAt: &confirmationExpiresAt,
+		createdAt:             time.Now().UTC(),
+		updatedAt:             time.Now().UTC(),
 	}, nil
 }
 
@@ -51,7 +63,11 @@ func RestoreUserModel(
 	email string,
 	passwordHash string,
 	isActivated bool,
-	rpToken string,
+	confirmationToken *string,
+	confirmationExpiresAt *time.Time,
+	confirmedAt *time.Time,
+	resetPasswordToken *string,
+	resetPasswordExpiresAt *time.Time,
 	createdAt time.Time,
 	updatedAt time.Time,
 ) (UserModel, error) {
@@ -74,14 +90,18 @@ func RestoreUserModel(
 
 	// Create user model with all fields
 	return UserModel{
-		id:           id,
-		name:         *nameModel,
-		email:        *emailModel,
-		passwordHash: passwordHash,
-		isActivated:  isActivated,
-		rpToken:      rpToken,
-		createdAt:    createdAt,
-		updatedAt:    updatedAt,
+		id:                     id,
+		name:                   *nameModel,
+		email:                  *emailModel,
+		passwordHash:           passwordHash,
+		isActivated:            isActivated,
+		confirmationToken:      confirmationToken,
+		confirmationExpiresAt:  confirmationExpiresAt,
+		confirmedAt:            confirmedAt,
+		resetPasswordToken:     resetPasswordToken,
+		resetPasswordExpiresAt: resetPasswordExpiresAt,
+		createdAt:              createdAt,
+		updatedAt:              updatedAt,
 	}, nil
 }
 
@@ -105,8 +125,24 @@ func (u *UserModel) IsActivated() bool {
 	return u.isActivated
 }
 
-func (u *UserModel) RpToken() string {
-	return u.rpToken
+func (u *UserModel) ConfirmationToken() *string {
+	return u.confirmationToken
+}
+
+func (u *UserModel) ConfirmationExpiresAt() *time.Time {
+	return u.confirmationExpiresAt
+}
+
+func (u *UserModel) ConfirmedAt() *time.Time {
+	return u.confirmedAt
+}
+
+func (u *UserModel) ResetPasswordToken() *string {
+	return u.resetPasswordToken
+}
+
+func (u *UserModel) ResetPasswordExpiresAt() *time.Time {
+	return u.resetPasswordExpiresAt
 }
 
 func (u *UserModel) CreatedAt() time.Time {
@@ -119,5 +155,26 @@ func (u *UserModel) UpdatedAt() time.Time {
 
 func (u *UserModel) Activate() {
 	u.isActivated = true
-	u.updatedAt = time.Now()
+	u.updatedAt = time.Now().UTC()
+}
+
+func (u *UserModel) Confirm() {
+	now := time.Now().UTC()
+	u.isActivated = true
+	u.confirmedAt = &now
+	u.confirmationToken = nil
+	u.confirmationExpiresAt = nil
+	u.updatedAt = now
+}
+
+func (u *UserModel) SetResetPasswordDetails(token string, expiresAt time.Time) {
+	u.resetPasswordToken = &token
+	u.resetPasswordExpiresAt = &expiresAt
+	u.updatedAt = time.Now().UTC()
+}
+
+func (u *UserModel) ClearResetPasswordDetails() {
+	u.resetPasswordToken = nil
+	u.resetPasswordExpiresAt = nil
+	u.updatedAt = time.Now().UTC()
 }

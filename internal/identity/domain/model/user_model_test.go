@@ -76,11 +76,14 @@ func TestCreateUserModel(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			user, err := CreateUserModel(tt.userName, tt.email, tt.passwordHash)
+			// Use default confirmation token and expiration time for testing
+			confirmationToken := "default_token"
+			confirmationExpiresAt := time.Now().UTC().Add(24 * time.Hour)
+
+			user, err := CreateUserModel(tt.userName, tt.email, tt.passwordHash, confirmationToken, confirmationExpiresAt)
 
 			if tt.expectError {
 				assert.Error(t, err)
-				assert.Nil(t, user)
 				if err != nil {
 					assert.Contains(t, err.Error(), tt.errorContains)
 				}
@@ -101,7 +104,13 @@ func TestCreateUserModel(t *testing.T) {
 				// Verify other fields
 				assert.Equal(t, tt.passwordHash, user.PasswordHash())
 				assert.False(t, user.IsActivated())
-				assert.Empty(t, user.RpToken())
+				require.NotNil(t, user.ConfirmationToken())
+				assert.Equal(t, confirmationToken, *user.ConfirmationToken())
+				require.NotNil(t, user.ConfirmationExpiresAt())
+				assert.Equal(t, confirmationExpiresAt.Unix(), user.ConfirmationExpiresAt().Unix())
+				assert.Nil(t, user.ConfirmedAt())
+				assert.Nil(t, user.ResetPasswordToken())
+				assert.Nil(t, user.ResetPasswordExpiresAt())
 
 				// Verify timestamps are set
 				assert.False(t, user.CreatedAt().IsZero())
@@ -117,22 +126,32 @@ func TestCreateUserModel(t *testing.T) {
 
 func TestUserModel_Fields(t *testing.T) {
 	// Create test data
-	now := time.Now()
+	now := time.Now().UTC()
 	nameModel, err := CreateNameModel("John Doe")
 	require.NoError(t, err)
 	emailModel, err := CreateEmailModel("john@example.com")
 	require.NoError(t, err)
 
+	confirmToken := "confirm_token"
+	resetToken := "reset_token"
+	confirmExpiry := now.Add(24 * time.Hour)
+	resetExpiry := now.Add(12 * time.Hour)
+	confirmedAt := now.Add(-1 * time.Hour)
+
 	// Create a user model manually for field testing
 	user := UserModel{
-		id:           123,
-		name:         *nameModel,
-		email:        *emailModel,
-		passwordHash: "hashed_password",
-		isActivated:  true,
-		rpToken:      "reset_token",
-		createdAt:    now,
-		updatedAt:    now,
+		id:                     123,
+		name:                   *nameModel,
+		email:                  *emailModel,
+		passwordHash:           "hashed_password",
+		isActivated:            true,
+		confirmationToken:      &confirmToken,
+		confirmationExpiresAt:  &confirmExpiry,
+		confirmedAt:            &confirmedAt,
+		resetPasswordToken:     &resetToken,
+		resetPasswordExpiresAt: &resetExpiry,
+		createdAt:              now,
+		updatedAt:              now,
 	}
 
 	// Test field values
@@ -141,75 +160,131 @@ func TestUserModel_Fields(t *testing.T) {
 	assert.Equal(t, "john@example.com", user.Email())
 	assert.Equal(t, "hashed_password", user.PasswordHash())
 	assert.True(t, user.IsActivated())
-	assert.Equal(t, "reset_token", user.RpToken())
+	assert.Equal(t, confirmToken, *user.ConfirmationToken())
+	assert.Equal(t, confirmExpiry.Unix(), user.ConfirmationExpiresAt().Unix())
+	assert.Equal(t, confirmedAt.Unix(), user.ConfirmedAt().Unix())
+	assert.Equal(t, resetToken, *user.ResetPasswordToken())
+	assert.Equal(t, resetExpiry.Unix(), user.ResetPasswordExpiresAt().Unix())
 	assert.Equal(t, now, user.CreatedAt())
 	assert.Equal(t, now, user.UpdatedAt())
 }
 
 func TestRestoreUserModel(t *testing.T) {
 	tests := []struct {
-		name        string
-		id          uint64
-		userName    string
-		email       string
-		password    string
-		isActivated bool
-		rpToken     string
-		createdAt   time.Time
-		updatedAt   time.Time
-		expectError bool
-		errorMsg    string
+		name                   string
+		id                     uint64
+		userName               string
+		email                  string
+		password               string
+		isActivated            bool
+		confirmationToken      *string
+		confirmationExpiresAt  *time.Time
+		confirmedAt            *time.Time
+		resetPasswordToken     *string
+		resetPasswordExpiresAt *time.Time
+		createdAt              time.Time
+		updatedAt              time.Time
+		expectError            bool
+		errorMsg               string
 	}{
 		{
-			name:        "Valid user restoration",
-			id:          1,
-			userName:    "John Doe",
-			email:       "test@example.com",
-			password:    "hashedpassword",
-			isActivated: true,
-			rpToken:     "token123",
-			createdAt:   time.Now().Add(-24 * time.Hour),
-			updatedAt:   time.Now(),
-			expectError: false,
+			name:                   "Valid user restoration",
+			id:                     1,
+			userName:               "John Doe",
+			email:                  "test@example.com",
+			password:               "hashedpassword",
+			isActivated:            true,
+			confirmationToken:      nil,
+			confirmationExpiresAt:  nil,
+			confirmedAt:            ptrTime(time.Now().Add(-24 * time.Hour)),
+			resetPasswordToken:     nil,
+			resetPasswordExpiresAt: nil,
+			createdAt:              time.Now().Add(-48 * time.Hour),
+			updatedAt:              time.Now(),
+			expectError:            false,
 		},
 		{
-			name:        "Invalid email",
-			id:          2,
-			userName:    "John Doe",
-			email:       "invalid-email",
-			password:    "hashedpassword",
-			isActivated: true,
-			rpToken:     "token123",
-			createdAt:   time.Now().Add(-24 * time.Hour),
-			updatedAt:   time.Now(),
-			expectError: true,
-			errorMsg:    "invalid email format",
+			name:                   "Valid user with confirmation data",
+			id:                     2,
+			userName:               "Jane Doe",
+			email:                  "jane@example.com",
+			password:               "hashedpassword",
+			isActivated:            false,
+			confirmationToken:      ptrString("token123"),
+			confirmationExpiresAt:  ptrTime(time.Now().Add(24 * time.Hour)),
+			confirmedAt:            nil,
+			resetPasswordToken:     nil,
+			resetPasswordExpiresAt: nil,
+			createdAt:              time.Now().Add(-1 * time.Hour),
+			updatedAt:              time.Now(),
+			expectError:            false,
 		},
 		{
-			name:        "Invalid name",
-			id:          3,
-			userName:    "J", // Too short
-			email:       "test@example.com",
-			password:    "hashedpassword",
-			isActivated: true,
-			rpToken:     "token123",
-			createdAt:   time.Now().Add(-24 * time.Hour),
-			updatedAt:   time.Now(),
-			expectError: true,
-			errorMsg:    "name must be at least 2 characters",
+			name:                   "Valid user with reset password data",
+			id:                     3,
+			userName:               "Bob Smith",
+			email:                  "bob@example.com",
+			password:               "hashedpassword",
+			isActivated:            true,
+			confirmationToken:      nil,
+			confirmationExpiresAt:  nil,
+			confirmedAt:            ptrTime(time.Now().Add(-48 * time.Hour)),
+			resetPasswordToken:     ptrString("reset123"),
+			resetPasswordExpiresAt: ptrTime(time.Now().Add(12 * time.Hour)),
+			createdAt:              time.Now().Add(-72 * time.Hour),
+			updatedAt:              time.Now(),
+			expectError:            false,
 		},
 		{
-			name:        "Empty password hash",
-			id:          4,
-			userName:    "John Doe",
-			email:       "test@example.com",
-			password:    "",
-			isActivated: true,
-			rpToken:     "token123",
-			createdAt:   time.Now().Add(-24 * time.Hour),
-			updatedAt:   time.Now(),
-			expectError: true,
-			errorMsg:    "password hash is required",
+			name:                   "Invalid email",
+			id:                     4,
+			userName:               "Invalid User",
+			email:                  "invalid-email",
+			password:               "hashedpassword",
+			isActivated:            true,
+			confirmationToken:      nil,
+			confirmationExpiresAt:  nil,
+			confirmedAt:            nil,
+			resetPasswordToken:     nil,
+			resetPasswordExpiresAt: nil,
+			createdAt:              time.Now().Add(-24 * time.Hour),
+			updatedAt:              time.Now(),
+			expectError:            true,
+			errorMsg:               "invalid email format",
+		},
+		{
+			name:                   "Invalid name",
+			id:                     5,
+			userName:               "J", // Too short
+			email:                  "test@example.com",
+			password:               "hashedpassword",
+			isActivated:            true,
+			confirmationToken:      nil,
+			confirmationExpiresAt:  nil,
+			confirmedAt:            nil,
+			resetPasswordToken:     nil,
+			resetPasswordExpiresAt: nil,
+			createdAt:              time.Now().Add(-24 * time.Hour),
+			updatedAt:              time.Now(),
+			expectError:            true,
+			errorMsg:               "name must be at least 2 characters",
+		},
+		{
+			name:                   "Empty password hash",
+			id:                     6,
+			userName:               "John Doe",
+			email:                  "test@example.com",
+			password:               "",
+			isActivated:            true,
+			confirmationToken:      nil,
+			confirmationExpiresAt:  nil,
+			confirmedAt:            nil,
+			resetPasswordToken:     nil,
+			resetPasswordExpiresAt: nil,
+			createdAt:              time.Now().Add(-24 * time.Hour),
+			updatedAt:              time.Now(),
+			expectError:            true,
+			errorMsg:               "password hash is required",
 		},
 	}
 
@@ -221,7 +296,11 @@ func TestRestoreUserModel(t *testing.T) {
 				tc.email,
 				tc.password,
 				tc.isActivated,
-				tc.rpToken,
+				tc.confirmationToken,
+				tc.confirmationExpiresAt,
+				tc.confirmedAt,
+				tc.resetPasswordToken,
+				tc.resetPasswordExpiresAt,
 				tc.createdAt,
 				tc.updatedAt,
 			)
@@ -231,7 +310,6 @@ func TestRestoreUserModel(t *testing.T) {
 				if tc.errorMsg != "" {
 					assert.Contains(t, err.Error(), tc.errorMsg)
 				}
-				assert.Nil(t, user)
 			} else {
 				assert.NoError(t, err)
 				assert.NotNil(t, user)
@@ -240,10 +318,111 @@ func TestRestoreUserModel(t *testing.T) {
 				assert.Equal(t, tc.userName, user.Name())
 				assert.Equal(t, tc.password, user.PasswordHash())
 				assert.Equal(t, tc.isActivated, user.IsActivated())
-				assert.Equal(t, tc.rpToken, user.RpToken())
+
+				// Check confirmation data
+				if tc.confirmationToken == nil {
+					assert.Nil(t, user.ConfirmationToken())
+				} else {
+					assert.Equal(t, *tc.confirmationToken, *user.ConfirmationToken())
+				}
+
+				if tc.confirmationExpiresAt == nil {
+					assert.Nil(t, user.ConfirmationExpiresAt())
+				} else {
+					assert.Equal(t, tc.confirmationExpiresAt.Unix(), user.ConfirmationExpiresAt().Unix())
+				}
+
+				if tc.confirmedAt == nil {
+					assert.Nil(t, user.ConfirmedAt())
+				} else {
+					assert.Equal(t, tc.confirmedAt.Unix(), user.ConfirmedAt().Unix())
+				}
+
+				// Check reset password data
+				if tc.resetPasswordToken == nil {
+					assert.Nil(t, user.ResetPasswordToken())
+				} else {
+					assert.Equal(t, *tc.resetPasswordToken, *user.ResetPasswordToken())
+				}
+
+				if tc.resetPasswordExpiresAt == nil {
+					assert.Nil(t, user.ResetPasswordExpiresAt())
+				} else {
+					assert.Equal(t, tc.resetPasswordExpiresAt.Unix(), user.ResetPasswordExpiresAt().Unix())
+				}
+
 				assert.Equal(t, tc.createdAt.Unix(), user.CreatedAt().Unix())
 				assert.Equal(t, tc.updatedAt.Unix(), user.UpdatedAt().Unix())
 			}
 		})
 	}
+}
+
+func TestConfirmationMethods(t *testing.T) {
+	// Create a user with confirmation token and expiration time
+	confirmationToken := "confirm_token"
+	confirmationExpiresAt := time.Now().UTC().Add(24 * time.Hour)
+	user, err := CreateUserModel("Test User", "test@example.com", "password_hash", confirmationToken, confirmationExpiresAt)
+	require.NoError(t, err)
+
+	// Verify initial state
+	assert.False(t, user.IsActivated())
+	require.NotNil(t, user.ConfirmationToken())
+	assert.Equal(t, confirmationToken, *user.ConfirmationToken())
+	require.NotNil(t, user.ConfirmationExpiresAt())
+	assert.Nil(t, user.ConfirmedAt())
+
+	// Confirm the user
+	user.Confirm()
+
+	// Verify user is confirmed
+	assert.True(t, user.IsActivated())
+	assert.Nil(t, user.ConfirmationToken())
+	assert.Nil(t, user.ConfirmationExpiresAt())
+	require.NotNil(t, user.ConfirmedAt())
+
+	// Confirming should update the updatedAt timestamp
+	assert.True(t, user.UpdatedAt().After(user.CreatedAt()))
+}
+
+func TestResetPasswordMethods(t *testing.T) {
+	// Create a user with confirmation token and expiration time
+	confirmationToken := "confirm_token"
+	confirmationExpiresAt := time.Now().UTC().Add(24 * time.Hour)
+	user, err := CreateUserModel("Test User", "test@example.com", "password_hash", confirmationToken, confirmationExpiresAt)
+	require.NoError(t, err)
+
+	// Verify initial state
+	assert.Nil(t, user.ResetPasswordToken())
+	assert.Nil(t, user.ResetPasswordExpiresAt())
+
+	// Set reset password details
+	token := "reset_token"
+	expiresAt := time.Now().UTC().Add(24 * time.Hour)
+	user.SetResetPasswordDetails(token, expiresAt)
+
+	// Verify reset password details were set
+	require.NotNil(t, user.ResetPasswordToken())
+	assert.Equal(t, token, *user.ResetPasswordToken())
+	require.NotNil(t, user.ResetPasswordExpiresAt())
+	assert.Equal(t, expiresAt.Unix(), user.ResetPasswordExpiresAt().Unix())
+
+	// Clear reset password details
+	user.ClearResetPasswordDetails()
+
+	// Verify reset password details were cleared
+	assert.Nil(t, user.ResetPasswordToken())
+	assert.Nil(t, user.ResetPasswordExpiresAt())
+
+	// Clearing should update the updatedAt timestamp
+	assert.True(t, user.UpdatedAt().After(user.CreatedAt()))
+}
+
+// Helper functions
+func ptrString(s string) *string {
+	return &s
+}
+
+func ptrTime(t time.Time) *time.Time {
+	return &t
 }

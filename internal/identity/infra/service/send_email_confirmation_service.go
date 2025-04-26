@@ -2,14 +2,10 @@ package service
 
 import (
 	"context"
-	"encoding/base64"
 	"fmt"
-	"time"
 
-	"github.com/cristiano-pacheco/shoplist/internal/identity/domain/model"
 	"github.com/cristiano-pacheco/shoplist/internal/identity/domain/repository"
 	"github.com/cristiano-pacheco/shoplist/internal/identity/domain/service"
-	domain_service "github.com/cristiano-pacheco/shoplist/internal/identity/domain/service"
 	"github.com/cristiano-pacheco/shoplist/internal/kernel/config"
 	"github.com/cristiano-pacheco/shoplist/internal/kernel/logger"
 	"github.com/cristiano-pacheco/shoplist/internal/kernel/mailer"
@@ -24,30 +20,24 @@ type SendEmailConfirmationService interface {
 }
 
 type sendEmailConfirmationService struct {
-	mailerTemplate                mailer.MailerTemplate
-	mailer                        mailer.SmtpMailer
-	accountConfirmationRepository repository.AccountConfirmationRepository
-	userRepository                repository.UserRepository
-	hashService                   domain_service.HashService
-	logger                        logger.Logger
-	cfg                           config.Config
+	mailerTemplate mailer.MailerTemplate
+	mailer         mailer.SmtpMailer
+	userRepository repository.UserRepository
+	logger         logger.Logger
+	cfg            config.Config
 }
 
 func NewSendEmailConfirmationService(
 	mailerTemplate mailer.MailerTemplate,
 	smtpMailer mailer.SmtpMailer,
-	accountConfirmationRepository repository.AccountConfirmationRepository,
 	userRepository repository.UserRepository,
-	hashService domain_service.HashService,
 	logger logger.Logger,
 	cfg config.Config,
 ) SendEmailConfirmationService {
 	return &sendEmailConfirmationService{
 		mailerTemplate,
 		smtpMailer,
-		accountConfirmationRepository,
 		userRepository,
-		hashService,
 		logger,
 		cfg,
 	}
@@ -63,23 +53,13 @@ func (s *sendEmailConfirmationService) Execute(ctx context.Context, userID uint6
 		s.logger.Error(message, "error", err)
 		return err
 	}
-	// generate a random token
-	token, err := s.hashService.GenerateRandomBytes()
-	if err != nil {
-		message := "error generating random bytes"
-		s.logger.Error(message, "error", err)
-		return err
-	}
-
-	// encode the token
-	accountConfToken := base64.StdEncoding.EncodeToString(token)
 
 	// generate the account confirmation link
 	accountConfLink := fmt.Sprintf(
 		"%s/user/confirmation?id=%d&token=%s",
 		s.cfg.App.BaseURL,
 		user.ID(),
-		accountConfToken,
+		*user.ConfirmationToken(),
 	)
 
 	// compile the template
@@ -94,21 +74,6 @@ func (s *sendEmailConfirmationService) Execute(ctx context.Context, userID uint6
 	content, err := s.mailerTemplate.CompileTemplate(sendAccountConfirmationEmailTemplate, tplData)
 	if err != nil {
 		message := "error compiling template"
-		s.logger.Error(message, "error", err)
-		return err
-	}
-
-	acModel, err := model.CreateAccountConfirmationModel(user.ID(), accountConfToken, time.Now().Add(time.Hour*24))
-	if err != nil {
-		message := "error creating account confirmation model"
-		s.logger.Error(message, "error", err)
-		return err
-	}
-
-	// persist the account confirmation in the database
-	_, err = s.accountConfirmationRepository.Create(ctx, acModel)
-	if err != nil {
-		message := "error creating account confirmation"
 		s.logger.Error(message, "error", err)
 		return err
 	}

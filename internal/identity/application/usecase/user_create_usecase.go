@@ -2,7 +2,9 @@ package usecase
 
 import (
 	"context"
+	"encoding/base64"
 	"errors"
+	"time"
 
 	"github.com/cristiano-pacheco/shoplist/internal/identity/domain/errs"
 	"github.com/cristiano-pacheco/shoplist/internal/identity/domain/model"
@@ -82,7 +84,24 @@ func (uc *userCreateUseCase) Execute(ctx context.Context, input UserCreateInput)
 		return output, err
 	}
 
-	userModel, err := model.CreateUserModel(input.Name, input.Email, string(ph))
+	token, err := uc.hashService.GenerateRandomBytes()
+	if err != nil {
+		message := "error generating random bytes"
+		uc.logger.Error(message, "error", err)
+		return output, err
+	}
+
+	// encode the token
+	confirmationToken := base64.StdEncoding.EncodeToString(token)
+	confirmationExpiresAt := time.Now().Add(time.Hour * 24)
+
+	userModel, err := model.CreateUserModel(
+		input.Name,
+		input.Email,
+		string(ph),
+		confirmationToken,
+		confirmationExpiresAt,
+	)
 	if err != nil {
 		message := "error creating user model"
 		uc.logger.Error(message, "error", err)
