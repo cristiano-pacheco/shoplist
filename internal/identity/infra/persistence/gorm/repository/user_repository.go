@@ -86,8 +86,23 @@ func (r *userRepository) FindByEmail(ctx context.Context, email string) (model.U
 	return userModel, nil
 }
 
-func (r *userRepository) FindByRPToken(ctx context.Context, token string) (model.UserModel, error) {
-	ctx, span := otel.Trace().StartSpan(ctx, "UserRepository.FindByRPToken")
+func (r *userRepository) FindByConfirmationToken(ctx context.Context, token string) (model.UserModel, error) {
+	ctx, span := otel.Trace().StartSpan(ctx, "UserRepository.FindByConfirmationToken")
+	defer span.End()
+	var userEntity entity.UserEntity
+	r.db.WithContext(ctx).Where("confirmation_token = ?", token).First(&userEntity)
+	if userEntity.ID == 0 {
+		return model.UserModel{}, errs.ErrNotFound
+	}
+	userModel, err := r.mapper.ToModel(userEntity)
+	if err != nil {
+		return model.UserModel{}, err
+	}
+	return userModel, nil
+}
+
+func (r *userRepository) FindByResetPasswordToken(ctx context.Context, token string) (model.UserModel, error) {
+	ctx, span := otel.Trace().StartSpan(ctx, "UserRepository.FindByResetPasswordToken")
 	defer span.End()
 	var userEntity entity.UserEntity
 	r.db.WithContext(ctx).Where("reset_password_token = ?", token).First(&userEntity)

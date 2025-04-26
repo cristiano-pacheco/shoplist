@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"encoding/json"
 	"errors"
 	"net/http"
 	"strconv"
@@ -105,7 +104,7 @@ func (h *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 	defer span.End()
 
 	var updateUserRequest dto.UpdateUserRequest
-	if err := json.NewDecoder(r.Body).Decode(&updateUserRequest); err != nil {
+	if err := request.ReadJSON(w, r, &updateUserRequest); err != nil {
 		response.Error(w, err)
 		return
 	}
@@ -183,13 +182,13 @@ func (h *UserHandler) Activate(w http.ResponseWriter, r *http.Request) {
 	ctx, span := otel.Trace().StartSpan(r.Context(), "UserHandler.Activate")
 	defer span.End()
 
-	var request dto.ActivateUserRequest
-	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+	var req dto.ActivateUserRequest
+	if err := request.ReadJSON(w, r, &req); err != nil {
 		response.Error(w, err)
 		return
 	}
 
-	input := usecase.UserActivateUseCaseInput{UserID: request.UserID, Token: request.Token}
+	input := usecase.UserActivateInput{Token: req.Token}
 	if err := h.userActivateUseCase.Execute(ctx, input); err != nil {
 		response.Error(w, err)
 		return
