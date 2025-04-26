@@ -2,7 +2,6 @@ package errs
 
 import (
 	"errors"
-	"fmt"
 )
 
 // Common error types
@@ -23,22 +22,3 @@ var (
 	ErrPasswordNoSpecialChar = errors.New("password must contain at least one special character")
 	ErrEmailAlreadyInUse     = errors.New("email already in use")
 )
-
-// WrapError wraps an error with additional context
-func WrapError(err error, format string, args ...interface{}) error {
-	if err == nil {
-		return nil
-	}
-	msg := fmt.Sprintf(format, args...)
-	return fmt.Errorf("%s: %w", msg, err)
-}
-
-// Is checks if the target error is of the given type
-func Is(err, target error) bool {
-	return errors.Is(err, target)
-}
-
-// As finds the first error in err's chain that matches target
-func As(err error, target interface{}) bool {
-	return errors.As(err, target)
-}
