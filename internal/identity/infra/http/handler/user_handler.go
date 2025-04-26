@@ -53,16 +53,16 @@ func (h *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 	ctx, span := otel.Trace().StartSpan(r.Context(), "UserHandler.Create")
 	defer span.End()
 
-	var request dto.CreateUserRequest
-	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+	var createUserRequest dto.CreateUserRequest
+	if err := request.ReadJSON(w, r, &createUserRequest); err != nil {
 		response.Error(w, err)
 		return
 	}
 
 	input := usecase.UserCreateInput{
-		Name:     request.Name,
-		Email:    request.Email,
-		Password: request.Password,
+		Name:     createUserRequest.Name,
+		Email:    createUserRequest.Email,
+		Password: createUserRequest.Password,
 	}
 
 	output, err := h.userCreateUseCase.Execute(ctx, input)
@@ -72,7 +72,8 @@ func (h *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 			response.Error(w, rError)
 			return
 		}
-		response.Error(w, err)
+		rError := h.errorMapper.Map(err)
+		response.Error(w, rError)
 		return
 	}
 
