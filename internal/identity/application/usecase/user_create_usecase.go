@@ -93,7 +93,7 @@ func (uc *userCreateUseCase) Execute(ctx context.Context, input UserCreateInput)
 
 	// encode the token
 	confirmationToken := base64.StdEncoding.EncodeToString(token)
-	confirmationExpiresAt := time.Now().Add(time.Hour * 24)
+	confirmationExpiresAt := time.Now().UTC().Add(time.Hour * 24)
 
 	userModel, err := model.CreateUserModel(
 		input.Name,
