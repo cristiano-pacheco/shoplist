@@ -5,7 +5,6 @@ import (
 	"github.com/cristiano-pacheco/shoplist/internal/kernel/database"
 	"github.com/cristiano-pacheco/shoplist/internal/kernel/errs"
 	"github.com/cristiano-pacheco/shoplist/internal/kernel/http/httpserver"
-	"github.com/cristiano-pacheco/shoplist/internal/kernel/http/middleware"
 	"github.com/cristiano-pacheco/shoplist/internal/kernel/jwt"
 	"github.com/cristiano-pacheco/shoplist/internal/kernel/logger"
 	"github.com/cristiano-pacheco/shoplist/internal/kernel/mailer"
@@ -24,7 +23,6 @@ var Module = fx.Module(
 	translator.Module,
 	httpserver.Module,
 	logger.Module,
-	middleware.Module,
 	registry.Module,
 	jwt.Module,
 	mailer.Module,

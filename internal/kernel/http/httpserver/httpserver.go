@@ -5,7 +5,6 @@ import (
 
 	_ "github.com/cristiano-pacheco/shoplist/docs"
 	"github.com/cristiano-pacheco/shoplist/internal/kernel/config"
-	"github.com/cristiano-pacheco/shoplist/internal/kernel/http/middleware"
 	"github.com/cristiano-pacheco/shoplist/pkg/httpserver"
 	"github.com/julienschmidt/httprouter"
 	"go.uber.org/fx"
@@ -18,7 +17,6 @@ type HTTPServer struct {
 func NewHTTPServer(
 	lc fx.Lifecycle,
 	conf config.Config,
-	errorHandlerMiddleware *middleware.ErrorHandlerMiddleware,
 ) *HTTPServer {
 	corsConfig := httpserver.CorsConfig{
 		AllowedOrigins:   conf.CORS.GetAllowedOrigins(),
