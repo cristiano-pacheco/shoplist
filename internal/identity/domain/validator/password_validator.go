@@ -18,48 +18,52 @@ func NewPasswordValidator() PasswordValidator {
 	return &passwordValidator{}
 }
 
-func (s *passwordValidator) Validate(password string) error {
-	// Track requirements
-	var (
-		hasUpper   bool // uppercase letter
-		hasLower   bool // lowercase letter
-		hasNumber  bool // number
-		hasSpecial bool // special character
-	)
+type passwordRequirements struct {
+	hasUpper   bool
+	hasLower   bool
+	hasNumber  bool
+	hasSpecial bool
+}
 
-	// Check minimum length (8 characters)
+func (s *passwordValidator) checkRequirements(password string) passwordRequirements {
+	reqs := passwordRequirements{}
+
+	for _, r := range password {
+		switch {
+		case unicode.IsUpper(r):
+			reqs.hasUpper = true
+		case unicode.IsLower(r):
+			reqs.hasLower = true
+		case unicode.IsNumber(r):
+			reqs.hasNumber = true
+		case unicode.IsPunct(r) || unicode.IsSymbol(r):
+			reqs.hasSpecial = true
+		}
+	}
+
+	return reqs
+}
+
+func (s *passwordValidator) Validate(password string) error {
 	if utf8.RuneCountInString(password) < 8 {
 		return errs.ErrPasswordTooShort
 	}
 
-	// Iterate through each rune (character) with UTF-8 support
-	for _, r := range password {
-		switch {
-		case unicode.IsUpper(r):
-			hasUpper = true
-		case unicode.IsLower(r):
-			hasLower = true
-		case unicode.IsNumber(r):
-			hasNumber = true
-		case unicode.IsPunct(r) || unicode.IsSymbol(r):
-			hasSpecial = true
-		}
-	}
+	reqs := s.checkRequirements(password)
 
-	// Verify all requirements are met
-	if !hasUpper {
+	// Check all requirements in a single pass
+	if !reqs.hasUpper {
 		return errs.ErrPasswordNoUppercase
 	}
-	if !hasLower {
+	if !reqs.hasLower {
 		return errs.ErrPasswordNoLowercase
 	}
-	if !hasNumber {
+	if !reqs.hasNumber {
 		return errs.ErrPasswordNoNumber
 	}
-	if !hasSpecial {
+	if !reqs.hasSpecial {
 		return errs.ErrPasswordNoSpecialChar
 	}
 
-	// Password meets all requirements
 	return nil
 }
