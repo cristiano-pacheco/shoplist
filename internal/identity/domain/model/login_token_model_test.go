@@ -67,8 +67,6 @@ func TestCreateLoginTokenModel(t *testing.T) {
 				assert.Equal(t, tt.userID, token.UserID())
 				assert.Equal(t, tt.token, token.Token())
 				assert.Equal(t, tt.expiresAt.Unix(), token.ExpiresAt().Unix())
-				assert.Nil(t, token.ConsumedAt())
-				assert.False(t, token.IsConsumed())
 
 				// Verify timestamps are set
 				assert.False(t, token.CreatedAt().IsZero())
@@ -84,7 +82,6 @@ func TestCreateLoginTokenModel(t *testing.T) {
 
 func TestRestoreLoginTokenModel(t *testing.T) {
 	now := time.Now().UTC()
-	consumedAt := now.Add(-1 * time.Hour)
 	expiresAt := now.Add(24 * time.Hour)
 
 	tests := []struct {
@@ -93,7 +90,6 @@ func TestRestoreLoginTokenModel(t *testing.T) {
 		userID        uint64
 		token         string
 		expiresAt     time.Time
-		consumedAt    *time.Time
 		createdAt     time.Time
 		updatedAt     time.Time
 		expectError   bool
@@ -105,7 +101,6 @@ func TestRestoreLoginTokenModel(t *testing.T) {
 			userID:      456,
 			token:       "valid_token",
 			expiresAt:   expiresAt,
-			consumedAt:  &consumedAt,
 			createdAt:   now.Add(-2 * time.Hour),
 			updatedAt:   now,
 			expectError: false,
@@ -116,7 +111,6 @@ func TestRestoreLoginTokenModel(t *testing.T) {
 			userID:      456,
 			token:       "valid_token",
 			expiresAt:   expiresAt,
-			consumedAt:  nil,
 			createdAt:   now.Add(-2 * time.Hour),
 			updatedAt:   now,
 			expectError: false,
@@ -127,7 +121,6 @@ func TestRestoreLoginTokenModel(t *testing.T) {
 			userID:        456,
 			token:         "valid_token",
 			expiresAt:     expiresAt,
-			consumedAt:    nil,
 			createdAt:     now.Add(-2 * time.Hour),
 			updatedAt:     now,
 			expectError:   true,
@@ -139,7 +132,6 @@ func TestRestoreLoginTokenModel(t *testing.T) {
 			userID:        0,
 			token:         "valid_token",
 			expiresAt:     expiresAt,
-			consumedAt:    nil,
 			createdAt:     now.Add(-2 * time.Hour),
 			updatedAt:     now,
 			expectError:   true,
@@ -151,7 +143,6 @@ func TestRestoreLoginTokenModel(t *testing.T) {
 			userID:        456,
 			token:         "",
 			expiresAt:     expiresAt,
-			consumedAt:    nil,
 			createdAt:     now.Add(-2 * time.Hour),
 			updatedAt:     now,
 			expectError:   true,
@@ -163,7 +154,6 @@ func TestRestoreLoginTokenModel(t *testing.T) {
 			userID:        456,
 			token:         "valid_token",
 			expiresAt:     time.Time{},
-			consumedAt:    nil,
 			createdAt:     now.Add(-2 * time.Hour),
 			updatedAt:     now,
 			expectError:   true,
@@ -178,7 +168,6 @@ func TestRestoreLoginTokenModel(t *testing.T) {
 				tt.userID,
 				tt.token,
 				tt.expiresAt,
-				tt.consumedAt,
 				tt.createdAt,
 				tt.updatedAt,
 			)
@@ -197,15 +186,6 @@ func TestRestoreLoginTokenModel(t *testing.T) {
 				assert.Equal(t, tt.userID, token.UserID())
 				assert.Equal(t, tt.token, token.Token())
 				assert.Equal(t, tt.expiresAt.Unix(), token.ExpiresAt().Unix())
-
-				if tt.consumedAt == nil {
-					assert.Nil(t, token.ConsumedAt())
-					assert.False(t, token.IsConsumed())
-				} else {
-					require.NotNil(t, token.ConsumedAt())
-					assert.Equal(t, tt.consumedAt.Unix(), token.ConsumedAt().Unix())
-					assert.True(t, token.IsConsumed())
-				}
 
 				assert.Equal(t, tt.createdAt.Unix(), token.CreatedAt().Unix())
 				assert.Equal(t, tt.updatedAt.Unix(), token.UpdatedAt().Unix())
@@ -230,7 +210,6 @@ func TestLoginTokenModel_IsExpired(t *testing.T) {
 		456,
 		"expired_token",
 		expiredExpiresAt,
-		nil,
 		now.Add(-2*time.Hour),
 		now,
 	)
@@ -240,37 +219,31 @@ func TestLoginTokenModel_IsExpired(t *testing.T) {
 
 func TestLoginTokenModel_IsValid(t *testing.T) {
 	now := time.Now().UTC()
-	consumedAt := now.Add(-1 * time.Hour)
 
 	testCases := []struct {
-		name       string
-		expiresAt  time.Time
-		consumedAt *time.Time
-		expected   bool
+		name      string
+		expiresAt time.Time
+		expected  bool
 	}{
 		{
-			name:       "Valid token (not expired, not consumed)",
-			expiresAt:  now.Add(24 * time.Hour),
-			consumedAt: nil,
-			expected:   true,
+			name:      "Valid token (not expired, not consumed)",
+			expiresAt: now.Add(24 * time.Hour),
+			expected:  true,
 		},
 		{
-			name:       "Invalid token (expired, not consumed)",
-			expiresAt:  now.Add(-1 * time.Hour),
-			consumedAt: nil,
-			expected:   false,
+			name:      "Invalid token (expired, not consumed)",
+			expiresAt: now.Add(-1 * time.Hour),
+			expected:  false,
 		},
 		{
-			name:       "Invalid token (not expired, consumed)",
-			expiresAt:  now.Add(24 * time.Hour),
-			consumedAt: &consumedAt,
-			expected:   false,
+			name:      "Invalid token (not expired, consumed)",
+			expiresAt: now.Add(24 * time.Hour),
+			expected:  true,
 		},
 		{
-			name:       "Invalid token (expired, consumed)",
-			expiresAt:  now.Add(-1 * time.Hour),
-			consumedAt: &consumedAt,
-			expected:   false,
+			name:      "Invalid token (expired, consumed)",
+			expiresAt: now.Add(-1 * time.Hour),
+			expected:  false,
 		},
 	}
 
@@ -281,7 +254,6 @@ func TestLoginTokenModel_IsValid(t *testing.T) {
 				456,
 				"test_token",
 				tc.expiresAt,
-				tc.consumedAt,
 				now.Add(-2*time.Hour),
 				now,
 			)
@@ -290,31 +262,4 @@ func TestLoginTokenModel_IsValid(t *testing.T) {
 			assert.Equal(t, tc.expected, token.IsValid())
 		})
 	}
-}
-
-func TestLoginTokenModel_Consume(t *testing.T) {
-	// Create a token
-	now := time.Now().UTC()
-	expiresAt := now.Add(24 * time.Hour)
-	token, err := CreateLoginTokenModel(123, "valid_token", expiresAt)
-	require.NoError(t, err)
-
-	// Initial state
-	assert.Nil(t, token.ConsumedAt())
-	assert.False(t, token.IsConsumed())
-	assert.True(t, token.IsValid())
-
-	// Consume the token
-	token.Consume()
-
-	// After consumption
-	assert.NotNil(t, token.ConsumedAt())
-	assert.True(t, token.IsConsumed())
-	assert.False(t, token.IsValid())
-
-	// The consumed timestamp should be approximately now
-	assert.WithinDuration(t, time.Now().UTC(), *token.ConsumedAt(), 1*time.Second)
-
-	// Updates should be reflected in updatedAt
-	assert.True(t, token.UpdatedAt().After(token.CreatedAt()))
 }

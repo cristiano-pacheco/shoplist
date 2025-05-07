@@ -6,13 +6,12 @@ import (
 )
 
 type LoginTokenModel struct {
-	id         uint64
-	userID     uint64
-	token      string
-	expiresAt  time.Time
-	consumedAt *time.Time
-	createdAt  time.Time
-	updatedAt  time.Time
+	id        uint64
+	userID    uint64
+	token     string
+	expiresAt time.Time
+	createdAt time.Time
+	updatedAt time.Time
 }
 
 func CreateLoginTokenModel(userID uint64, token string, expiresAt time.Time) (LoginTokenModel, error) {
@@ -42,7 +41,6 @@ func RestoreLoginTokenModel(
 	userID uint64,
 	token string,
 	expiresAt time.Time,
-	consumedAt *time.Time,
 	createdAt time.Time,
 	updatedAt time.Time,
 ) (LoginTokenModel, error) {
@@ -63,13 +61,12 @@ func RestoreLoginTokenModel(
 	}
 
 	return LoginTokenModel{
-		id:         id,
-		userID:     userID,
-		token:      token,
-		expiresAt:  expiresAt,
-		consumedAt: consumedAt,
-		createdAt:  createdAt,
-		updatedAt:  updatedAt,
+		id:        id,
+		userID:    userID,
+		token:     token,
+		expiresAt: expiresAt,
+		createdAt: createdAt,
+		updatedAt: updatedAt,
 	}, nil
 }
 
@@ -89,10 +86,6 @@ func (t *LoginTokenModel) ExpiresAt() time.Time {
 	return t.expiresAt
 }
 
-func (t *LoginTokenModel) ConsumedAt() *time.Time {
-	return t.consumedAt
-}
-
 func (t *LoginTokenModel) CreatedAt() time.Time {
 	return t.createdAt
 }
@@ -101,20 +94,10 @@ func (t *LoginTokenModel) UpdatedAt() time.Time {
 	return t.updatedAt
 }
 
-func (t *LoginTokenModel) IsConsumed() bool {
-	return t.consumedAt != nil
-}
-
 func (t *LoginTokenModel) IsExpired() bool {
 	return time.Now().UTC().After(t.expiresAt)
 }
 
 func (t *LoginTokenModel) IsValid() bool {
-	return !t.IsConsumed() && !t.IsExpired()
-}
-
-func (t *LoginTokenModel) Consume() {
-	now := time.Now().UTC()
-	t.consumedAt = &now
-	t.updatedAt = now
+	return !t.IsExpired()
 }

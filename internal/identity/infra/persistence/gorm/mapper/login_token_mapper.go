@@ -23,7 +23,6 @@ func (m *loginTokenMapper) ToModel(entity entity.LoginTokenEntity) (model.LoginT
 		entity.UserID,
 		entity.Token,
 		entity.ExpiresAt,
-		entity.ConsumedAt,
 		entity.CreatedAt,
 		entity.UpdatedAt,
 	)
@@ -35,12 +34,11 @@ func (m *loginTokenMapper) ToModel(entity entity.LoginTokenEntity) (model.LoginT
 
 func (m *loginTokenMapper) ToEntity(model model.LoginTokenModel) entity.LoginTokenEntity {
 	return entity.LoginTokenEntity{
-		ID:         model.ID(),
-		UserID:     model.UserID(),
-		Token:      model.Token(),
-		ExpiresAt:  model.ExpiresAt(),
-		ConsumedAt: model.ConsumedAt(),
-		CreatedAt:  model.CreatedAt(),
-		UpdatedAt:  model.UpdatedAt(),
+		ID:        model.ID(),
+		UserID:    model.UserID(),
+		Token:     model.Token(),
+		ExpiresAt: model.ExpiresAt(),
+		CreatedAt: model.CreatedAt(),
+		UpdatedAt: model.UpdatedAt(),
 	}
 }
